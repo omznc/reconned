@@ -1,7 +1,7 @@
 import { ArrowUpRight, Calendar } from "lucide-react";
-import Image from "next/image";
 import type { ReactNode } from "react";
 import { ClubAvatar } from "@/components/identity/club-avatar";
+import { Image } from "@/components/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";

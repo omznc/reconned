@@ -18,7 +18,6 @@ import {
 	subMonths,
 } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
@@ -27,6 +26,7 @@ import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 import { VerifiedClubIcon } from "@/components/icons";
 import { ClubAvatar } from "@/components/identity/club-avatar";
+import { Image } from "@/components/image";
 import {
 	Credenza,
 	CredenzaBody,

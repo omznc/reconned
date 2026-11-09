@@ -2,13 +2,13 @@
 
 import Error500 from "@public/errors/500.webp";
 import type { Route } from "next";
-import Image from "next/image";
 import Link from "next/link";
-import { useLogger } from "next-axiom";
 import { useExtracted } from "next-intl";
 import posthog from "posthog-js";
 import { useEffect } from "react";
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
+import { useLogger } from "@/lib/logger";
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
 	const logger = useLogger({ source: "global-error" });

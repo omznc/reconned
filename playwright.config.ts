@@ -69,7 +69,7 @@ export default defineConfig({
 			timeout: 120_000,
 		},
 		{
-			command: `bun --bun next dev --turbo -p ${WEB_PORT}`,
+			command: `bun --bun vite dev --port ${WEB_PORT}`,
 			cwd: "./apps/web",
 			url: `http://localhost:${WEB_PORT}`,
 			reuseExistingServer: !process.env.CI,

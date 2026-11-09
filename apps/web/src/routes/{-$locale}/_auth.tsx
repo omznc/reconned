@@ -1,21 +1,49 @@
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { House } from "lucide-react";
-import type { Metadata } from "next";
-import Image from "next/image";
-import { getExtracted, setRequestLocale } from "next-intl/server";
-import { AnimationWrapper } from "@/app/[locale]/(auth)/_components/animation-wrapper";
+import { useExtracted } from "next-intl";
+import { getExtracted } from "next-intl/server";
+import background from "@/assets/auth/background-blur.webp";
+import backgroundLight from "@/assets/auth/background-blur-light.webp";
+import { AnimationWrapper } from "@/components/auth/animation-wrapper";
+import { Image } from "@/components/image";
 import { LanguageSwitcher } from "@/components/personalization/language/language-switcher";
+import { RouteErrorPage } from "@/components/route-error-page";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { env } from "@/lib/env";
+import { buildSeoHead } from "@/lib/seo";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
-import background from "./background-blur.webp";
-import backgroundLight from "./background-blur-light.webp";
 
-export default async function RootLayout({ children, params }: LayoutProps<"/[locale]">) {
-	const { locale } = await params;
-	setRequestLocale(locale);
-	const t = await getExtracted();
+export const Route = createFileRoute("/{-$locale}/_auth")({
+	loader: async ({ context }) => {
+		const { locale } = context;
+		const t = await getExtracted({ locale });
+		const baseUrl = env.NEXT_PUBLIC_WEB_URL || "";
+		const title = t("Sign In & Join RECONNED - Airsoft Community Platform");
+		const description = t(
+			"Access your RECONNED account to manage your airsoft profile, join clubs, and register for events. Sign in or create an account today.",
+		);
+		return {
+			title,
+			description,
+			keywords: t(
+				"airsoft login, airsoft register, airsoft account, join airsoft community, airsoft platform sign in, airsoft player account",
+			)
+				.split(",")
+				.map((keyword: string) => keyword.trim())
+				.join(", "),
+			canonical: constructCanonicalUrl(baseUrl, "/login", locale),
+			languages: generatePageLanguages(baseUrl, "/login", locale),
+		};
+	},
+	head: ({ loaderData }) => (loaderData ? buildSeoHead(loaderData) : {}),
+	component: AuthLayout,
+	errorComponent: RouteErrorPage,
+});
+
+function AuthLayout() {
+	const t = useExtracted();
 
 	return (
 		<>
@@ -47,44 +75,10 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[lo
 						<LanguageSwitcher className="w-full items-center justify-center" variant="outline" />
 					</div>
 				</div>
-				<AnimationWrapper>{children}</AnimationWrapper>
+				<AnimationWrapper>
+					<Outlet />
+				</AnimationWrapper>
 			</Card>
 		</>
 	);
-}
-
-export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Promise<Metadata> {
-	const { locale } = await params;
-	setRequestLocale(locale);
-	const t = await getExtracted();
-
-	return {
-		title: t("Sign In & Join RECONNED - Airsoft Community Platform"),
-		description: t(
-			"Access your RECONNED account to manage your airsoft profile, join clubs, and register for events. Sign in or create an account today.",
-		),
-		keywords: t(
-			"airsoft login, airsoft register, airsoft account, join airsoft community, airsoft platform sign in, airsoft player account",
-		)
-			.split(",")
-			.map((keyword: string) => keyword.trim()),
-		openGraph: {
-			title: t("Sign In & Join RECONNED - Airsoft Community Platform"),
-			description: t(
-				"Access your RECONNED account to manage your airsoft profile, join clubs, and register for events. Sign in or create an account today.",
-			),
-			type: "website",
-		},
-		twitter: {
-			card: "summary_large_image",
-			title: t("Sign In & Join RECONNED - Airsoft Community Platform"),
-			description: t(
-				"Access your RECONNED account to manage your airsoft profile, join clubs, and register for events. Sign in or create an account today.",
-			),
-		},
-		alternates: {
-			canonical: constructCanonicalUrl(env.NEXT_PUBLIC_WEB_URL || "", "/login", locale),
-			languages: generatePageLanguages(env.NEXT_PUBLIC_WEB_URL || "", "/login", locale),
-		},
-	};
 }

@@ -1,13 +1,13 @@
 "use client";
 
 import { Hash } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import DeleteClubPhoto1 from "@/../public/help/delete-club-photo-1.png";
 import DeleteClubPhoto2 from "@/../public/help/delete-club-photo-2.png";
 import GoogleMap1Image from "@/../public/help/google-map-1.png";
+import { Image } from "@/components/image";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 

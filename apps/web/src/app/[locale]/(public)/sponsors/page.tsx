@@ -1,8 +1,8 @@
 import { ArrowUpRight, MailCheckIcon } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getExtracted, setRequestLocale } from "next-intl/server";
 import type { CollectionPage, WithContext } from "schema-dts";
+import { Image } from "@/components/image";
 import JsonLdScript from "@/components/json-ld-script";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";

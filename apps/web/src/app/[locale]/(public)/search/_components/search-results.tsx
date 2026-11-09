@@ -2,10 +2,10 @@
 
 import NoResults from "@public/errors/no-results.png";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import { useEffect, useMemo, useRef } from "react";
+import { Image } from "@/components/image";
 import { ListingCard } from "@/components/listing-card";
 import { ListingCardSkeleton } from "@/components/listing-card-skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";

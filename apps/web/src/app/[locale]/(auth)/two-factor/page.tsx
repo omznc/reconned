@@ -4,7 +4,7 @@ import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { AuthFormSkeleton } from "@/app/[locale]/(auth)/_components/auth-form-skeleton";
+import { AuthFormSkeleton } from "@/components/auth/auth-form-skeleton";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";

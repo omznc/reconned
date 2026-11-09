@@ -1,11 +1,11 @@
 import { isAfter, isBefore } from "date-fns";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
-import Image from "next/image";
 import { getExtracted } from "next-intl/server";
 import { Suspense } from "react";
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
 import { BadgeSoon } from "@/components/badge-soon";
 import { ClubCard } from "@/components/club-card";
+import { Image } from "@/components/image";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { normalizeMapData, snapshotHasData } from "@/components/map-editor/map-data";
 import { MapViewer } from "@/components/map-editor/map-viewer-wrapper";
@@ -321,7 +321,8 @@ export async function EventOverview({ event, clubId, user, placesLeft = null }: 
 			</div>
 
 			<Suspense fallback={null}>
-				<ReviewsOverview type="event" typeId={event.id} entityName={event.name} />
+				{/* TODO(tanstack): load reviews in the route loader and pass them here */}
+				<ReviewsOverview type="event" typeId={event.id} entityName={event.name} reviews={undefined} />
 			</Suspense>
 		</div>
 	);

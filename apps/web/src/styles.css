@@ -1,5 +1,23 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/archivo";
+@import "@fontsource-variable/archivo-narrow";
+
+/* Same variables and classes that `next/font/google` produced. */
+:root {
+	--font-archivo: "Archivo Variable";
+	--font-archivo-narrow: "Archivo Narrow Variable";
+}
+
+.font-geist-sans {
+	font-family: "Geist Variable", sans-serif;
+}
+
+.font-geist-mono {
+	font-family: "Geist Mono Variable", monospace;
+}
 
 @custom-variant dark (&:is(.dark *));
 

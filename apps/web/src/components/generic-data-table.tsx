@@ -3,12 +3,12 @@
 import NoResults from "@public/errors/no-results.png";
 import { format } from "date-fns";
 import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "lucide-react";
-import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import type { ChangeEvent, ReactNode } from "react";
 import { Children, useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,

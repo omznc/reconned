@@ -8,8 +8,7 @@ import {
 	ShieldQuestion,
 	StarIcon,
 } from "lucide-react";
-import { getExtracted, setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
+import { useExtracted } from "next-intl";
 import { BadgeSoon } from "@/components/badge-soon";
 import { CookieSettingsButton } from "@/components/cookie-settings-button";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
@@ -18,18 +17,10 @@ import { env } from "@/lib/env";
 
 const CURRENT_COMMIT = env.NEXT_PUBLIC_SOURCE_COMMIT;
 
-async function FooterVersion({ locale }: { locale: string }) {
-	const commitDateResponse = await fetch(`https://api.github.com/repos/omznc/reconned/commits/${CURRENT_COMMIT}`, {
-		cache: "force-cache",
-		next: {
-			revalidate: false,
-		},
-	});
-	const body = (await commitDateResponse.json()) as {
-		commit?: { committer?: { date?: string } };
-	};
-
-	if (!CURRENT_COMMIT || !body.commit?.committer?.date) return null;
+function FooterVersion({ locale, commitDate }: { locale: string; commitDate: string | null }) {
+	if (!(CURRENT_COMMIT && commitDate)) {
+		return null;
+	}
 
 	return (
 		<Link
@@ -38,7 +29,7 @@ async function FooterVersion({ locale }: { locale: string }) {
 			className="font-mono mt-4 w-fit opacity-60 hover:opacity-100 flex items-center gap-1 transition-opacity"
 		>
 			Version {CURRENT_COMMIT.slice(0, 7)} (
-			{new Date(body.commit.committer.date).toLocaleDateString(locale, {
+			{new Date(commitDate).toLocaleDateString(locale, {
 				year: "numeric",
 				month: "long",
 				day: "numeric",
@@ -49,13 +40,8 @@ async function FooterVersion({ locale }: { locale: string }) {
 	);
 }
 
-// The locale arrives as a prop rather than via `getLocale()`. This component renders inside a
-// layout that has no `params` of its own, and without `setRequestLocale()` first, every
-// next-intl server API resolves the locale from a request header — which reads `headers()` and
-// opts the entire public route subtree out of static rendering.
-export async function Footer({ locale }: { locale: string }) {
-	setRequestLocale(locale);
-	const t = await getExtracted();
+export function Footer({ locale, commitDate }: { locale: string; commitDate: string | null }) {
+	const t = useExtracted();
 
 	return (
 		<footer className="relative w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-opacity md:flex-row flex items-center justify-evenly bg-sidebar border-t">
@@ -219,9 +205,7 @@ export async function Footer({ locale }: { locale: string }) {
 					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
 						{t("Check out our sponsors and partners")}
 					</Link>
-					<Suspense fallback={null}>
-						<FooterVersion locale={locale} />
-					</Suspense>
+					<FooterVersion locale={locale} commitDate={commitDate} />
 				</div>
 			</div>
 			<FooterDrawing className="opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none" />

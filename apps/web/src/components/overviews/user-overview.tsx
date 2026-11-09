@@ -222,7 +222,8 @@ export async function UserOverview({ user }: UserOverviewProps) {
 						)}
 					</CardContent>
 				</Card>
-				<ReviewsOverview type="user" typeId={user.id} entityName={user.name} />
+				{/* TODO(tanstack): load reviews in the route loader and pass them here */}
+				<ReviewsOverview type="user" typeId={user.id} entityName={user.name} reviews={undefined} />
 			</div>
 		</div>
 	);

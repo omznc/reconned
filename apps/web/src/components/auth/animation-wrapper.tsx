@@ -1,8 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { usePathname } from "@/i18n/navigation";
 
 const variants = {
 	hidden: { x: -700, y: 0, filter: "blur(5px)" },

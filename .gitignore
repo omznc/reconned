@@ -66,3 +66,8 @@ e2e/.auth
 e2e/.backend.log
 playwright-report
 test-results
+
+# tanstack start / nitro
+.output/
+.nitro/
+.tanstack/

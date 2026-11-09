@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useLogger } from "next-axiom";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { usePathname } from "@/i18n/navigation";
+import { useLogger } from "@/lib/logger";
 
 export interface TurnstileWidgetRef {
 	reset: () => void;

@@ -3,9 +3,9 @@
 import NoResults from "@public/errors/no-results.png";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
+import { Image } from "@/components/image";
 import { ListingCard } from "@/components/listing-card";
 import { ListingCardSkeleton } from "@/components/listing-card-skeleton";
 import { Button } from "@/components/ui/button";

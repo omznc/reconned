@@ -1,4 +1,8 @@
-import type { ImageLoaderProps } from "next/image";
+export type ImageLoaderProps = {
+	src: string;
+	width: number;
+	quality?: number;
+};
 
 const normalizeSrc = (src: string) => {
 	return src.startsWith("/") ? src.slice(1) : src;
@@ -9,7 +13,7 @@ export default function cloudflareLoader({ src, width, quality }: ImageLoaderPro
 	if (quality) {
 		params.push(`quality=${quality}`);
 	}
-	if (process.env.NODE_ENV === "development") {
+	if (import.meta.env.DEV) {
 		const separator = src.includes("?") ? "&" : "?";
 		return `${src}${separator}${params.join("&")}`;
 	}

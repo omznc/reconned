@@ -1,13 +1,13 @@
 "use client";
 
 import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 import { EditPurchaseModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/edit-purchase-modal";
 import { FilePreviewModal } from "@/app/[locale]/dashboard/(club)/[clubId]/club/spending/_components/file-preview-modal";
 import { GenericDataTable } from "@/components/generic-data-table";
+import { Image } from "@/components/image";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import { Button } from "@/components/ui/button";
 import {

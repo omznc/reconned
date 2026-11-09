@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { addDays, differenceInDays, format, subHours } from "date-fns";
 import { ArrowUpRight, Calendar as CalendarIcon, Eye, MapPin, RotateCcw, Settings, Trash } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useLogger } from "next-axiom";
 import { useExtracted, useLocale } from "next-intl";
 import posthog from "posthog-js";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -45,6 +44,7 @@ import { getApiErrorMessage } from "@/lib/api/api-error";
 import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
 import { useIsAuthenticated } from "@/lib/auth-client";
 import { getDateFnsLocale } from "@/lib/date-locale";
+import { useLogger } from "@/lib/logger";
 import { cn } from "@/lib/utils";
 
 interface CreateEventFormProps {

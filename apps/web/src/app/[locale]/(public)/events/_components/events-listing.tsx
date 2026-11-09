@@ -3,10 +3,10 @@
 import NoResults from "@public/errors/no-results.png";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { EventCard } from "@/components/event-card";
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";

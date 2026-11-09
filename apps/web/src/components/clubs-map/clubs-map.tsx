@@ -19,12 +19,12 @@ import {
 	Search,
 	X,
 } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import { useQueryState } from "nuqs";
 import { type CSSProperties, Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { InstagramIcon, VerifiedClubIcon } from "@/components/icons";
 import { ClubAvatar } from "@/components/identity/club-avatar";
+import { Image } from "@/components/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

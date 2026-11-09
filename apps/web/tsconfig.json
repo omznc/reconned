@@ -22,16 +22,12 @@
 		"declaration": false,
 		"inlineSources": true,
 		"sourceMap": true,
-		// For next-intl
 		"allowArbitraryExtensions": true,
-		// Next.js Specific
 		"jsx": "react-jsx",
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
+		"types": ["vite/client"],
 		"paths": {
+			"next-intl": ["./src/i18n/shim/client.ts"],
+			"next-intl/server": ["./src/i18n/shim/server.ts"],
 			"@/*": ["./src/*"],
 			"@components/*": ["./src/components/*"],
 			"@auth/client": ["./src/lib/auth-client"],
@@ -49,13 +45,6 @@
 		// ETC
 		"allowImportingTsExtensions": true
 	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.ts",
-		"**/*.tsx",
-		".next/types/**/*.ts",
-		".next/dev/types/**/*.ts",
-		"src/app/.well-known/**/*.ts"
-	],
-	"exclude": ["node_modules"]
+	"include": ["**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules", "src/app", "src/proxy.ts", "src/instrumentation.ts", "next.config.ts", ".output", "dist"]
 }

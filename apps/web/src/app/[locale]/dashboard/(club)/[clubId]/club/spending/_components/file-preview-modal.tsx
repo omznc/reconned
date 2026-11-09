@@ -1,12 +1,12 @@
 "use client";
 
 import { ArrowUpRight, Download } from "lucide-react";
-import Image from "next/image";
-import { useLogger } from "next-axiom";
 import { useExtracted } from "next-intl";
 import { useState } from "react";
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import { Credenza, CredenzaBody, CredenzaContent, CredenzaHeader, CredenzaTitle } from "@/components/ui/credenza";
+import { useLogger } from "@/lib/logger";
 
 interface FilePreviewModalProps {
 	isOpen: boolean;

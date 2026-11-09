@@ -1,7 +1,7 @@
 import Error404 from "@public/errors/404.webp";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getExtracted } from "next-intl/server";
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 
