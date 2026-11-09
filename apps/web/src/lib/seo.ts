@@ -1,3 +1,5 @@
+import { env } from "@/lib/env";
+
 export type SeoInput = {
 	title: string;
 	description?: string;
@@ -6,8 +8,8 @@ export type SeoInput = {
 	canonical?: string;
 	/** hreflang -> absolute URL, from `generatePageLanguages` or `generateHreflangAlternatesForSluggableEntity`. */
 	languages?: Record<string, string>;
-	/** Open Graph image. */
-	image?: { url: string; alt: string };
+	/** Open Graph image. Defaults to the site-wide `/opengraph-image.jpg`. */
+	image?: { url: string; alt: string; width?: number; height?: number };
 	/** JSON-LD documents, already `JSON.stringify`-ed so the object stays serializable in loader data. */
 	schemas?: string[];
 };
@@ -17,6 +19,12 @@ export type SeoInput = {
  * title, description, keywords, Open Graph, Twitter card, canonical, hreflang and JSON-LD.
  */
 export function buildSeoHead(input: SeoInput) {
+	const image = input.image ?? {
+		url: `${env.NEXT_PUBLIC_WEB_URL}/opengraph-image.jpg`,
+		alt: "RECONNED",
+		width: 1200,
+		height: 630,
+	};
 	const meta: Array<Record<string, string>> = [{ title: input.title }];
 	const addMeta = (key: "name" | "property", name: string, content: string | undefined) => {
 		if (content) {
@@ -30,8 +38,10 @@ export function buildSeoHead(input: SeoInput) {
 	addMeta("property", "og:description", input.description);
 	addMeta("property", "og:type", "website");
 	addMeta("property", "og:url", input.canonical);
-	addMeta("property", "og:image", input.image?.url);
-	addMeta("property", "og:image:alt", input.image?.alt);
+	addMeta("property", "og:image", image.url);
+	addMeta("property", "og:image:alt", image.alt);
+	addMeta("property", "og:image:width", image.width?.toString());
+	addMeta("property", "og:image:height", image.height?.toString());
 	addMeta("name", "twitter:card", "summary_large_image");
 	addMeta("name", "twitter:title", input.title);
 	addMeta("name", "twitter:description", input.description);

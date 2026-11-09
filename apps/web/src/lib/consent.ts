@@ -87,7 +87,7 @@ export function setConsent(analytics: boolean): ConsentRecord {
 	return record;
 }
 
-/** Called from `instrumentation-client.ts` so consenting users are tracked from the first paint. */
+/** Called from `src/client.tsx` so consenting users are tracked from the first paint. */
 export function applyStoredConsent(): void {
 	const stored = readConsent();
 	if (stored?.analytics) {
