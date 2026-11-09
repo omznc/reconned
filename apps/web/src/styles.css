@@ -69,6 +69,16 @@
 	   `font-person-mark` is the quieter 600 used for people. */
 	--font-club-mark: var(--font-archivo-narrow), "Archivo Narrow", sans-serif;
 	--font-person-mark: var(--font-archivo), Archivo, sans-serif;
+	--font-club: var(--font-archivo-narrow), "Archivo Narrow", "Arial Narrow", sans-serif;
+	--font-person: var(--font-archivo), Archivo, system-ui, sans-serif;
+
+	/* Redesign tokens. The status colours stay the same in both themes. */
+	--color-brand: hsl(var(--brand));
+	--color-brand-soft: hsl(var(--brand-soft));
+	--color-glow: hsl(var(--glow));
+	--color-status-open: hsl(var(--status-open));
+	--color-status-soon: hsl(var(--status-soon));
+	--color-status-full: hsl(var(--status-full));
 
 	--radius-lg: var(--radius);
 	--radius-md: calc(var(--radius) - 2px);
@@ -380,6 +390,12 @@
 		--chart-4: 43 74% 66%;
 		--chart-5: 27 87% 67%;
 		--radius: 1rem;
+		--brand: 0 78% 46%;
+		--brand-soft: 0 80% 96%;
+		--glow: 0 60% 97%;
+		--status-open: 173 58% 39%;
+		--status-soon: 43 74% 66%;
+		--status-full: 12 76% 61%;
 		--sidebar-background: 0 0% 98%;
 		--sidebar-foreground: 240 5.3% 26.1%;
 		--sidebar-primary: 240 5.9% 10%;
@@ -434,6 +450,9 @@
 		--chart-3: 30 80% 55%;
 		--chart-4: 280 65% 60%;
 		--chart-5: 340 75% 55%;
+		--brand: 0 84% 58%;
+		--brand-soft: 0 70% 12%;
+		--glow: 0 100% 9%;
 		--sidebar-background: 240 5.9% 5%;
 		--sidebar-foreground: 240 4.8% 70.9%;
 		--sidebar-primary: 224.3 76.3% 48%;
@@ -520,4 +539,31 @@ img {
 	select {
 		background-color: hsl(var(--background));
 	}
+}
+
+/* Native <progress> for "places left". `data-hot` turns it red when the event is nearly full. */
+.meter {
+	appearance: none;
+	width: 100%;
+	height: 6px;
+	border: 0;
+	border-radius: 999px;
+	overflow: hidden;
+	background: hsl(var(--secondary));
+	color: hsl(var(--foreground));
+	accent-color: currentColor;
+}
+.meter[data-hot="true"] {
+	color: hsl(var(--status-full));
+}
+.meter::-webkit-progress-bar {
+	background: hsl(var(--secondary));
+}
+.meter::-webkit-progress-value {
+	background: currentColor;
+	border-radius: 999px;
+}
+.meter::-moz-progress-bar {
+	background: currentColor;
+	border-radius: 999px;
 }
