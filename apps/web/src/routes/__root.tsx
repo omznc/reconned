@@ -35,7 +35,15 @@ function RootNotFound() {
 	const messages = localeMatch?.loaderData?.messages;
 
 	if (!messages) {
-		return <p>Page not found</p>;
+		// Untranslated on purpose: no messages exist here (an invalid first segment fails the layout's beforeLoad).
+		// React 19 hoists <title> and <meta> into the document head.
+		return (
+			<>
+				<title>You are lost</title>
+				<meta name="description" content="The page you are looking for does not exist." />
+				<p>Page not found</p>
+			</>
+		);
 	}
 	return (
 		<IntlProvider locale={getLocaleFromPathname(pathname)} messages={messages} timeZone={DEFAULT_TIME_ZONE}>

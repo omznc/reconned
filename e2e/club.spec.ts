@@ -5,6 +5,8 @@ import { expect, test } from "@playwright/test";
 test("a logged-in user can create a club from the dashboard", async ({ page }) => {
 	const clubName = `E2E UI Club ${Date.now()}`;
 	await page.goto("/en/dashboard/add-club?type=new");
+	// The dashboard shell hydrates after `load`; a click before that never reaches React.
+	await page.waitForLoadState("networkidle");
 
 	await page.getByPlaceholder("Veis").fill(clubName);
 

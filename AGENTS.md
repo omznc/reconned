@@ -146,7 +146,7 @@ The web build (`vite build`) does not typecheck — run `bun run typecheck` sepa
 
 ## E2E (Playwright)
 
-- `playwright.config.ts` at root; specs in `e2e/`. Playwright's `webServer` boots both the backend (`tests/helpers/e2e-serve.ts` — resets/migrates/seeds `reconned_e2e`, serves on 3202) and web (`vite dev` on 3100 with the dummy `webEnv`).
+- `playwright.config.ts` at root; specs in `e2e/`. Playwright's `webServer` boots both the backend (`tests/helpers/e2e-serve.ts` — resets/migrates/seeds `reconned_e2e`, serves on 3202) and web (production build on 3100 with the dummy `webEnv`).
 - Locally `reuseExistingServer: !CI` piggybacks on your dev servers — reproduce CI behavior with `CI=true bunx playwright test`.
 - Every var in `env.ts`'s `client` block must be present in `webEnv` (dummy values fine): the browser bundle validates `NEXT_PUBLIC_*` and cannot see `CI=true`, so a missing var crashes every page.
 - Ports/URLs in `playwright.config.ts` must stay in sync with `apps/backend/tests/helpers/e2e-prepare.ts`.

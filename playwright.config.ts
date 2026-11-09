@@ -7,7 +7,7 @@ const WEB_PORT = 3100;
 const BACKEND_URL = "http://localhost:3202";
 
 const webEnv = {
-	CI: "true", // skips t3-env validation so the dummy values below pass
+	CI: "true", // skips env validation so the dummy values below pass
 	NEXT_PUBLIC_BACKEND_URL: BACKEND_URL,
 	BACKEND_INTERNAL_URL: BACKEND_URL,
 	NEXT_PUBLIC_WEB_URL: `http://localhost:${WEB_PORT}`,
@@ -66,7 +66,9 @@ export default defineConfig({
 			timeout: 120_000,
 		},
 		{
-			command: `bun --bun vite dev --port ${WEB_PORT}`,
+			// A production build, not `vite dev`: the dev server hydrates seconds after load, so specs that fill
+			// a form straight after `goto` fire before React attaches its handlers.
+			command: `bun run build && PORT=${WEB_PORT} bun run start`,
 			cwd: "./apps/web",
 			url: `http://localhost:${WEB_PORT}`,
 			reuseExistingServer: !process.env.CI,
