@@ -14,6 +14,7 @@ import type { ApiResponse } from "@/lib/api/api-type-helpers";
 import { env } from "@/lib/env";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
+import { getFeatureFlagsFn } from "@/lib/server-fns";
 import { asJson } from "@/lib/server/json";
 import { constructCanonicalUrl, generateHreflangAlternatesForSluggableEntity } from "@/lib/utils";
 import { EventApplicationForm } from "@/routes/{-$locale}/_public/events/$id/-components/event-application.form";
@@ -107,15 +108,20 @@ const getApplyPageFn = createServerFn({ method: "GET" })
 	});
 
 export const Route = createFileRoute("/{-$locale}/_public/events/$id/apply")({
-	beforeLoad: ({ context, params }) => {
+	loader: async ({ params, context }) => {
 		if (!context.user) {
+			// A disabled feature says so to everyone, before the login redirect.
+			const flags = await getFeatureFlagsFn();
+			if (!flags.EVENT_REGISTRATION) {
+				return { kind: "disabled" as const };
+			}
 			throw redirect({
 				href: `/login?redirectTo=${encodeURIComponent(`/events/${params.id}/apply`)}`,
 				locale: context.locale,
 			});
 		}
+		return await getApplyPageFn({ data: { id: params.id, locale: context.locale } });
 	},
-	loader: ({ params, context }) => getApplyPageFn({ data: { id: params.id, locale: context.locale } }),
 	head: ({ loaderData }) => {
 		return loaderData?.seo ? buildSeoHead(loaderData.seo) : {};
 	},
