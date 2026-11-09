@@ -952,7 +952,8 @@ clubsInstagramRouter.get(
 			};
 
 			return response.json({
-				media: mediaData.data || [],
+				// Graph omits media_url on some items (e.g. videos with copyrighted audio); one would fail the whole feed.
+				media: (mediaData.data || []).filter((item) => item.media_url),
 				username: mediaData.data?.[0]?.username || clubRecord.instagramUsername || null,
 			});
 		} catch (error) {
