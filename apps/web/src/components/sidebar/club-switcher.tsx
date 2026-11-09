@@ -1,7 +1,7 @@
 "use client";
 
+import { useParams } from "@tanstack/react-router";
 import { ChevronsUpDown, Plus, Square } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
 import { useEffect } from "react";
 import { useCurrentClub } from "@/components/current-club-provider";
@@ -27,7 +27,7 @@ interface ClubSwitcherProps {
 
 export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 	const router = useRouter();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams({ strict: false }) as { clubId?: string };
 	const { clubId, setClubId } = useCurrentClub();
 	const t = useExtracted();
 	const sidebar = useSidebar();
