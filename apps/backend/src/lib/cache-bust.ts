@@ -28,7 +28,7 @@ export async function bustRouteCache(keys: string[]): Promise<void> {
 
 /** Everything that changes when a club's membership list changes. */
 export function clubMembershipCacheKeys(clubId: string): string[] {
-	return ["clubs", `club:${clubId}`];
+	return ["clubs", `club:${clubId}`, "users"];
 }
 
 /** The public club pages that an event or a rule change reaches. Their routes are keyed by club, not event. */
@@ -61,8 +61,7 @@ export async function bustReviewCache(type: string, entityId: string): Promise<v
 		});
 	}
 
+	// The home feed lists recent reviews and the players listing carries each player's rating.
 	const targetKey = REVIEW_TARGET_CACHE_KEY[type]?.(entityId);
-	if (targetKey) {
-		await bustRouteCache([targetKey]);
-	}
+	await bustRouteCache([...(targetKey ? [targetKey] : []), "public:feed", ...(type === "user" ? ["users"] : [])]);
 }

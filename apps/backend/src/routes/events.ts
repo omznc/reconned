@@ -1228,7 +1228,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "clubs"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create event",
@@ -1410,7 +1410,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Update event",
@@ -1520,7 +1520,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event",
@@ -1637,7 +1637,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event image",
@@ -2352,7 +2352,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create or update event registration",
@@ -2425,7 +2425,7 @@ eventsRouter.delete(
 		});
 	},
 	{
-		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event registration",
@@ -2814,7 +2814,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["event:{id}"],
+		bustCache: ["event:{id}", "users"],
 		schema: {
 			tags: ["Events"],
 			summary: "Toggle attendance",
@@ -2887,7 +2887,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["event:{id}"],
+		bustCache: ["event:{id}", "users"],
 		schema: {
 			tags: ["Events"],
 			summary: "Mark one person present or absent",

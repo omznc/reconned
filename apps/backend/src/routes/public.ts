@@ -4,12 +4,13 @@ import * as z from "zod";
 import { city, club, clubAlliance, clubMembership, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
+import { FEED_TYPES, feedItemSchema, loadFeed } from "../lib/feed";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
 import { logoTileResponseSchema } from "../lib/schemas";
 
 const STATS_CACHE_KEY = "public:stats";
-const STATS_CACHE_TTL = 86400;
+const STATS_CACHE_TTL = 600;
 
 /** Enough for the three clamped lines the map panel shows, and no more. */
 const MAP_DESCRIPTION_CHARS = 240;
@@ -42,6 +43,13 @@ publicRouter.get(
 			whereConditions.push(eq(club.verified, true));
 		}
 
+		const memberCounts = db
+			.select({ clubId: clubMembership.clubId, count: count().as("member_count") })
+			.from(clubMembership)
+			.where(eq(clubMembership.status, "ACTIVE"))
+			.groupBy(clubMembership.clubId)
+			.as("map_member_counts");
+
 		const clubs = await db
 			.select({
 				id: club.id,
@@ -53,6 +61,10 @@ publicRouter.get(
 				latitude: club.latitude,
 				longitude: club.longitude,
 				location: club.location,
+				city: club.city,
+				citySlug: club.citySlug,
+				countryId: club.countryId,
+				memberCount: sql<number>`COALESCE(${memberCounts.count}, 0)`.mapWith(Number),
 				// The map panel only ever shows three clamped lines, and this payload is
 				// every public club at once — a full description per club would multiply
 				// the response for text nobody reads here.
@@ -71,6 +83,7 @@ publicRouter.get(
 				)})`,
 			})
 			.from(club)
+			.leftJoin(memberCounts, eq(club.id, memberCounts.clubId))
 			.where(and(...whereConditions));
 
 		logger.emit({
@@ -103,6 +116,10 @@ publicRouter.get(
 							latitude: z.number().nullable(),
 							longitude: z.number().nullable(),
 							location: z.string().nullable(),
+							city: z.string().nullable(),
+							citySlug: z.string().nullable(),
+							countryId: z.number().nullable(),
+							memberCount: z.number().describe("Active members"),
 							description: z.string().nullable(),
 							verified: z.boolean(),
 							dateFounded: z.string().nullable(),
@@ -574,9 +591,14 @@ publicRouter.get(
 			});
 		}
 
-		const [clubCountRow] = await db.select({ value: count() }).from(club);
-		const [eventCountRow] = await db.select({ value: count() }).from(event);
-		const [userCountRow] = await db.select({ value: count() }).from(user);
+		// Public figures only: private clubs and users, and events that are private or belong to a private club, are not counted.
+		const [clubCountRow] = await db.select({ value: count() }).from(club).where(eq(club.isPrivate, false));
+		const [eventCountRow] = await db
+			.select({ value: count() })
+			.from(event)
+			.innerJoin(club, eq(event.clubId, club.id))
+			.where(and(eq(event.isPrivate, false), eq(club.isPrivate, false)));
+		const [userCountRow] = await db.select({ value: count() }).from(user).where(eq(user.isPrivate, false));
 
 		const stats = {
 			stats: {
@@ -602,7 +624,8 @@ publicRouter.get(
 		schema: {
 			tags: ["Public"],
 			summary: "Public platform counts",
-			description: "Aggregated counts of all clubs, events, and player profiles for marketing display",
+			description:
+				"Aggregated counts of public clubs, public events and public player profiles for marketing display",
 			response: {
 				200: z.object({
 					stats: z.object({
@@ -619,6 +642,28 @@ publicRouter.get(
 		},
 	},
 );
+
+publicRouter.get("/public/feed", async ({ query, response }) => response.json(await loadFeed(query)), {
+	cache: { key: "public:feed", ttl: 60, varyByQuery: ["type", "cursor", "limit"] },
+	schema: {
+		tags: ["Public"],
+		summary: "Home community feed",
+		description:
+			"One time-ordered list (newest first) of new public games (events that have not finished), public club posts and public reviews of clubs and events (only when the REVIEWS feature flag is on). " +
+			"Each item has a `kind` (`game`, `post` or `review`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts or reviews change.",
+		query: z.object({
+			type: z.enum(FEED_TYPES).optional().default("all"),
+			cursor: z.string().max(500).optional(),
+			limit: z.coerce.number().int().min(1).max(50).optional().default(20),
+		}),
+		response: {
+			200: z.object({
+				items: z.array(feedItemSchema),
+				nextCursor: z.string().nullable(),
+			}),
+		},
+	},
+});
 
 publicRouter.get(
 	"/public/feature-flags",
