@@ -91,9 +91,20 @@ const getMapPageFn = createServerFn({ method: "GET" })
 			},
 		};
 
+		const { data: allCountries } = await apiServer.GET("/api/countries");
+		const used = new Set(clubs.map((club) => club.countryId));
+		const countries = (allCountries ?? [])
+			.filter((country) => used.has(country.id))
+			.map((country) => ({
+				id: country.id,
+				name: (country.translations as Record<string, string> | null)?.[locale] ?? country.name,
+			}))
+			.sort((a, b) => a.name.localeCompare(b.name, locale));
+
 		return {
 			kind: "ok" as const,
 			clubs,
+			countries,
 			seo: { ...seo, schemas: [JSON.stringify(mapSchema)] },
 		};
 	});
@@ -117,7 +128,7 @@ function MapPage() {
 	return (
 		<div className="fixed top-0 left-0 z-40 h-dvh w-full">
 			<h1 className="sr-only">{t("Airsoft Clubs Map")}</h1>
-			<ClubsMapWrapper clubs={page.clubs} controlsBelowHeader={true} />
+			<ClubsMapWrapper clubs={page.clubs} countries={page.countries} controlsBelowHeader={true} />
 		</div>
 	);
 }

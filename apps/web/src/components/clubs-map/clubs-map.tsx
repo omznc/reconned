@@ -4,32 +4,23 @@ import { CircleMarker, MapContainer, Polyline, useMap, useMapEvents, ZoomControl
 import "leaflet/dist/leaflet.css";
 import { Marker, type MarkerProps } from "@adamscybot/react-leaflet-component-marker";
 import L from "leaflet";
-import {
-	ArrowUpRightIcon,
-	Calendar,
-	ChevronRight,
-	Eye,
-	EyeOff,
-	Globe,
-	Handshake,
-	MailOpenIcon,
-	MapPin,
-	Navigation,
-	Phone,
-	Search,
-	X,
-} from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import { useExtracted } from "next-intl";
-import { useQueryState } from "nuqs";
-import { type CSSProperties, Fragment, useCallback, useEffect, useRef, useState } from "react";
-import { InstagramIcon, VerifiedClubIcon } from "@/components/icons";
+import { parseAsBoolean, parseAsInteger, useQueryState } from "nuqs";
+import { type CSSProperties, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	ClubCompactCard,
+	type ClubWithDistance,
+	filterClubs,
+	type MapCountry,
+	type MapFilterState,
+	MapPeek,
+	MapPill,
+	MapSidebar,
+} from "@/components/clubs-map/map-panels";
+import { VerifiedClubIcon } from "@/components/icons";
 import { ClubAvatar } from "@/components/identity/club-avatar";
-import { Image } from "@/components/image";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Link } from "@/i18n/navigation";
-import { bannerFallbackStyle } from "@/lib/identity";
 import { cn } from "@/lib/utils";
 
 // Minimal club type for map marker
@@ -39,6 +30,9 @@ export interface MapClub {
 	latitude: number | null;
 	longitude: number | null;
 	location: string | null;
+	city?: string | null;
+	countryId?: number | null;
+	memberCount?: number | null;
 	logo: string | null;
 	logoTile?: "paper" | "ink" | null;
 	headerImage?: string | null;
@@ -739,6 +733,8 @@ interface ClubsMapProps {
 	interactive?: boolean;
 	focusPoint?: MapFocusPoint | null;
 	controlsBelowHeader?: boolean;
+	/** Country names for the filter. Only countries that have clubs are needed. */
+	countries?: MapCountry[];
 }
 
 function LocationMarker({
@@ -832,167 +828,6 @@ function selectionCenter(selection: MapSelection): [number, number] | null {
 	return null;
 }
 
-function directionsUrl(club: MapClub): string | null {
-	if (typeof club.latitude !== "number" || typeof club.longitude !== "number") return null;
-	return `https://www.google.com/maps/dir/?api=1&destination=${club.latitude},${club.longitude}`;
-}
-
-/**
- * A club's banner, at panel scale. Without an upload the hashed field colour
- * fills the band, so every card has the same silhouette whether or not the club
- * ever got round to uploading a header.
- */
-function CardBanner({ club }: { club: MapClub }) {
-	return (
-		<div
-			className="relative h-24 w-full overflow-hidden rounded-t-[7px]"
-			style={club.headerImage ? undefined : bannerFallbackStyle(club.name, "club")}
-		>
-			{club.headerImage && (
-				<Image
-					suppressHydrationWarning
-					src={club.headerImage}
-					alt=""
-					fill
-					draggable={false}
-					sizes="360px"
-					className="object-cover"
-				/>
-			)}
-			{/*
-			 * A bottom scrim sits under the mark. Without an upload the banner and the
-			 * mark hash from the same name and land on the same colour, so the ring
-			 * alone isn't enough to separate them.
-			 */}
-			<div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-[rgba(27,26,24,0.6)] to-transparent" />
-		</div>
-	);
-}
-
-/**
- * Everything a viewer needs to decide whether to keep looking, without leaving
- * the map: who the club is, where, and every way to reach them.
- */
-function ClubDetailCard({ club }: { club: MapClub }) {
-	const t = useExtracted();
-	const directions = directionsUrl(club);
-	const instagram = club.instagramUsername && !club.website?.includes("instagram.com");
-
-	return (
-		<>
-			<CardBanner club={club} />
-
-			<div className="flex flex-col gap-3 p-4 pt-0">
-				{/*
-				 * The mark overhangs the banner, matching the club page's header. It needs
-				 * `relative` to do that: the banner is positioned, so it paints over a
-				 * static sibling no matter which comes first in the DOM.
-				 */}
-				<div className="relative z-1 -mt-7 w-fit rounded-[16px] bg-background p-1 shadow-md">
-					<ClubAvatar name={club.name} logo={club.logo} tile={club.logoTile} size={56} radius={12} />
-				</div>
-
-				<div className="flex flex-col gap-0.5">
-					<div className="flex items-center gap-2">
-						<h3 className="truncate font-semibold text-lg">{club.name}</h3>
-						{club.verified && <VerifiedClubIcon />}
-					</div>
-					{club.location && (
-						<p className="flex items-center gap-1.5 text-muted-foreground text-sm">
-							<MapPin className="size-3.5 shrink-0" />
-							<span className="truncate">{club.location}</span>
-						</p>
-					)}
-				</div>
-
-				{club.description && <p className="line-clamp-3 text-foreground text-sm">{club.description}</p>}
-
-				<div className="flex flex-wrap gap-1.5">
-					<Badge variant="secondary" className="flex items-center gap-1">
-						{club.isPrivate ? (
-							<>
-								<EyeOff className="size-3" />
-								{t("Private")}
-							</>
-						) : (
-							<>
-								<Eye className="size-3" />
-								{t("Public")}
-							</>
-						)}
-					</Badge>
-					{club.isAllied && (
-						<Badge variant="secondary" className="flex items-center gap-1">
-							<Handshake className="size-3" />
-							{t("ASK FBIH")}
-						</Badge>
-					)}
-					{club.dateFounded && (
-						<Badge variant="secondary" className="flex items-center gap-1">
-							<Calendar className="size-3" />
-							{t("Founded")} {new Date(club.dateFounded).getFullYear()}
-						</Badge>
-					)}
-				</div>
-
-				<div className="grid grid-cols-2 gap-2">
-					{club.website && (
-						<Button variant="outline" size="sm" asChild>
-							<Link href={club.website} target="_blank" rel="noopener noreferrer">
-								<Globe />
-								{t("Website")}
-							</Link>
-						</Button>
-					)}
-					{instagram && (
-						<Button variant="outline" size="sm" asChild>
-							<Link
-								href={`https://instagram.com/${club.instagramUsername}`}
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								<InstagramIcon />
-								{t("Instagram")}
-							</Link>
-						</Button>
-					)}
-					{club.contactEmail && (
-						<Button variant="outline" size="sm" asChild>
-							<Link href={`mailto:${club.contactEmail}`}>
-								<MailOpenIcon />
-								{t("Email")}
-							</Link>
-						</Button>
-					)}
-					{club.contactPhone && (
-						<Button variant="outline" size="sm" asChild>
-							<Link href={`tel:${club.contactPhone}`}>
-								<Phone />
-								{t("Call")}
-							</Link>
-						</Button>
-					)}
-					{directions && (
-						<Button variant="outline" size="sm" asChild>
-							<Link href={directions} target="_blank" rel="noopener noreferrer">
-								<Navigation />
-								{t("Directions")}
-							</Link>
-						</Button>
-					)}
-				</div>
-
-				<Button className="w-full" size="sm" asChild>
-					<Link href={`/clubs/${club.slug || club.id}`} target="_blank">
-						{t("View Club")}
-						<ArrowUpRightIcon />
-					</Link>
-				</Button>
-			</div>
-		</>
-	);
-}
-
 /**
  * The answer to a pin that can't be split: the clubs sharing that coordinate,
  * listed, each one a step into its own card.
@@ -1040,27 +875,33 @@ function GroupClubList({ clubs, onSelect }: { clubs: MapClub[]; onSelect: (club:
 	);
 }
 
-function SelectionBody({ selection, onSelect }: { selection: MapSelection; onSelect: (club: MapClub) => void }) {
+function SelectionBody({
+	selection,
+	onSelect,
+	onClose,
+}: {
+	selection: MapSelection;
+	onSelect: (club: MapClub) => void;
+	onClose: () => void;
+}) {
+	const t = useExtracted();
 	if (selection.kind === "group") {
-		return <GroupClubList clubs={selection.clubs} onSelect={onSelect} />;
-	}
-	return <ClubDetailCard club={selection.club} />;
-}
-
-function ClubResultRow({ club, onSelect }: { club: MapClub; onSelect: (club: MapClub) => void }) {
-	return (
-		<button
-			type="button"
-			className="flex w-full touch-manipulation items-center gap-2 rounded px-3 py-2 text-left transition-colors hover:bg-muted"
-			onClick={() => onSelect(club)}
-		>
-			<ClubAvatar name={club.name} logo={club.logo} tile={club.logoTile} size={28} className="shrink-0" />
-			<div className="min-w-0 flex-1">
-				<div className="truncate font-medium">{club.name}</div>
-				{club.location && <div className="truncate text-muted-foreground text-sm">{club.location}</div>}
+		return (
+			<div className="relative">
+				<Button
+					variant="ghost"
+					size="sm"
+					aria-label={t("Close")}
+					className="absolute top-2 right-2 z-1 size-8 p-0"
+					onClick={onClose}
+				>
+					<X className="size-4" aria-hidden={true} />
+				</Button>
+				<GroupClubList clubs={selection.clubs} onSelect={onSelect} />
 			</div>
-		</button>
-	);
+		);
+	}
+	return <ClubCompactCard club={selection.club} onClose={onClose} />;
 }
 
 function MapInstanceCapturer({ onMapReady }: { onMapReady: (map: L.Map) => void }) {
@@ -1073,17 +914,76 @@ function MapInstanceCapturer({ onMapReady }: { onMapReady: (map: L.Map) => void 
 	return null;
 }
 
+/** Filter state. The toggles and the country live in the URL so a filtered map can be shared. */
+function useMapFilters() {
+	const [verified, setVerified] = useQueryState("verified", parseAsBoolean.withDefault(false));
+	const [allied, setAllied] = useQueryState("allied", parseAsBoolean.withDefault(false));
+	const [country, setCountry] = useQueryState("country", parseAsInteger);
+	const [query, setQuery] = useState("");
+
+	const onChange = useCallback(
+		(patch: Partial<MapFilterState>) => {
+			if (patch.query !== undefined) setQuery(patch.query);
+			if (patch.verified !== undefined) void setVerified(patch.verified || null);
+			if (patch.allied !== undefined) void setAllied(patch.allied || null);
+			if (patch.country !== undefined) void setCountry(patch.country);
+		},
+		[setVerified, setAllied, setCountry],
+	);
+
+	const filters = useMemo<MapFilterState>(
+		() => ({ query, verified, allied, country }),
+		[query, verified, allied, country],
+	);
+	return { filters, onChange };
+}
+
+/**
+ * The clubs the side list shows: those inside the viewport, nearest to its centre
+ * first. A search ignores the viewport, because the match may be off screen.
+ */
+function useListEntries(shown: MapClub[], map: L.Map | null, searching: boolean): ClubWithDistance<MapClub>[] {
+	const [bounds, setBounds] = useState<L.LatLngBounds | null>(null);
+
+	useEffect(() => {
+		if (!map) return;
+
+		const update = () => setBounds(map.getBounds());
+		update();
+		map.on("moveend", update);
+
+		return () => {
+			map.off("moveend", update);
+		};
+	}, [map]);
+
+	return useMemo(() => {
+		const center = bounds?.getCenter() ?? null;
+		const entries: ClubWithDistance<MapClub>[] = [];
+		for (const club of shown) {
+			if (typeof club.latitude !== "number" || typeof club.longitude !== "number") continue;
+			const point = L.latLng(club.latitude, club.longitude);
+			if (!searching && bounds && !bounds.contains(point)) continue;
+			entries.push({ club, km: center ? center.distanceTo(point) / 1000 : null });
+		}
+		return entries.sort((a, b) => (a.km ?? 0) - (b.km ?? 0));
+	}, [shown, bounds, searching]);
+}
+
 export function ClubsMap({
 	clubs,
 	onLocationSelect,
 	interactive = false,
 	focusPoint,
 	controlsBelowHeader = false,
+	countries = [],
 }: ClubsMapProps) {
 	const [mounted, setMounted] = useState(false);
 	const [clubId] = useQueryState("clubId");
 	const [hoveredKey, setHoveredKey] = useState<string | null>(null);
-	const [searchQuery, setSearchQuery] = useState("");
+	const { filters, onChange } = useMapFilters();
+	const [listOpen, setListOpen] = useState(false);
+	const [filtersOpen, setFiltersOpen] = useState(false);
 	const [targetClub, setTargetClub] = useState<MapClub | null>(null);
 	const [groups, setGroups] = useState<ClubGroup[]>([]);
 	const [far, setFar] = useState(false);
@@ -1112,12 +1012,9 @@ export function ClubsMap({
 		: [prefilledClub?.latitude || 43.8563, prefilledClub?.longitude || 18.4131];
 	const defaultZoom = focusPoint?.zoom || (prefilledClub ? 14 : 8);
 
-	const filteredClubs = clubs.filter(
-		(club) =>
-			searchQuery === "" ||
-			club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			club.location?.toLowerCase().includes(searchQuery.toLowerCase()),
-	);
+	// The editor passes one club and wants it drawn, so filters only apply to the public map.
+	const shown = useMemo(() => (interactive ? clubs : filterClubs(clubs, filters)), [interactive, clubs, filters]);
+	const entries = useListEntries(shown, mapInstance, filters.query.trim() !== "");
 
 	useEffect(() => {
 		setMounted(true);
@@ -1143,10 +1040,10 @@ export function ClubsMap({
 	// Regroup on zoom. Panning is deliberately not a trigger: groups are computed
 	// in projected space, so they're identical wherever the viewport sits.
 	useEffect(() => {
-		if (!mapInstance || !clubs.length) return;
+		if (!mapInstance) return;
 
 		const regroup = () => {
-			const next = groupClubs(clubs, mapInstance);
+			const next = groupClubs(shown, mapInstance);
 			const entities = pinEntities(next);
 			const previous = lastEntities.current;
 			lastEntities.current = entities;
@@ -1180,7 +1077,7 @@ export function ClubsMap({
 			mapInstance.off("zoomend", regroup);
 			if (ghostTimer.current) clearTimeout(ghostTimer.current);
 		};
-	}, [mapInstance, clubs]);
+	}, [mapInstance, shown]);
 
 	const deselect = useCallback(() => setSelection(null), []);
 
@@ -1232,8 +1129,13 @@ export function ClubsMap({
 	const selectFromSearch = useCallback((club: MapClub) => {
 		setTargetClub(club);
 		setSelection({ kind: "club", club });
-		setSearchQuery("");
+		setListOpen(false);
 	}, []);
+
+	const selectFirstMatch = useCallback(() => {
+		const first = entries[0]?.club;
+		if (first) selectFromSearch(first);
+	}, [entries, selectFromSearch]);
 
 	// Escape is the other way out of a selection, so the overview never feels
 	// like something you're stuck inside.
@@ -1264,7 +1166,7 @@ export function ClubsMap({
 			const sheetHeight = sheetRef.current?.offsetHeight ?? 0;
 			mapInstance.panInside(L.latLng(selectionLat, selectionLng), {
 				// Clear of the header and the search pill sitting under it.
-				paddingTopLeft: [24, headerHeight + 80],
+				paddingTopLeft: [24, 96],
 				paddingBottomRight: [24, sheetHeight + 24],
 				animate: true,
 				duration: 0.4,
@@ -1272,7 +1174,7 @@ export function ClubsMap({
 		});
 
 		return () => cancelAnimationFrame(frame);
-	}, [mapInstance, selectionLat, selectionLng, headerHeight]);
+	}, [mapInstance, selectionLat, selectionLng]);
 
 	if (!mounted) {
 		return null;
@@ -1283,343 +1185,269 @@ export function ClubsMap({
 			? ([clubs[0].latitude, clubs[0].longitude] as [number, number])
 			: null;
 
-	const controlsTopInset = "top-[var(--map-top-inset)]";
+	const searching = filters.query.trim() !== "";
 
 	return (
+		// The site header wraps to two rows on narrow screens, so its height is measured
+		// and the map starts below it.
 		<div
-			className={cn(
-				"relative h-full w-full [&_.leaflet-top]:top-[var(--map-top-inset)]",
-				// The header's height is measured rather than assumed: it wraps to two
-				// rows on narrow screens, and a hardcoded inset tucked the search field
-				// underneath it there.
-			)}
-			style={{ "--map-top-inset": `calc(${controlsBelowHeader ? headerHeight : 0}px + 1rem)` } as CSSProperties}
+			className="relative h-full w-full [&_.leaflet-top]:top-4"
+			style={{ paddingTop: controlsBelowHeader && !interactive ? headerHeight : 0 }}
 		>
-			{!interactive && (
-				<>
-					{/*
-					 * Desktop: search parked top-left, the card top-right, both out of the
-					 * way of the middle of the map where the pins are.
-					 */}
-					<div className={cn("absolute left-4 z-[1200] hidden w-80 md:block", controlsTopInset)}>
-						<div className="rounded-md border bg-background p-3 shadow-lg">
-							<div className="relative">
-								<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
-								<Input
-									placeholder={t("Search clubs...")}
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-									onKeyDown={(e) => {
-										const first = filteredClubs[0];
-										if (e.key === "Enter" && first) selectFromSearch(first);
-									}}
-									className="pr-4 pl-10"
-								/>
-							</div>
-
-							{searchQuery && (
-								<div className="mt-2 max-h-64 overflow-y-auto border-t pt-2">
-									{filteredClubs.length > 0 ? (
-										filteredClubs.map((club) => (
-											<ClubResultRow key={club.id} club={club} onSelect={selectFromSearch} />
-										))
-									) : (
-										<div className="px-3 py-2 text-center text-muted-foreground text-sm">
-											{t("No clubs found")}
-										</div>
-									)}
-								</div>
-							)}
-						</div>
-					</div>
-
-					{selection && (
-						<div className={cn("absolute right-4 z-[1200] hidden w-80 md:block", controlsTopInset)}>
-							<div className="relative overflow-hidden rounded-md border bg-background shadow-lg">
-								<Button
-									variant="secondary"
-									size="sm"
-									aria-label={t("Close")}
-									className="absolute top-2 right-2 z-1 size-7 rounded-full p-0 shadow-sm"
-									onClick={deselect}
-								>
-									<X className="size-4" />
-								</Button>
-								<SelectionBody selection={selection} onSelect={selectClub} />
-							</div>
-						</div>
-					)}
-
-					{/*
-					 * Phone: search is a pill at the top and the selection is a sheet at the
-					 * bottom, so the two never stack on top of each other and the sheet lands
-					 * under the thumb. The middle of the screen stays map.
-					 */}
-					<div className={cn("absolute right-3 left-3 z-[1200] md:hidden", controlsTopInset)}>
-						<div className="rounded-full border bg-background shadow-lg">
-							<div className="relative">
-								<Search className="-translate-y-1/2 absolute top-1/2 left-4 size-4 text-muted-foreground" />
-								<Input
-									placeholder={t("Search clubs...")}
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-									onKeyDown={(e) => {
-										const first = filteredClubs[0];
-										if (e.key === "Enter" && first) {
-											selectFromSearch(first);
-											e.currentTarget.blur();
-										}
-									}}
-									className="h-11 rounded-full border-0 pr-10 pl-11 shadow-none focus-visible:ring-0"
-								/>
-								{searchQuery && (
-									<button
-										type="button"
-										aria-label={t("Clear search")}
-										onClick={() => setSearchQuery("")}
-										className="-translate-y-1/2 absolute top-1/2 right-3 rounded-full p-1 text-muted-foreground"
-									>
-										<X className="size-4" />
-									</button>
-								)}
-							</div>
-						</div>
-
-						{searchQuery && (
-							<div className="mt-2 max-h-[45dvh] overflow-y-auto rounded-2xl border bg-background p-1 shadow-lg">
-								{filteredClubs.length > 0 ? (
-									filteredClubs
-										.slice(0, 12)
-										.map((club) => (
-											<ClubResultRow key={club.id} club={club} onSelect={selectFromSearch} />
-										))
-								) : (
-									<div className="px-3 py-3 text-center text-muted-foreground text-sm">
-										{t("No clubs found")}
-									</div>
-								)}
-							</div>
-						)}
-					</div>
-
-					{selection && (
-						<div
-							ref={sheetRef}
-							className="map-sheet absolute inset-x-0 bottom-0 z-[1200] max-h-[75dvh] overflow-y-auto overscroll-contain rounded-t-2xl border-t bg-background pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-8px_24px_rgba(27,26,24,0.18)] md:hidden"
-						>
-							{/* A grabber reads as "this panel is the front layer", even though it's the close button that dismisses it. */}
-							<div className="sticky top-0 z-1 flex justify-center bg-background pt-2 pb-1">
-								<div className="h-1 w-10 rounded-full bg-border" />
-							</div>
-							<Button
-								variant="secondary"
-								size="sm"
-								aria-label={t("Close")}
-								className="absolute top-3 right-3 z-2 size-8 rounded-full p-0 shadow-sm"
-								onClick={deselect}
-							>
-								<X className="size-4" />
-							</Button>
-							<SelectionBody selection={selection} onSelect={selectClub} />
-						</div>
-					)}
-				</>
-			)}
-
-			<MapContainer
-				center={defaultCenter}
-				zoom={defaultZoom}
-				className="h-full w-full z-0"
-				zoomControl={false}
-				maxZoom={MAX_ZOOM}
-				zoomSnap={0.1}
-				zoomDelta={0.25}
-				wheelPxPerZoomLevel={120}
-				wheelDebounceTime={40}
-			>
-				<OptimizedTileLayerComponent
-					url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-					// OSM blocks tile requests without a Referer; the site policy is same-origin.
-					referrerPolicy="strict-origin-when-cross-origin"
-					maxZoom={MAX_ZOOM}
-					attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-				/>
-
-				<MapInstanceCapturer onMapReady={setMapInstance} />
-				<MapController targetClub={targetClub} focusPoint={focusPoint} />
-
-				{interactive ? (
-					<MapEventHandler onLocationSelect={onLocationSelect} />
-				) : (
-					<MapBackgroundDeselect onDeselect={deselect} />
-				)}
-
-				{interactive && selectedLocation && (
-					<LocationMarker
-						position={selectedLocation}
-						name={clubs?.[0]?.name}
-						logo={clubs?.[0]?.logo}
-						tile={clubs?.[0]?.logoTile}
-						labels={iconLabels}
+			<div className={cn("flex h-full w-full", !interactive && "md:gap-4 md:p-4")}>
+				{!interactive && (
+					<MapSidebar
+						filters={filters}
+						countries={countries}
+						onChange={onChange}
+						entries={entries}
+						searching={searching}
+						selectedId={selection?.kind === "club" ? selection.club.id : null}
+						onSelect={selectFromSearch}
+						onEnter={selectFirstMatch}
 					/>
 				)}
+				<div
+					className={cn(
+						"relative h-full min-w-0 flex-1 overflow-hidden",
+						!interactive && "md:rounded-lg md:border",
+					)}
+				>
+					{!interactive && (
+						<>
+							{selection && (
+								<div className="absolute top-4 right-4 z-[1200] hidden w-80 overflow-hidden rounded-lg border bg-card text-card-foreground shadow-lg md:block">
+									<SelectionBody selection={selection} onSelect={selectClub} onClose={deselect} />
+								</div>
+							)}
 
-				{!interactive &&
-					groups.map((group) => {
-						const hovered = hoveredKey === group.key;
-						const first = group.clubs[0];
-						if (!first) return null;
-
-						// Fanned out: the pins sit on a ring, and a leader line runs from
-						// each back to the dot marking the coordinate they actually share.
-						if (group.spread) {
-							return (
-								<Fragment key={group.key}>
-									{group.spread.map(({ club, position }) => (
-										<Polyline
-											key={`leader-${club.id}`}
-											positions={[group.center, position]}
-											pathOptions={{ ...SPREAD_LEADER, className: "map-leader" }}
-											interactive={false}
-										/>
-									))}
-									<CircleMarker
-										center={group.center}
-										radius={3}
-										pathOptions={{ ...SPREAD_ANCHOR, className: "map-anchor" }}
-										interactive={false}
-									/>
-									{group.spread.map(({ club, position }) => {
-										const memberKey = `${group.key}::${club.id}`;
-										const memberHovered = hoveredKey === memberKey;
-										const memberSelected =
-											selection?.kind === "club" && selection.club.id === club.id;
-										return (
-											<Marker
-												key={memberKey}
-												position={position}
-												componentIconOpts={CLUB_ICON_OPTS}
-												icon={
-													<ClubPin
-														club={club}
-														far={false}
-														state={
-															memberSelected
-																? "selected"
-																: memberHovered
-																	? "hovered"
-																	: "default"
-														}
-														labels={iconLabels}
-														motion={enterMotion.get(memberKey)}
-													/>
-												}
-												zIndexOffset={memberSelected ? 2000 : memberHovered ? 1000 : 0}
-												eventHandlers={{
-													mouseover: () => setHoveredKey(memberKey),
-													mouseout: () => setHoveredKey(null),
-													click: () => selectClub(club),
-												}}
-											/>
-										);
-									})}
-								</Fragment>
-							);
-						}
-
-						if (group.clubs.length > 1) {
-							const openAsList = selection?.kind === "group" && selection.key === group.key;
-							return (
-								<Marker
-									key={group.key}
-									position={group.center}
-									componentIconOpts={GROUP_ICON_OPTS}
-									icon={
-										<GroupPin
-											count={group.clubs.length}
-											far={far}
-											hovered={hovered || openAsList}
-											hint={groupHint(group, iconLabels)}
-											motion={enterMotion.get(group.key)}
-										/>
-									}
-									zIndexOffset={openAsList ? 2000 : hovered ? 1000 : 0}
-									eventHandlers={{
-										mouseover: () => setHoveredKey(group.key),
-										mouseout: () => setHoveredKey(null),
-										click: () => openGroup(group),
-									}}
+							{/* Phone: a search pill on top, and at the bottom either the selected club or the list peek. */}
+							<div className="absolute inset-x-3 top-3 z-[1200] md:hidden">
+								<MapPill
+									filters={filters}
+									countries={countries}
+									onChange={onChange}
+									onEnter={selectFirstMatch}
+									filtersOpen={filtersOpen}
+									onToggleFilters={() => setFiltersOpen((open) => !open)}
 								/>
-							);
-						}
+							</div>
 
-						const selected = selection?.kind === "club" && selection.club.id === first.id;
-						return (
-							<Marker
-								key={group.key}
-								position={group.center}
-								componentIconOpts={CLUB_ICON_OPTS}
-								icon={
-									<ClubPin
-										club={first}
-										far={far}
-										state={selected ? "selected" : hovered ? "hovered" : "default"}
-										labels={iconLabels}
-										motion={enterMotion.get(group.key)}
+							{selection ? (
+								<div
+									ref={sheetRef}
+									className="map-sheet absolute inset-x-0 bottom-0 z-[1200] max-h-[75dvh] overflow-y-auto overscroll-contain rounded-t-2xl border-t bg-card pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-8px_24px_rgba(27,26,24,0.18)] md:hidden"
+								>
+									<SelectionBody selection={selection} onSelect={selectClub} onClose={deselect} />
+								</div>
+							) : (
+								<MapPeek
+									entries={entries}
+									searching={searching}
+									expanded={listOpen}
+									onToggleList={() => setListOpen((open) => !open)}
+									onSelect={selectFromSearch}
+								/>
+							)}
+						</>
+					)}
+
+					<MapContainer
+						center={defaultCenter}
+						zoom={defaultZoom}
+						className="h-full w-full z-0"
+						zoomControl={false}
+						maxZoom={MAX_ZOOM}
+						zoomSnap={0.1}
+						zoomDelta={0.25}
+						wheelPxPerZoomLevel={120}
+						wheelDebounceTime={40}
+					>
+						<OptimizedTileLayerComponent
+							url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+							// OSM blocks tile requests without a Referer; the site policy is same-origin.
+							referrerPolicy="strict-origin-when-cross-origin"
+							maxZoom={MAX_ZOOM}
+							attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						/>
+
+						<MapInstanceCapturer onMapReady={setMapInstance} />
+						<MapController targetClub={targetClub} focusPoint={focusPoint} />
+
+						{interactive ? (
+							<MapEventHandler onLocationSelect={onLocationSelect} />
+						) : (
+							<MapBackgroundDeselect onDeselect={deselect} />
+						)}
+
+						{interactive && selectedLocation && (
+							<LocationMarker
+								position={selectedLocation}
+								name={clubs?.[0]?.name}
+								logo={clubs?.[0]?.logo}
+								tile={clubs?.[0]?.logoTile}
+								labels={iconLabels}
+							/>
+						)}
+
+						{!interactive &&
+							groups.map((group) => {
+								const hovered = hoveredKey === group.key;
+								const first = group.clubs[0];
+								if (!first) return null;
+
+								// Fanned out: the pins sit on a ring, and a leader line runs from
+								// each back to the dot marking the coordinate they actually share.
+								if (group.spread) {
+									return (
+										<Fragment key={group.key}>
+											{group.spread.map(({ club, position }) => (
+												<Polyline
+													key={`leader-${club.id}`}
+													positions={[group.center, position]}
+													pathOptions={{ ...SPREAD_LEADER, className: "map-leader" }}
+													interactive={false}
+												/>
+											))}
+											<CircleMarker
+												center={group.center}
+												radius={3}
+												pathOptions={{ ...SPREAD_ANCHOR, className: "map-anchor" }}
+												interactive={false}
+											/>
+											{group.spread.map(({ club, position }) => {
+												const memberKey = `${group.key}::${club.id}`;
+												const memberHovered = hoveredKey === memberKey;
+												const memberSelected =
+													selection?.kind === "club" && selection.club.id === club.id;
+												return (
+													<Marker
+														key={memberKey}
+														position={position}
+														componentIconOpts={CLUB_ICON_OPTS}
+														icon={
+															<ClubPin
+																club={club}
+																far={false}
+																state={
+																	memberSelected
+																		? "selected"
+																		: memberHovered
+																			? "hovered"
+																			: "default"
+																}
+																labels={iconLabels}
+																motion={enterMotion.get(memberKey)}
+															/>
+														}
+														zIndexOffset={memberSelected ? 2000 : memberHovered ? 1000 : 0}
+														eventHandlers={{
+															mouseover: () => setHoveredKey(memberKey),
+															mouseout: () => setHoveredKey(null),
+															click: () => selectClub(club),
+														}}
+													/>
+												);
+											})}
+										</Fragment>
+									);
+								}
+
+								if (group.clubs.length > 1) {
+									const openAsList = selection?.kind === "group" && selection.key === group.key;
+									return (
+										<Marker
+											key={group.key}
+											position={group.center}
+											componentIconOpts={GROUP_ICON_OPTS}
+											icon={
+												<GroupPin
+													count={group.clubs.length}
+													far={far}
+													hovered={hovered || openAsList}
+													hint={groupHint(group, iconLabels)}
+													motion={enterMotion.get(group.key)}
+												/>
+											}
+											zIndexOffset={openAsList ? 2000 : hovered ? 1000 : 0}
+											eventHandlers={{
+												mouseover: () => setHoveredKey(group.key),
+												mouseout: () => setHoveredKey(null),
+												click: () => openGroup(group),
+											}}
+										/>
+									);
+								}
+
+								const selected = selection?.kind === "club" && selection.club.id === first.id;
+								return (
+									<Marker
+										key={group.key}
+										position={group.center}
+										componentIconOpts={CLUB_ICON_OPTS}
+										icon={
+											<ClubPin
+												club={first}
+												far={far}
+												state={selected ? "selected" : hovered ? "hovered" : "default"}
+												labels={iconLabels}
+												motion={enterMotion.get(group.key)}
+											/>
+										}
+										zIndexOffset={selected ? 2000 : hovered ? 1000 : 0}
+										eventHandlers={{
+											mouseover: () => setHoveredKey(group.key),
+											mouseout: () => setHoveredKey(null),
+											click: () => selectClub(first),
+										}}
 									/>
-								}
-								zIndexOffset={selected ? 2000 : hovered ? 1000 : 0}
-								eventHandlers={{
-									mouseover: () => setHoveredKey(group.key),
-									mouseout: () => setHoveredKey(null),
-									click: () => selectClub(first),
-								}}
-							/>
-						);
-					})}
+								);
+							})}
 
-				{/*
-				 * The pins the last regroup removed, still on screen for as long as it
-				 * takes them to leave. They're inert and sit under the live pins: their
-				 * only job is to show where they went.
-				 */}
-				{!interactive &&
-					ghosts.map((ghost) => {
-						const first = ghost.clubs[0];
-						if (!first) return null;
+						{/*
+						 * The pins the last regroup removed, still on screen for as long as it
+						 * takes them to leave. They're inert and sit under the live pins: their
+						 * only job is to show where they went.
+						 */}
+						{!interactive &&
+							ghosts.map((ghost) => {
+								const first = ghost.clubs[0];
+								if (!first) return null;
 
-						return (
-							<Marker
-								key={`ghost-${ghost.id}`}
-								position={ghost.at}
-								interactive={false}
-								zIndexOffset={-1000}
-								componentIconOpts={ghost.group ? GROUP_ICON_OPTS : CLUB_ICON_OPTS}
-								icon={
-									ghost.group ? (
-										<GroupPin
-											count={ghost.clubs.length}
-											far={far}
-											hovered={false}
-											hint=""
-											motion={ghost.motion}
-										/>
-									) : (
-										<ClubPin
-											club={first}
-											far={far}
-											state="default"
-											labels={iconLabels}
-											motion={ghost.motion}
-										/>
-									)
-								}
-							/>
-						);
-					})}
+								return (
+									<Marker
+										key={`ghost-${ghost.id}`}
+										position={ghost.at}
+										interactive={false}
+										zIndexOffset={-1000}
+										componentIconOpts={ghost.group ? GROUP_ICON_OPTS : CLUB_ICON_OPTS}
+										icon={
+											ghost.group ? (
+												<GroupPin
+													count={ghost.clubs.length}
+													far={far}
+													hovered={false}
+													hint=""
+													motion={ghost.motion}
+												/>
+											) : (
+												<ClubPin
+													club={first}
+													far={far}
+													state="default"
+													labels={iconLabels}
+													motion={ghost.motion}
+												/>
+											)
+										}
+									/>
+								);
+							})}
 
-				<ZoomControl position="bottomright" />
-			</MapContainer>
+						<ZoomControl position="bottomright" />
+					</MapContainer>
+				</div>
+			</div>
 		</div>
 	);
 }
