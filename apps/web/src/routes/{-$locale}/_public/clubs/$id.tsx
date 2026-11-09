@@ -1,0 +1,67 @@
+import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { useExtracted } from "next-intl";
+import * as z from "zod";
+import { ErrorPage } from "@/components/error-page";
+import { LoadingPage } from "@/components/loading-page";
+import { NotFoundPage } from "@/components/not-found-page";
+import { ClubOverview } from "@/components/overviews/club-overview";
+import { buildSeoHead } from "@/lib/seo";
+import { loadClubPage } from "@/lib/server/club-page";
+
+const getClubPageFn = createServerFn({ method: "GET" })
+	.validator(z.object({ id: z.string(), locale: z.string(), signedIn: z.boolean() }))
+	.handler(async ({ data }) => await loadClubPage(data));
+
+export const Route = createFileRoute("/{-$locale}/_public/clubs/$id")({
+	loader: async ({ params, context }) => {
+		const page = await getClubPageFn({
+			data: { id: params.id, locale: context.locale, signedIn: Boolean(context.user) },
+		});
+		if (page.kind === "not-found") {
+			throw notFound();
+		}
+		return page;
+	},
+	head: ({ loaderData }) => {
+		if (loaderData?.kind !== "ok") {
+			return { meta: [{ title: "Club not found." }] };
+		}
+		return buildSeoHead(loaderData.seo);
+	},
+	pendingComponent: LoadingPage,
+	notFoundComponent: NotFoundPage,
+	component: ClubPage,
+});
+
+function ClubPage() {
+	const t = useExtracted();
+	const page = Route.useLoaderData();
+	const { user } = Route.useRouteContext();
+
+	if (page.kind !== "ok") {
+		return <ErrorPage title={t("Club not found.")} />;
+	}
+
+	const { club, extras } = page;
+
+	return (
+		<div className="flex flex-col size-full gap-8 max-w-[1200px] py-8 px-4">
+			<ClubOverview
+				club={club}
+				isManager={extras.isManager}
+				isMember={extras.isMember}
+				currentUserMembership={extras.membership}
+				hasOwner={extras.hasOwner}
+				user={user}
+				members={extras.members}
+				privateCount={extras.privateCount}
+				posts={extras.posts}
+				alliances={extras.alliances}
+				instagramData={extras.instagram}
+				invites={extras.invites}
+				reviews={extras.reviews}
+			/>
+		</div>
+	);
+}

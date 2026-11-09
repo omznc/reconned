@@ -1,7 +1,6 @@
-"use client";
-
 import { Button } from "@components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute } from "@tanstack/react-router";
 import type { SuccessContext } from "better-auth/react";
 import { Key, MailIcon } from "lucide-react";
 import { useExtracted } from "next-intl";
@@ -11,9 +10,9 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { AuthFormSkeleton } from "@/app/[locale]/(auth)/_components/auth-form-skeleton";
-import { GoogleLoginButton } from "@/app/[locale]/(auth)/_components/google-login-button";
-import { TurnstileWidget, type TurnstileWidgetRef } from "@/app/[locale]/(auth)/_components/turnstile-widget";
+import { AuthFormSkeleton } from "@/components/auth/auth-form-skeleton";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
+import { TurnstileWidget, type TurnstileWidgetRef } from "@/components/auth/turnstile-widget";
 import { Loader } from "@/components/loader";
 import { LoaderSubmitButton } from "@/components/loader-submit-button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +24,11 @@ import { authClient } from "@/lib/auth-client";
 import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
 
-export default function LoginPage() {
+export const Route = createFileRoute("/{-$locale}/_auth/login")({
+	component: LoginPage,
+});
+
+function LoginPage() {
 	return (
 		<Suspense fallback={<AuthFormSkeleton />}>
 			<LoginPageContent />
