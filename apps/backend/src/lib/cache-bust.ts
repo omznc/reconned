@@ -2,10 +2,10 @@ import { deleteKeysByPattern } from "./cache";
 import { logger } from "./posthog";
 
 /**
- * The prefix the router builds its cache keys with — see `cache.keyPrefix` in `src/index.ts`.
- * Kept in sync by hand because the router owns the prefix and doesn't export it.
+ * The prefix the router builds its cache keys with; `src/index.ts` passes it as `cache.keyPrefix`.
+ * Change the version when a cached response shape changes: a deploy must not serve old shapes.
  */
-const ROUTE_CACHE_PREFIX = "route:";
+export const ROUTE_CACHE_PREFIX = "route:v2:";
 
 /**
  * Drops every cached response under a set of route-cache keys.
