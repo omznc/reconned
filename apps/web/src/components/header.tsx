@@ -33,17 +33,122 @@ function isNavActive(pathname: string, href: string) {
 	return pathname.startsWith(`${href}/`);
 }
 
+function useSignOut() {
+	const router = useRouter();
+	return async () => {
+		await authClient.signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					router.push("/login");
+					posthog.reset();
+				},
+			},
+		});
+	};
+}
+
+function AccountMenu({ user }: { user: NonNullable<ReturnType<typeof useIsAuthenticated>["user"]> }) {
+	const t = useExtracted();
+	const signOut = useSignOut();
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger asChild={true}>
+				<button
+					type="button"
+					aria-label={t("Account menu")}
+					className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+				>
+					<Avatar className="size-9 border select-none">
+						<AvatarImage src={user.image || ""} alt="" />
+						<AvatarFallback name={user.name} />
+					</Avatar>
+				</button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent className="mr-4" sideOffset={12}>
+				<DropdownMenuLabel>{t("Personalization")}</DropdownMenuLabel>
+				<DropdownMenuItem asChild={true}>
+					<FontSwitcher />
+				</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild={true} className="cursor-pointer">
+					<Button
+						variant="ghost"
+						onClick={signOut}
+						className="w-full cursor-pointer items-center justify-start"
+					>
+						<LogOut className="h-4 w-4" />
+						{t("Sign out")}
+					</Button>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
+	);
+}
+
+function DesktopAuth({ mounted }: { mounted: boolean }) {
+	const t = useExtracted();
+	const { user } = useIsAuthenticated();
+	if (!mounted) {
+		return <Skeleton className="h-9 w-24 shrink-0" />;
+	}
+	if (!user) {
+		return (
+			<Button asChild={true} size="sm">
+				<Link href="/login">{t("Login")}</Link>
+			</Button>
+		);
+	}
+	return (
+		<>
+			<Button asChild={true} size="sm">
+				<Link href="/dashboard">{t("Dashboard")}</Link>
+			</Button>
+			<AccountMenu user={user} />
+		</>
+	);
+}
+
+function DrawerAccount({ mounted }: { mounted: boolean }) {
+	const t = useExtracted();
+	const { user } = useIsAuthenticated();
+	const signOut = useSignOut();
+	if (!mounted) {
+		return null;
+	}
+	if (!user) {
+		return (
+			<DrawerClose asChild={true}>
+				<Button asChild={true}>
+					<Link href="/login">{t("Login")}</Link>
+				</Button>
+			</DrawerClose>
+		);
+	}
+	return (
+		<>
+			<DrawerClose asChild={true}>
+				<Button asChild={true}>
+					<Link href="/dashboard">{t("Dashboard")}</Link>
+				</Button>
+			</DrawerClose>
+			<FontSwitcher />
+			<Button variant="ghost" onClick={signOut} className="w-full justify-start">
+				<LogOut className="h-4 w-4" />
+				{t("Sign out")}
+			</Button>
+		</>
+	);
+}
+
 export function Header() {
 	// Read the session on the client so the public layout above us stays statically renderable.
 	// A server-side session read there would opt every public/SEO route out of static rendering.
-	const { user } = useIsAuthenticated();
 	// The session store can resolve before React hydrates, so the client's first render would
 	// disagree with the server-rendered logged-out markup. Render a placeholder until mounted
 	// so both sides agree, then swap in the real auth UI.
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
 	const t = useExtracted();
-	const router = useRouter();
 	const pathname = usePathname();
 
 	const mainLinks = [
@@ -58,16 +163,17 @@ export function Header() {
 
 	return (
 		<header className="sticky top-0 z-50 w-full bg-background/20 backdrop-blur-xl">
-			<div className="container mx-auto flex flex-col gap-2 px-3 py-2 sm:gap-3 sm:px-4 lg:min-h-16 lg:flex-row lg:items-center lg:gap-3">
-				<Link href="/" className="flex shrink-0 justify-center py-1 lg:justify-start">
-					<Logo className="h-8 w-auto max-w-[200px] sm:h-9 md:h-10" />
+			<div className="container mx-auto flex h-[68px] items-center gap-3 px-4 sm:px-6">
+				<Link
+					href="/"
+					aria-label={t("RECONNED home")}
+					className="flex shrink-0 rounded-md py-1 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+				>
+					<Logo className="h-8 w-auto max-w-[200px] lg:h-9" />
 				</Link>
 
-				<nav
-					className="hidden min-w-0 flex-1 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex [&::-webkit-scrollbar]:hidden"
-					aria-label={t("Navigation")}
-				>
-					<ul className="flex w-full items-center justify-start gap-1 overflow-x-auto overscroll-x-contain pb-0.5 pl-1 lg:justify-center lg:gap-1.5 lg:pl-0">
+				<nav className="hidden min-w-0 flex-1 justify-center lg:flex" aria-label={t("Navigation")}>
+					<ul className="flex items-center gap-1.5">
 						{mainLinks.map((item) => {
 							const active = isNavActive(pathname, item.href);
 							const Icon = item.icon;
@@ -77,20 +183,14 @@ export function Header() {
 										href={item.href}
 										aria-current={active ? "page" : undefined}
 										className={cn(
-											"flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs font-medium transition-[color,background-color,border-color,box-shadow] sm:gap-2 sm:px-3 sm:text-sm",
+											"flex h-9 items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium whitespace-nowrap outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50",
 											active
-												? "border-red-500/50 bg-red-500/10 text-red-500 shadow-sm"
-												: "border-transparent bg-background/50 text-muted-foreground hover:border-border hover:bg-background/70 hover:text-foreground",
+												? "border-brand/55 bg-brand/10 text-brand"
+												: "border-transparent bg-secondary text-foreground hover:bg-secondary/70",
 										)}
 									>
-										<Icon
-											className={cn(
-												"size-3.5 shrink-0 sm:size-4",
-												active ? "text-red-500" : "opacity-80",
-											)}
-											aria-hidden
-										/>
-										<span className="whitespace-nowrap">{item.label}</span>
+										<Icon className="size-4 shrink-0" aria-hidden />
+										{item.label}
 									</Link>
 								</li>
 							);
@@ -98,117 +198,72 @@ export function Header() {
 					</ul>
 				</nav>
 
-				<div className="flex w-full items-center gap-2 lg:w-auto lg:shrink-0">
-					<Drawer direction="left" shouldScaleBackground={false}>
-						<DrawerTrigger asChild={true}>
-							<Button
-								type="button"
-								variant="outline"
-								size="icon"
-								className="shrink-0 lg:hidden"
-								aria-label={t("Navigation")}
-							>
-								<Menu className="size-5" aria-hidden />
-							</Button>
-						</DrawerTrigger>
-						<DrawerContent className="h-full w-[min(100%,20rem)] max-w-sm gap-0 p-0">
-							<DrawerHeader className="relative border-b px-4 py-4 pr-12 text-left">
-								<DrawerTitle>{t("Navigation")}</DrawerTitle>
-								<DrawerClose className="ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden">
-									<X className="size-4" aria-hidden />
-									<span className="sr-only">{t("Close")}</span>
-								</DrawerClose>
-							</DrawerHeader>
-							<nav className="flex flex-col gap-1 p-3" aria-label={t("Navigation")}>
-								{drawerLinks.map((item) => {
-									const active = isNavActive(pathname, item.href);
-									const Icon = item.icon;
-									return (
-										<DrawerClose asChild={true} key={item.href}>
-											<Link
-												href={item.href}
-												aria-current={active ? "page" : undefined}
-												className={cn(
-													"flex items-center gap-3 rounded-lg border px-3 py-3 text-sm font-medium transition-[color,background-color,border-color]",
-													active
-														? "border-red-500/50 bg-red-500/10 text-red-500"
-														: "border-transparent bg-muted/40 text-foreground hover:bg-muted/70",
-												)}
-											>
-												<Icon
-													className={cn(
-														"size-5 shrink-0",
-														active ? "text-red-500" : "opacity-80",
-													)}
-													aria-hidden
-												/>
-												<span>{item.label}</span>
-											</Link>
-										</DrawerClose>
-									);
-								})}
-							</nav>
-						</DrawerContent>
-					</Drawer>
-					<div
-						className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2 lg:min-w-0 lg:flex-none"
-						suppressHydrationWarning={true}
-					>
-						<LanguageSwitcher />
-						{!mounted ? (
-							<Skeleton className="h-9 w-24 shrink-0 sm:h-10" />
-						) : user ? (
-							<>
-								<Button asChild={true} size="sm" className="max-sm:px-2.5 max-sm:text-xs">
-									<Link href="/dashboard">{t("Dashboard")}</Link>
-								</Button>
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild={true}>
-										<Avatar className="size-9 cursor-pointer border select-none sm:size-10">
-											<AvatarImage src={user?.image || ""} alt={user?.name} />
-											<AvatarFallback name={user?.name} />
-										</Avatar>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent className="mr-4" sideOffset={12}>
-										<DropdownMenuLabel>{t("Personalization")}</DropdownMenuLabel>
-										<DropdownMenuItem asChild={true}>
-											<ThemeSwitcher />
-										</DropdownMenuItem>
+				<div className="flex-1 lg:hidden" />
 
-										<DropdownMenuItem asChild={true}>
-											<FontSwitcher />
-										</DropdownMenuItem>
-										<DropdownMenuSeparator />
-
-										<DropdownMenuItem asChild={true} className="cursor-pointer">
-											<Button
-												variant="ghost"
-												onClick={async () => {
-													await authClient.signOut({
-														fetchOptions: {
-															onSuccess: () => {
-																router.push("/login");
-																posthog.reset();
-															},
-														},
-													});
-												}}
-												className="w-full cursor-pointer items-center justify-start"
-											>
-												<LogOut className="h-4 w-4" />
-												{t("Sign out")}
-											</Button>
-										</DropdownMenuItem>
-									</DropdownMenuContent>
-								</DropdownMenu>
-							</>
-						) : (
-							<Button asChild={true} size="sm">
-								<Link href="/login">{t("Login")}</Link>
-							</Button>
-						)}
-					</div>
+				<div className="hidden items-center gap-2 lg:flex" suppressHydrationWarning={true}>
+					<LanguageSwitcher size="sm" />
+					<ThemeSwitcher iconOnly={true} />
+					<DesktopAuth mounted={mounted} />
 				</div>
+
+				<Button asChild={true} variant="ghost" size="icon" className="lg:hidden">
+					<Link href="/search" aria-label={t("Search")}>
+						<Search className="size-5" aria-hidden />
+					</Link>
+				</Button>
+
+				<Drawer direction="left" shouldScaleBackground={false}>
+					<DrawerTrigger asChild={true}>
+						<Button
+							type="button"
+							variant="outline"
+							size="icon"
+							className="shrink-0 lg:hidden"
+							aria-label={t("Navigation")}
+						>
+							<Menu className="size-5" aria-hidden />
+						</Button>
+					</DrawerTrigger>
+					<DrawerContent className="h-full w-[min(100%,20rem)] max-w-sm gap-0 p-0">
+						<DrawerHeader className="relative border-b px-4 py-4 pr-12 text-left">
+							<DrawerTitle>{t("Navigation")}</DrawerTitle>
+							<DrawerClose className="ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden">
+								<X className="size-4" aria-hidden />
+								<span className="sr-only">{t("Close")}</span>
+							</DrawerClose>
+						</DrawerHeader>
+						<nav className="flex flex-col gap-1 p-3" aria-label={t("Navigation")}>
+							{drawerLinks.map((item) => {
+								const active = isNavActive(pathname, item.href);
+								const Icon = item.icon;
+								return (
+									<DrawerClose asChild={true} key={item.href}>
+										<Link
+											href={item.href}
+											aria-current={active ? "page" : undefined}
+											className={cn(
+												"flex items-center gap-3 rounded-lg border px-3 py-3 text-sm font-medium transition-colors",
+												active
+													? "border-brand/55 bg-brand/10 text-brand"
+													: "border-transparent bg-muted/40 text-foreground hover:bg-muted/70",
+											)}
+										>
+											<Icon className="size-5 shrink-0" aria-hidden />
+											<span>{item.label}</span>
+										</Link>
+									</DrawerClose>
+								);
+							})}
+						</nav>
+						<div className="mt-auto flex flex-col gap-2 border-t p-3">
+							<div className="flex items-center gap-2">
+								<LanguageSwitcher sync={false} variant="outline" />
+								<ThemeSwitcher sync={false} variant="outline" className="w-auto" />
+							</div>
+							<DrawerAccount mounted={mounted} />
+						</div>
+					</DrawerContent>
+				</Drawer>
 			</div>
 		</header>
 	);

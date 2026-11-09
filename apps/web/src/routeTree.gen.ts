@@ -33,6 +33,7 @@ import { Route as Char123LocaleChar125AuthRegisterRouteImport } from './routes/{
 import { Route as Char123LocaleChar125AuthResetPasswordRouteImport } from './routes/{-$locale}/_auth/reset-password'
 import { Route as Char123LocaleChar125AuthTwoFactorRouteImport } from './routes/{-$locale}/_auth/two-factor'
 import { Route as Char123LocaleChar125PublicIndexRouteImport } from './routes/{-$locale}/_public/index'
+import { Route as Char123LocaleChar125PublicDesignPreviewRouteImport } from './routes/{-$locale}/_public/design-preview'
 import { Route as Char123LocaleChar125PublicDevelopersRouteImport } from './routes/{-$locale}/_public/developers'
 import { Route as Char123LocaleChar125PublicMapRouteImport } from './routes/{-$locale}/_public/map'
 import { Route as Char123LocaleChar125PublicMapEditorRouteImport } from './routes/{-$locale}/_public/map-editor'
@@ -220,6 +221,12 @@ const Char123LocaleChar125PublicIndexRoute =
   Char123LocaleChar125PublicIndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => Char123LocaleChar125PublicRoute,
+  } as any)
+const Char123LocaleChar125PublicDesignPreviewRoute =
+  Char123LocaleChar125PublicDesignPreviewRouteImport.update({
+    id: '/design-preview',
+    path: '/design-preview',
     getParentRoute: () => Char123LocaleChar125PublicRoute,
   } as any)
 const Char123LocaleChar125PublicDevelopersRoute =
@@ -587,6 +594,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/register': typeof Char123LocaleChar125AuthRegisterRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125AuthResetPasswordRoute
   '/{-$locale}/two-factor': typeof Char123LocaleChar125AuthTwoFactorRoute
+  '/{-$locale}/design-preview': typeof Char123LocaleChar125PublicDesignPreviewRoute
   '/{-$locale}/developers': typeof Char123LocaleChar125PublicDevelopersRoute
   '/{-$locale}/map': typeof Char123LocaleChar125PublicMapRoute
   '/{-$locale}/map-editor': typeof Char123LocaleChar125PublicMapEditorRoute
@@ -665,6 +673,7 @@ export interface FileRoutesByTo {
   '/{-$locale}/register': typeof Char123LocaleChar125AuthRegisterRoute
   '/{-$locale}/reset-password': typeof Char123LocaleChar125AuthResetPasswordRoute
   '/{-$locale}/two-factor': typeof Char123LocaleChar125AuthTwoFactorRoute
+  '/{-$locale}/design-preview': typeof Char123LocaleChar125PublicDesignPreviewRoute
   '/{-$locale}/developers': typeof Char123LocaleChar125PublicDevelopersRoute
   '/{-$locale}/map': typeof Char123LocaleChar125PublicMapRoute
   '/{-$locale}/map-editor': typeof Char123LocaleChar125PublicMapEditorRoute
@@ -747,6 +756,7 @@ export interface FileRoutesById {
   '/{-$locale}/_auth/register': typeof Char123LocaleChar125AuthRegisterRoute
   '/{-$locale}/_auth/reset-password': typeof Char123LocaleChar125AuthResetPasswordRoute
   '/{-$locale}/_auth/two-factor': typeof Char123LocaleChar125AuthTwoFactorRoute
+  '/{-$locale}/_public/design-preview': typeof Char123LocaleChar125PublicDesignPreviewRoute
   '/{-$locale}/_public/developers': typeof Char123LocaleChar125PublicDevelopersRoute
   '/{-$locale}/_public/map': typeof Char123LocaleChar125PublicMapRoute
   '/{-$locale}/_public/map-editor': typeof Char123LocaleChar125PublicMapEditorRoute
@@ -829,6 +839,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/register'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/two-factor'
+    | '/{-$locale}/design-preview'
     | '/{-$locale}/developers'
     | '/{-$locale}/map'
     | '/{-$locale}/map-editor'
@@ -907,6 +918,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/register'
     | '/{-$locale}/reset-password'
     | '/{-$locale}/two-factor'
+    | '/{-$locale}/design-preview'
     | '/{-$locale}/developers'
     | '/{-$locale}/map'
     | '/{-$locale}/map-editor'
@@ -988,6 +1000,7 @@ export interface FileRouteTypes {
     | '/{-$locale}/_auth/register'
     | '/{-$locale}/_auth/reset-password'
     | '/{-$locale}/_auth/two-factor'
+    | '/{-$locale}/_public/design-preview'
     | '/{-$locale}/_public/developers'
     | '/{-$locale}/_public/map'
     | '/{-$locale}/_public/map-editor'
@@ -1231,6 +1244,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125PublicIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125PublicRoute
+    }
+    '/{-$locale}/_public/design-preview': {
+      id: '/{-$locale}/_public/design-preview'
+      path: '/design-preview'
+      fullPath: '/{-$locale}/design-preview'
+      preLoaderRoute: typeof Char123LocaleChar125PublicDesignPreviewRouteImport
       parentRoute: typeof Char123LocaleChar125PublicRoute
     }
     '/{-$locale}/_public/developers': {
@@ -1796,6 +1816,7 @@ const Char123LocaleChar125AuthRouteWithChildren =
   )
 
 interface Char123LocaleChar125PublicRouteChildren {
+  Char123LocaleChar125PublicDesignPreviewRoute: typeof Char123LocaleChar125PublicDesignPreviewRoute
   Char123LocaleChar125PublicDevelopersRoute: typeof Char123LocaleChar125PublicDevelopersRoute
   Char123LocaleChar125PublicMapRoute: typeof Char123LocaleChar125PublicMapRoute
   Char123LocaleChar125PublicMapEditorRoute: typeof Char123LocaleChar125PublicMapEditorRoute
@@ -1819,6 +1840,8 @@ interface Char123LocaleChar125PublicRouteChildren {
 
 const Char123LocaleChar125PublicRouteChildren: Char123LocaleChar125PublicRouteChildren =
   {
+    Char123LocaleChar125PublicDesignPreviewRoute:
+      Char123LocaleChar125PublicDesignPreviewRoute,
     Char123LocaleChar125PublicDevelopersRoute:
       Char123LocaleChar125PublicDevelopersRoute,
     Char123LocaleChar125PublicMapRoute: Char123LocaleChar125PublicMapRoute,

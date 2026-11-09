@@ -10,12 +10,27 @@ import { useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 /** Forwards the props of `DropdownMenuItem asChild`: the item padding, role and keyboard handlers. */
-export function ThemeSwitcher({ className, onClick, ...props }: ButtonProps) {
+export function ThemeSwitcher({
+	className,
+	onClick,
+	iconOnly = false,
+	sync = true,
+	...props
+}: ButtonProps & {
+	/** Show only the icon. The label stays as the accessible name. */
+	iconOnly?: boolean;
+	/** Only one mounted switcher may save the theme to the account. */
+	sync?: boolean;
+}) {
 	const { theme, setTheme } = useTheme();
 	const t = useExtracted();
 	const { user } = useIsAuthenticated();
 
 	useEffect(() => {
+		if (!sync) {
+			return;
+		}
+
 		if (theme !== "light" && theme !== "dark") {
 			return;
 		}
@@ -45,7 +60,7 @@ export function ThemeSwitcher({ className, onClick, ...props }: ButtonProps) {
 			old_value: user.theme,
 			new_value: theme,
 		});
-	}, [theme, user]);
+	}, [theme, user, sync]);
 
 	return (
 		<Button
@@ -56,11 +71,17 @@ export function ThemeSwitcher({ className, onClick, ...props }: ButtonProps) {
 				setTheme(theme === "dark" ? "light" : "dark");
 			}}
 			suppressHydrationWarning
-			className={cn("w-full items-center justify-start cursor-pointer shadow-none", className)}
+			aria-label={iconOnly ? t("Change theme") : undefined}
+			className={cn(
+				iconOnly
+					? "relative size-9 shrink-0 cursor-pointer p-0 shadow-none"
+					: "w-full items-center justify-start cursor-pointer shadow-none",
+				className,
+			)}
 		>
 			<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
 			<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-			{t("Change theme")}
+			{iconOnly ? null : t("Change theme")}
 		</Button>
 	);
 }
