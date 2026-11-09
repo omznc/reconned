@@ -1312,7 +1312,7 @@ export interface paths {
 		};
 		/**
 		 * List users
-		 * @description Returns a paginated list of users with optional search and sorting
+		 * @description Returns a paginated list of users. Users have no country or city of their own, so `countryId`, `clubId` and `city` match the public clubs a user is an active member of (one club must match all given filters). `sort=games` orders by games played (users who hide their stats come last), `sort=newest` by sign-up date, `sort=name` by name (the default). `gamesCount` and `rating` are null when the user hides their stats.
 		 */
 		get: operations["usersGet"];
 		put?: never;
@@ -1332,7 +1332,7 @@ export interface paths {
 		};
 		/**
 		 * Get user profile
-		 * @description Returns a public user profile by ID or slug
+		 * @description Returns a public user profile by ID or slug. When the user hides their stats (`isPrivateStats`), `gamesCount` and `rating` are null and `eventRegistration` is empty for everyone but the user and admins. `gamesCount` counts finished games played.
 		 */
 		get: operations["usersidprofileGet"];
 		put?: never;
@@ -3158,7 +3158,7 @@ export interface paths {
 		};
 		/**
 		 * Search clubs, users, and events
-		 * @description Unified search across clubs, users, and events with pagination and type filtering
+		 * @description Unified search across clubs, users, and events with pagination and type filtering. `counts` always holds the total matches per type (after the refine filters, ignoring `filter` and paging). `topResult` is the best name match across the included types: an exact name or callsign beats a prefix match, which beats a contains match; ties follow relevance, then club, user, event. It is null without a query. Users match on name, callsign and bio; `matchedIn` says which. `countryId` applies to all three types (events and users through their club).
 		 */
 		get: operations["searchGet"];
 		put?: never;
@@ -3914,9 +3914,29 @@ export interface paths {
 		};
 		/**
 		 * Public platform counts
-		 * @description Aggregated counts of all clubs, events, and player profiles for marketing display
+		 * @description Aggregated counts of public clubs, public events and public player profiles for marketing display
 		 */
 		get: operations["publicstatsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/public/feed": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Home community feed
+		 * @description One time-ordered list (newest first) of new public games (events that have not finished), public club posts and public reviews of clubs and events (only when the REVIEWS feature flag is on). Each item has a `kind` (`game`, `post` or `review`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts or reviews change.
+		 */
+		get: operations["publicfeedGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -12146,7 +12166,10 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search?: string;
-				sort?: "admin";
+				sort?: "admin" | "games" | "name" | "newest";
+				countryId?: number;
+				clubId?: string;
+				city?: string;
 			};
 			header?: never;
 			path?: never;
@@ -12189,6 +12212,23 @@ export interface operations {
 								};
 							}[];
 							isAdmin: boolean;
+							createdAt: string;
+							/** @description Finished games played; null when stats are private */
+							gamesCount: number | null;
+							/** @description Average of reviews received; null when none or stats are private */
+							rating: {
+								average: number;
+								count: number;
+							} | null;
+							/** @description Active memberships of public clubs, every role, oldest first (the first is the main club) */
+							clubs: {
+								id: string;
+								slug: string | null;
+								name: string;
+								logo: string | null;
+								/** @enum {string|null} */
+								logoTile: "paper" | "ink" | null;
+							}[];
 						}[];
 						pagination: {
 							page: number;
@@ -12252,6 +12292,13 @@ export interface operations {
 								logo: string | null;
 							};
 						}[];
+						/** @description Member since */
+						createdAt: string;
+						gamesCount: number | null;
+						rating: {
+							average: number;
+							count: number;
+						} | null;
 						eventRegistration: {
 							id: string;
 							eventId: string;
@@ -12266,8 +12313,12 @@ export interface operations {
 								name: string;
 								slug: string | null;
 								dateStart: string;
+								location: string;
+								costPerPerson: number;
 								club: {
 									id: string;
+									name: string;
+									slug: string | null;
 									isPrivate: boolean;
 								};
 							};
@@ -19879,6 +19930,10 @@ export interface operations {
 				perPage?: unknown;
 				search?: string;
 				filter?: string;
+				countryId?: number;
+				upcomingOnly?: "true" | "false";
+				registrationOpen?: "true" | "false";
+				verifiedOnly?: "true" | "false";
 			};
 			header?: never;
 			path?: never;
@@ -19909,6 +19964,26 @@ export interface operations {
 										logoTile: "paper" | "ink" | null;
 										location: string | null;
 										verified: boolean;
+										/** @description First 240 characters */
+										description: string | null;
+										/** @description Active members */
+										memberCount: number;
+										/** @description Average of the club's reviews */
+										rating: {
+											average: number;
+											count: number;
+										} | null;
+										/** @description Soonest upcoming public event */
+										nextGame: {
+											id: string;
+											slug: string | null;
+											name: string;
+											dateStart: string;
+											location: string;
+											maxAttendees: number | null;
+											attendeeCount: number;
+											placesLeft: number | null;
+										} | null;
 										_count: {
 											members: number;
 										};
@@ -19957,6 +20032,20 @@ export interface operations {
 										createdAt?: string;
 										updatedAt?: string;
 										headerImage?: string | null;
+										/**
+										 * @description Which field matched the query; null without a query
+										 * @enum {string|null}
+										 */
+										matchedIn: "name" | "callsign" | "bio" | null;
+										/** @description The user's oldest active membership of a public club */
+										mainClub: {
+											id: string;
+											slug: string | null;
+											name: string;
+											logo: string | null;
+											/** @enum {string|null} */
+											logoTile: "paper" | "ink" | null;
+										} | null;
 									};
 							  }
 							| {
@@ -19965,6 +20054,7 @@ export interface operations {
 									id: string;
 									name: string;
 									relevanceScore: number;
+									/** @description Event fields; attendeeCount is the number of CONFIRMED attendees */
 									data: {
 										id?: string;
 										name?: string;
@@ -19988,29 +20078,175 @@ export interface operations {
 										hasSnacks?: boolean;
 										hasDrinks?: boolean;
 										hasPrizes?: boolean;
-										gearRequirements?:
-											| (
-													| (string | number | boolean | null)
-													| {
-															[key: string]: unknown;
-													  }
-													| unknown[]
-											  )[]
-											| null;
-										mapData?:
-											| (
-													| (string | number | boolean | null)
-													| {
-															[key: string]: unknown;
-													  }
-													| unknown[]
-											  )
-											| null;
+										gearRequirements?: unknown[] | null;
+										mapData?: unknown;
 										createdAt?: string;
 										updatedAt?: string;
+										club: {
+											id: string;
+											name: string;
+											slug: string | null;
+											logo: string | null;
+											verified: boolean;
+										} | null;
+										attendeeCount: number;
+										placesLeft: number | null;
 									};
 							  }
 						)[];
+						counts: {
+							events: number;
+							clubs: number;
+							users: number;
+						};
+						topResult:
+							| (
+									| {
+											/** @enum {string} */
+											type: "club";
+											id: string;
+											name: string;
+											relevanceScore: number;
+											data: {
+												id: string;
+												name: string;
+												slug: string | null;
+												logo: string | null;
+												/** @enum {string|null} */
+												logoTile: "paper" | "ink" | null;
+												location: string | null;
+												verified: boolean;
+												/** @description First 240 characters */
+												description: string | null;
+												/** @description Active members */
+												memberCount: number;
+												/** @description Average of the club's reviews */
+												rating: {
+													average: number;
+													count: number;
+												} | null;
+												/** @description Soonest upcoming public event */
+												nextGame: {
+													id: string;
+													slug: string | null;
+													name: string;
+													dateStart: string;
+													location: string;
+													maxAttendees: number | null;
+													attendeeCount: number;
+													placesLeft: number | null;
+												} | null;
+												_count: {
+													members: number;
+												};
+											};
+									  }
+									| {
+											/** @enum {string} */
+											type: "user";
+											id: string;
+											name: string;
+											relevanceScore: number;
+											data: {
+												id?: string;
+												email?: string;
+												name?: string;
+												emailVerified?: boolean;
+												normalizedEmail?: string | null;
+												image?: string | null;
+												slug?: string | null;
+												bio?: string | null;
+												location?: string | null;
+												website?: string | null;
+												phone?: string | null;
+												callsign?: string | null;
+												gear?:
+													| (
+															| (string | number | boolean | null)
+															| {
+																	[key: string]: unknown;
+															  }
+															| unknown[]
+													  )[]
+													| null;
+												font?: string;
+												theme?: string;
+												language?: string;
+												isPrivate?: boolean;
+												isPrivateEmail?: boolean;
+												isPrivatePhone?: boolean;
+												isPrivateStats?: boolean;
+												role?: string | null;
+												banned?: boolean | null;
+												banReason?: string | null;
+												banExpires?: string | null;
+												twoFactorEnabled?: boolean | null;
+												createdAt?: string;
+												updatedAt?: string;
+												headerImage?: string | null;
+												/**
+												 * @description Which field matched the query; null without a query
+												 * @enum {string|null}
+												 */
+												matchedIn: "name" | "callsign" | "bio" | null;
+												/** @description The user's oldest active membership of a public club */
+												mainClub: {
+													id: string;
+													slug: string | null;
+													name: string;
+													logo: string | null;
+													/** @enum {string|null} */
+													logoTile: "paper" | "ink" | null;
+												} | null;
+											};
+									  }
+									| {
+											/** @enum {string} */
+											type: "event";
+											id: string;
+											name: string;
+											relevanceScore: number;
+											/** @description Event fields; attendeeCount is the number of CONFIRMED attendees */
+											data: {
+												id?: string;
+												name?: string;
+												description?: string;
+												clubId?: string;
+												image?: string | null;
+												slug?: string | null;
+												dateStart?: string;
+												dateEnd?: string;
+												dateRegistrationsClose?: string;
+												dateRegistrationsOpen?: string;
+												isPrivate?: boolean;
+												allowFreelancers?: boolean;
+												maxAttendees?: number | null;
+												location?: string;
+												googleMapsLink?: string | null;
+												costPerPerson?: number;
+												hasBreakfast?: boolean;
+												hasLunch?: boolean;
+												hasDinner?: boolean;
+												hasSnacks?: boolean;
+												hasDrinks?: boolean;
+												hasPrizes?: boolean;
+												gearRequirements?: unknown[] | null;
+												mapData?: unknown;
+												createdAt?: string;
+												updatedAt?: string;
+												club: {
+													id: string;
+													name: string;
+													slug: string | null;
+													logo: string | null;
+													verified: boolean;
+												} | null;
+												attendeeCount: number;
+												placesLeft: number | null;
+											};
+									  }
+							  )
+							| null;
 						pagination: {
 							page: number;
 							perPage: number;
@@ -22724,6 +22960,11 @@ export interface operations {
 							latitude: number | null;
 							longitude: number | null;
 							location: string | null;
+							city: string | null;
+							citySlug: string | null;
+							countryId: number | null;
+							/** @description Active members */
+							memberCount: number;
 							description: string | null;
 							verified: boolean;
 							dateFounded: string | null;
@@ -22953,6 +23194,119 @@ export interface operations {
 							events: number;
 							players: number;
 						};
+					};
+				};
+			};
+		};
+	};
+	publicfeedGet: {
+		parameters: {
+			query?: {
+				type?: "all" | "games" | "posts" | "reviews";
+				cursor?: string;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						items: (
+							| {
+									/** @enum {string} */
+									kind: "game";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									event: {
+										slug: string | null;
+										name: string;
+										/** @description First 400 characters */
+										description: string;
+										image: string | null;
+										location: string;
+										dateStart: string;
+										dateEnd: string;
+										dateRegistrationsOpen: string;
+										dateRegistrationsClose: string;
+										costPerPerson: number;
+										maxAttendees: number | null;
+										attendeeCount: number;
+										placesLeft: number | null;
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "post";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									post: {
+										title: string;
+										/** @description First 400 characters */
+										content: string;
+										images: string[];
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "review";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									review: {
+										rating: number;
+										/** @description First 400 characters */
+										content: string;
+										target: {
+											/** @enum {string} */
+											type: "club" | "event";
+											id: string;
+											slug: string | null;
+											name: string;
+										};
+										author: {
+											id: string;
+											slug: string | null;
+											name: string;
+											image: string | null;
+										};
+									};
+							  }
+						)[];
+						nextCursor: string | null;
 					};
 				};
 			};
