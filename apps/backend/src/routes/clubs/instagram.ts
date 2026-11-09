@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, instagramPageSelection } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { bustRouteCache } from "../../lib/cache-bust";
 import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 import { env } from "../../lib/env";
@@ -100,7 +101,7 @@ async function connectPageToClub({
 	const tokenInfo = await debugToken(nonExpiringToken);
 	const isPermanentToken = !tokenInfo.data.expires_at || tokenInfo.data.expires_at === 0;
 
-	await db
+	const [updated] = await db
 		.update(club)
 		.set({
 			instagramUsername: igBusinessResponse.instagram_business_account.username,
@@ -115,7 +116,12 @@ async function connectPageToClub({
 			instagramTokenType: isPermanentToken ? "PERMANENT" : "TEMPORARY",
 			updatedAt: new Date().toISOString(),
 		})
-		.where(eq(club.id, clubId));
+		.where(eq(club.id, clubId))
+		.returning({ slug: club.slug });
+
+	// The OAuth callback is a GET redirect with no route-level bustCache.
+	// The public page reads the club by slug, which caches under its own key.
+	await bustRouteCache(["clubs", `club:${clubId}`, ...(updated?.slug ? [`club:${updated.slug}`] : [])]);
 
 	await logClubAudit({
 		clubId,
@@ -948,7 +954,8 @@ clubsInstagramRouter.get(
 			};
 
 			return response.json({
-				media: mediaData.data || [],
+				// Graph omits media_url on some items (e.g. videos with copyrighted audio); one would fail the whole feed.
+				media: (mediaData.data || []).filter((item) => item.media_url),
 				username: mediaData.data?.[0]?.username || clubRecord.instagramUsername || null,
 			});
 		} catch (error) {
@@ -973,6 +980,7 @@ clubsInstagramRouter.get(
 	{
 		cache: {
 			key: "club:{id}:instagram",
+			varyByQuery: ["limit"],
 			ttl: 600,
 			swr: 3600,
 			// Public media feed, identical for every caller.
