@@ -49,6 +49,22 @@ describe("GET /users players listing", () => {
 		expect(new Set(seen)).toEqual(new Set(players.map((p) => p.id)));
 	});
 
+	test("search by email works only for admins", async () => {
+		const player = await createUser({ name: `${marker()} Mail` });
+		const emailPart = player.email.split("@")[0] ?? "";
+
+		const anonymous = await list(`search=${emailPart}`);
+		expect(anonymous.users.map((u) => u.id)).not.toContain(player.id);
+
+		const viewer = await createUser();
+		const signedIn = await list(`search=${emailPart}`, viewer.cookie);
+		expect(signedIn.users.map((u) => u.id)).not.toContain(player.id);
+
+		const admin = await makeAdmin(await createUser());
+		const asAdmin = await list(`search=${emailPart}`, admin.cookie);
+		expect(asAdmin.users.map((u) => u.id)).toContain(player.id);
+	});
+
 	test("clubs lists every active membership of public clubs, whatever the role", async () => {
 		const tag = marker();
 		const owner = await createUser({ name: `${tag} Owner` });

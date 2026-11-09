@@ -74,11 +74,16 @@ function visibilityCondition(viewer: Viewer): SQL | undefined {
 	return viewer.userId ? or(eq(user.isPrivate, false), eq(user.id, viewer.userId)) : eq(user.isPrivate, false);
 }
 
-function searchCondition(search: string | undefined): SQL | undefined {
+function searchCondition(search: string | undefined, viewer: Viewer): SQL | undefined {
 	if (!search) {
 		return undefined;
 	}
-	return or(ilike(user.name, `%${search}%`), ilike(user.email, `%${search}%`), ilike(user.callsign, `%${search}%`));
+	const pattern = `%${search}%`;
+	// Email only for admins: on a public list it tells anyone whether an address has an account.
+	if (viewer.isAdmin) {
+		return or(ilike(user.name, pattern), ilike(user.email, pattern), ilike(user.callsign, pattern));
+	}
+	return or(ilike(user.name, pattern), ilike(user.callsign, pattern));
 }
 
 /** Every order ends on the id, so equal names or counts cannot shuffle rows between pages. */
@@ -118,7 +123,7 @@ function maskedContact(
  */
 export async function listPlayers(query: PlayerListQuery, viewer: Viewer) {
 	const { page, perPage } = query;
-	const where = and(visibilityCondition(viewer), searchCondition(query.search), clubFilterCondition(query));
+	const where = and(visibilityCondition(viewer), searchCondition(query.search, viewer), clubFilterCondition(query));
 
 	const statsHidden = statsHiddenSql(user.isPrivateStats, user.id, viewer);
 	const games = sql<number | null>`CASE WHEN ${statsHidden} THEN NULL ELSE ${gamesCountSql()} END`;
