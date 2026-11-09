@@ -16,7 +16,7 @@ export const Route = createFileRoute("/{-$locale}/_public")({
 
 function PublicLayout() {
 	const t = useExtracted();
-	const commitDate = Route.useLoaderData();
+	const version = Route.useLoaderData();
 	const { locale } = Route.useRouteContext();
 
 	return (
@@ -36,7 +36,7 @@ function PublicLayout() {
 					<Outlet />
 				</main>
 			</div>
-			<Footer locale={locale} commitDate={commitDate} />
+			<Footer locale={locale} version={version} />
 		</>
 	);
 }

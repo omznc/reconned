@@ -7,7 +7,10 @@ import { defineConfig } from "vite";
 import { nextIntlExtract } from "./vite/next-intl-extract.ts";
 
 // The browser bundle reads the commit through `import.meta.env`, which only exposes `NEXT_PUBLIC_*`.
-process.env.NEXT_PUBLIC_SOURCE_COMMIT ??= process.env.SOURCE_COMMIT;
+// Guarded: assigning `undefined` to `process.env` stores the string "undefined", which the browser bundle then inlines.
+if (!process.env.NEXT_PUBLIC_SOURCE_COMMIT && process.env.SOURCE_COMMIT) {
+	process.env.NEXT_PUBLIC_SOURCE_COMMIT = process.env.SOURCE_COMMIT;
+}
 
 const backendInternalUrl = process.env.BACKEND_INTERNAL_URL || "http://localhost:3002";
 

@@ -16,12 +16,17 @@ export const getFeatureFlagsFn = createServerFn({ method: "GET" }).handler(async
 	return flags;
 });
 
-let commitDate: { value: string | null } | undefined;
+type CommitInfo = { commit: string; date: string } | null;
 
-/** Committer date of the running commit, for the footer. Fetched once per process. */
-export const getCommitDateFn = createServerFn({ method: "GET" }).handler(async () => {
-	if (commitDate) {
-		return commitDate.value;
+let commitInfo: { value: CommitInfo } | undefined;
+
+/**
+ * The running commit and its committer date, for the footer. Fetched once per process.
+ * The commit comes from here, not from the browser bundle, so the server and the client render the same text.
+ */
+export const getCommitDateFn = createServerFn({ method: "GET" }).handler(async (): Promise<CommitInfo> => {
+	if (commitInfo) {
+		return commitInfo.value;
 	}
 	const commit = process.env.NEXT_PUBLIC_SOURCE_COMMIT || process.env.SOURCE_COMMIT;
 	if (!commit) {
@@ -30,9 +35,10 @@ export const getCommitDateFn = createServerFn({ method: "GET" }).handler(async (
 	try {
 		const response = await fetch(`https://api.github.com/repos/omznc/reconned/commits/${commit}`);
 		const body = (await response.json()) as { commit?: { committer?: { date?: string } } };
-		commitDate = { value: body.commit?.committer?.date ?? null };
+		const date = body.commit?.committer?.date;
+		commitInfo = { value: date ? { commit, date } : null };
 	} catch {
 		return null;
 	}
-	return commitDate.value;
+	return commitInfo.value;
 });

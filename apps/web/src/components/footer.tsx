@@ -13,34 +13,38 @@ import { BadgeSoon } from "@/components/badge-soon";
 import { CookieSettingsButton } from "@/components/cookie-settings-button";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
 import { Link } from "@/i18n/navigation";
-import { env } from "@/lib/env";
+import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
 
-const CURRENT_COMMIT = env.NEXT_PUBLIC_SOURCE_COMMIT;
+type FooterCommit = { commit: string; date: string } | null;
 
-function FooterVersion({ locale, commitDate }: { locale: string; commitDate: string | null }) {
-	if (!(CURRENT_COMMIT && commitDate)) {
+function FooterVersion({ locale, version }: { locale: string; version: FooterCommit }) {
+	if (!version) {
 		return null;
 	}
 
 	return (
 		<Link
-			href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
+			href={`https://github.com/omznc/reconned/commit/${version.commit}`}
 			target="_blank"
 			className="font-mono mt-4 w-fit opacity-60 hover:opacity-100 flex items-center gap-1 transition-opacity"
 		>
-			Version {CURRENT_COMMIT.slice(0, 7)} (
-			{new Date(commitDate).toLocaleDateString(locale, {
-				year: "numeric",
-				month: "long",
-				day: "numeric",
-			})}
+			Version {version.commit.slice(0, 7)} (
+			{/* The ICU data of the server runtime and of the browser can format the same date differently. */}
+			<span suppressHydrationWarning>
+				{new Date(version.date).toLocaleDateString(locale, {
+					timeZone: DEFAULT_TIME_ZONE,
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				})}
+			</span>
 			)
 			<ArrowUpRightIcon className="w-4 h-4 -mt-0.5" />
 		</Link>
 	);
 }
 
-export function Footer({ locale, commitDate }: { locale: string; commitDate: string | null }) {
+export function Footer({ locale, version }: { locale: string; version: FooterCommit }) {
 	const t = useExtracted();
 
 	return (
@@ -205,7 +209,7 @@ export function Footer({ locale, commitDate }: { locale: string; commitDate: str
 					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
 						{t("Check out our sponsors and partners")}
 					</Link>
-					<FooterVersion locale={locale} commitDate={commitDate} />
+					<FooterVersion locale={locale} version={version} />
 				</div>
 			</div>
 			<FooterDrawing className="opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none" />
