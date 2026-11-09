@@ -4,8 +4,9 @@ import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { clubRule } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
-import { bustRouteCache } from "../../lib/cache-bust";
+import { bustClubPublicCaches, bustRouteCache } from "../../lib/cache-bust";
 import { requireClubManager } from "../../lib/club-access";
+import { getPublicClubRules, loadVisibleClub } from "../../lib/club-public";
 import { db } from "../../lib/db";
 
 const clubsRulesRouter = new Router();
@@ -17,6 +18,52 @@ const createRuleBodySchema = z.object({
 	description: z.string().optional(),
 	content: z.string(),
 });
+
+clubsRulesRouter.get(
+	"/clubs/:id/public-rules",
+	async ({ params, response, context }) => {
+		if (!params.id) {
+			throw apiError.validation("Club ID is required");
+		}
+		const { club: found } = await loadVisibleClub(params.id, context);
+
+		return response.json({ rules: await getPublicClubRules(found.id) });
+	},
+	{
+		auth: false,
+		cache: {
+			key: "club:{id}:public-rules",
+			ttl: 300,
+			swr: 1800,
+			varyByUser: true,
+		},
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get public club rules",
+			description:
+				"Rules a visitor may read. Rules have no public flag, so this returns only the rules attached to a public event, the same rules that event page shows. Club-level rules and rules of private events are not returned. `id` is a club id or slug.",
+			params: z.object({ id: z.string() }),
+			response: {
+				200: z.object({
+					rules: z.array(
+						z.object({
+							id: z.string(),
+							name: z.string(),
+							description: z.string().nullable(),
+							content: z.string(),
+							updatedAt: z.string(),
+							eventId: z.string(),
+							eventName: z.string(),
+							eventSlug: z.string().nullable(),
+						}),
+					),
+				}),
+				404: z.object({ error: z.string() }),
+			},
+			mcpTool: { name: "list_public_club_rules", description: "List the public rules of a club" },
+		},
+	},
+);
 
 clubsRulesRouter.get(
 	"/clubs/:id/rules",
@@ -216,6 +263,7 @@ clubsRulesRouter.put(
 		// params can't name — it only knows the club and the rule.
 		if (updatedRule[0].eventId) {
 			await bustRouteCache([`event:${updatedRule[0].eventId}`]);
+			await bustClubPublicCaches(clubId);
 		}
 
 		await logClubAudit({
@@ -284,6 +332,7 @@ clubsRulesRouter.delete(
 		// See the update route: an event-attached rule is cached under the event, not the club.
 		if (ruleData[0].eventId) {
 			await bustRouteCache([`event:${ruleData[0].eventId}`]);
+			await bustClubPublicCaches(clubId);
 		}
 
 		await logClubAudit({

@@ -9,7 +9,7 @@ import EventInvitationEmail from "../emails/event-invitation";
 import EventPlaceReleasedEmail from "../emails/event-place-released";
 import EventWaitlistPromotedEmail from "../emails/event-waitlist-promoted";
 import { logClubAudit } from "../lib/audit-logger";
-import { bustRouteCache } from "../lib/cache-bust";
+import { bustClubPublicCaches, bustRouteCache } from "../lib/cache-bust";
 import { getActiveMembership, requireClubManager } from "../lib/club-access";
 import { db } from "../lib/db";
 import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
@@ -1094,6 +1094,8 @@ eventsRouter.post(
 				.where(and(eq(clubRule.clubId, body.clubId), inArray(clubRule.id, body.ruleIds)));
 		}
 
+		await bustClubPublicCaches(body.clubId);
+
 		await logClubAudit({
 			clubId: body.clubId,
 			actionType: "EVENT_CREATE",
@@ -1140,7 +1142,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create event",
@@ -1269,6 +1271,8 @@ eventsRouter.put(
 			}
 		}
 
+		await bustClubPublicCaches(existingEvent.clubId);
+
 		await logClubAudit({
 			clubId: existingEvent.clubId,
 			actionType: "EVENT_UPDATE",
@@ -1320,7 +1324,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Update event",
@@ -1400,6 +1404,8 @@ eventsRouter.delete(
 			}
 		}
 
+		await bustClubPublicCaches(existingEvent.clubId);
+
 		await logClubAudit({
 			clubId: existingEvent.clubId,
 			actionType: "EVENT_DELETE",
@@ -1428,7 +1434,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event",
@@ -1529,6 +1535,8 @@ eventsRouter.delete(
 
 		await db.update(event).set({ image: null }).where(eq(event.id, eventId));
 
+		await bustClubPublicCaches(existingEvent.clubId);
+
 		await logClubAudit({
 			clubId: existingEvent.clubId,
 			actionType: "EVENT_UPDATE",
@@ -1543,7 +1551,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event image",
@@ -2258,7 +2266,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create or update event registration",
@@ -2331,7 +2339,7 @@ eventsRouter.delete(
 		});
 	},
 	{
-		bustCache: ["events", "events:upcoming", "events:calendar", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event registration",
@@ -2698,6 +2706,8 @@ eventsRouter.put(
 			return rows[0];
 		});
 
+		await bustClubPublicCaches(eventRecord.clubId);
+
 		await logClubAudit({
 			clubId: eventRecord.clubId,
 			actionType: "EVENT_ATTENDANCE_UPDATE",
@@ -2771,6 +2781,8 @@ eventsRouter.put(
 		if (!updated[0]) {
 			throw apiError.notFound("Attendee not found");
 		}
+
+		await bustClubPublicCaches(eventRecord.clubId);
 
 		await logClubAudit({
 			clubId: eventRecord.clubId,

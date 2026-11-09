@@ -1649,7 +1649,13 @@ export interface paths {
 		};
 		/**
 		 * List clubs
-		 * @description List clubs with pagination, search, and sorting
+		 * @description List clubs with pagination, search, filters, sorting and optional facet counts.
+		 *
+		 *     Filters combine with AND. `size` buckets use the count of active, non-archived members: small is fewer than 15, medium is 15 to 40 (inclusive), large is more than 40. `allied` counts a club as allied when its legacy flag is set or it has a row in an alliance. `hasGames` means at least one upcoming public event. `verified`, `allied` and `hasGames` accept "true" (only these) or "false" (exclude these).
+		 *
+		 *     `sortBy` takes name, location, createdAt (these need `sortOrder`), and members, rating, newest (`sortOrder` defaults to desc; clubs without reviews come last when sorting by rating). Without `sortBy` the standing order applies: verified, then claimed and allied, claimed, allied, the rest.
+		 *
+		 *     `totals` counts public clubs only, ignoring filters and the viewer. With `facets=true` the response also holds `facets`: each group counts the clubs that match the search and all other active filters, but not its own filter.
 		 */
 		get: operations["clubsGet"];
 		put?: never;
@@ -2449,6 +2455,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/clubs/{id}/public-rules": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get public club rules
+		 * @description Rules a visitor may read. Rules have no public flag, so this returns only the rules attached to a public event, the same rules that event page shows. Club-level rules and rules of private events are not returned. `id` is a club id or slug.
+		 */
+		get: operations["clubsidpublicRulesGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/clubs/{id}/rules": {
 		parameters: {
 			query?: never;
@@ -2513,6 +2539,31 @@ export interface paths {
 		 * @description Get club statistics including members over time, role distribution, events per month, and recent events
 		 */
 		get: operations["clubsidstatsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/clubs/{id}/public-stats": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get public club statistics
+		 * @description Public numbers for the club page. `id` is a club id or slug. Same visibility rules as the club itself.
+		 *
+		 *     - `memberCount`: active, non-archived members. `privateMemberCount`: those of them whose profile is private.
+		 *     - `gamesHosted`: public events of the club that have ended. `playersHosted`: distinct users with a CONFIRMED place at such an event who were not marked absent.
+		 *     - Both are null when the club sets `isPrivateStats` and the caller is not a member or admin.
+		 *     - `rating`: average and count of club reviews, null without reviews. `photoCount`: images on the club's public posts (Instagram media is not counted).
+		 */
+		get: operations["clubsidpublicStatsGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -13194,8 +13245,15 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search?: string;
-				sortBy?: "name" | "location" | "createdAt";
+				sortBy?: "name" | "location" | "createdAt" | "members" | "rating" | "newest";
 				sortOrder?: "asc" | "desc";
+				countryId?: unknown;
+				city?: string;
+				size?: "small" | "medium" | "large";
+				verified?: unknown;
+				allied?: unknown;
+				hasGames?: unknown;
+				facets?: unknown;
 			};
 			header?: never;
 			path?: never;
@@ -13246,12 +13304,47 @@ export interface operations {
 							_count: {
 								members: number;
 							};
+							/** @description Active, non-archived members */
+							memberCount: number;
+							/** @description Average and number of club reviews. Null when the club has no review. */
+							rating: {
+								average: number;
+								count: number;
+							} | null;
+							nextGame: {
+								id: string;
+								slug: string | null;
+								name: string;
+								date: string;
+								/** @description Capacity minus confirmed attendees. Null means unlimited. */
+								placesLeft: number | null;
+							} | null;
 						}[];
 						pagination: {
 							page: number;
 							perPage: number;
 							total: number;
 							totalPages: number;
+						};
+						totals?: {
+							clubCount: number;
+							cityCount: number;
+							countryCount: number;
+						};
+						facets?: {
+							country: {
+								countryId: number;
+								count: number;
+							}[];
+							size: {
+								small: number;
+								medium: number;
+								large: number;
+							};
+							verified: {
+								verified: number;
+								unverified: number;
+							};
 						};
 					};
 				};
@@ -16854,6 +16947,50 @@ export interface operations {
 			};
 		};
 	};
+	clubsidpublicRulesGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						rules: {
+							id: string;
+							name: string;
+							description: string | null;
+							content: string;
+							updatedAt: string;
+							eventId: string;
+							eventName: string;
+							eventSlug: string | null;
+						}[];
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	clubsidrulesGet: {
 		parameters: {
 			query?: never;
@@ -17298,6 +17435,49 @@ export interface operations {
 				content: {
 					"application/json": {
 						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidpublicStatsGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						memberCount: number;
+						privateMemberCount: number;
+						gamesHosted: number | null;
+						playersHosted: number | null;
+						rating: {
+							average: number;
+							count: number;
+						} | null;
+						photoCount: number;
 					};
 				};
 			};
