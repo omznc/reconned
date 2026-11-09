@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useExtracted } from "next-intl";
 import { getExtracted } from "next-intl/server";
 import type { SearchResultsPage, WithContext } from "schema-dts";
 import { LoadingPage } from "@/components/loading-page";
@@ -7,8 +6,7 @@ import { NotFoundPage } from "@/components/not-found-page";
 import { env } from "@/lib/env";
 import { buildSeoHead } from "@/lib/seo";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
-import { Search } from "@/routes/{-$locale}/_public/search/-components/search";
-import { SearchResults } from "@/routes/{-$locale}/_public/search/-components/search-results";
+import { SearchPage } from "@/routes/{-$locale}/_public/search/-components/search-page";
 
 /** `?q=a&q=b` parses to an array and `?q=123` to a number; the rest of the page treats the query as a plain string. */
 function toQuery(value: unknown): string {
@@ -89,22 +87,3 @@ export const Route = createFileRoute("/{-$locale}/_public/search/")({
 	notFoundComponent: NotFoundPage,
 	component: SearchPage,
 });
-
-function SearchPage() {
-	const t = useExtracted();
-
-	return (
-		<div className="container max-w-4xl py-8 space-y-8 px-4">
-			<div>
-				<h1 className="text-4xl font-bold mb-2">{t("Search")}</h1>
-				<p className="text-muted-foreground">{t("Find clubs, players, and events - all in one place")}</p>
-			</div>
-
-			<div className="w-full">
-				<Search />
-			</div>
-
-			<SearchResults />
-		</div>
-	);
-}
