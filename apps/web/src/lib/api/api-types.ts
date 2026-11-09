@@ -2654,7 +2654,7 @@ export interface paths {
 		};
 		/**
 		 * List events
-		 * @description List events with pagination, search, sorting, and privacy filtering
+		 * @description List events with pagination, search, sorting, filters and privacy filtering. List-valued filters (registration, countryId) are comma separated. With facets=true the response also carries facet counts and the page header counts.
 		 */
 		get: operations["eventsGet"];
 		put?: never;
@@ -17441,6 +17441,13 @@ export interface operations {
 								| null;
 							createdAt: string;
 							updatedAt: string;
+							attendeeCount: number;
+							capacity: number | null;
+							placesLeft: number | null;
+							/** @enum {string} */
+							registrationState: "open" | "notOpenYet" | "closed" | "full";
+							price: number;
+							currency: string;
 							_count: {
 								eventRegistration: number;
 							};
@@ -17817,10 +17824,20 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search?: string;
-				sortBy?: "name" | "dateStart";
+				sortBy?: "name" | "dateStart" | "date" | "placesLeft" | "price";
 				sortOrder?: "asc" | "desc";
 				isPrivate?: string;
 				filter?: "mine";
+				dateFrom?: string;
+				dateTo?: string;
+				when?: "weekend" | "next30";
+				registration?: string;
+				countryId?: string;
+				city?: string;
+				maxPrice?: number;
+				freelancers?: "true" | "false";
+				verifiedOnly?: "true" | "false";
+				facets?: "true" | "false";
 			};
 			header?: never;
 			path?: never;
@@ -17862,11 +17879,22 @@ export interface operations {
 							mapData: unknown;
 							createdAt: string;
 							updatedAt: string;
+							attendeeCount: number;
+							capacity: number | null;
+							placesLeft: number | null;
+							/** @enum {string} */
+							registrationState: "open" | "notOpenYet" | "closed" | "full";
+							price: number;
+							currency: string;
+							city: string | null;
+							countryId: number | null;
 							club: {
 								id: string;
 								name: string;
 								slug: string | null;
 								logo: string | null;
+								logoTile: string | null;
+								verified: boolean;
 							} | null;
 						}[];
 						pagination: {
@@ -17875,6 +17903,21 @@ export interface operations {
 							total: number;
 							totalPages: number;
 						};
+						facets?: {
+							registration: {
+								open: number;
+								notOpenYet: number;
+								closed: number;
+								full: number;
+							};
+							country: {
+								countryId: number;
+								name: string;
+								count: number;
+							}[];
+						};
+						upcomingCount?: number;
+						openThisWeekendCount?: number;
 					};
 				};
 			};
@@ -18036,7 +18079,20 @@ export interface operations {
 							mapData: unknown;
 							createdAt: string;
 							updatedAt: string;
+							attendeeCount: number;
+							capacity: number | null;
+							placesLeft: number | null;
+							/** @enum {string} */
+							registrationState: "open" | "notOpenYet" | "closed" | "full";
+							price: number;
+							currency: string;
+							city: string | null;
+							countryId: number | null;
 							club: {
+								id: string;
+								slug: string | null;
+								logo: string | null;
+								logoTile: string | null;
 								name: string;
 								verified: boolean;
 							} | null;
