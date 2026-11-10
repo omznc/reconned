@@ -42,6 +42,15 @@ function addImageMeta(
 }
 
 /**
+ * Makes JSON text safe inside a `<script>` element. JSON-LD holds user text (names, the search query),
+ * and a raw `</script>` in it would close the element and inject markup. `<` only occurs inside JSON
+ * strings, where `<` is the same character.
+ */
+export function scriptSafeJson(json: string): string {
+	return json.replaceAll("<", "\\u003c");
+}
+
+/**
  * Builds the object a route's `head()` returns. It covers what `generateMetadata` returned in Next.js:
  * title, description, keywords, Open Graph, Twitter card, canonical, hreflang and JSON-LD.
  */
@@ -81,7 +90,7 @@ export function buildSeoHead(input: SeoInput) {
 
 	const scripts = (input.schemas ?? []).map((schema) => ({
 		type: "application/ld+json",
-		children: schema,
+		children: scriptSafeJson(schema),
 	}));
 
 	return { meta, links, scripts };

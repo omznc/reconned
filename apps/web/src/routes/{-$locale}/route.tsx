@@ -19,6 +19,7 @@ import { getMessages, isLocale, type Locale } from "@/i18n/messages";
 import { DEFAULT_TIME_ZONE, routing } from "@/i18n/routing";
 import { FeatureFlagsProvider } from "@/lib/feature-flags/client";
 import { buildCatchAllHead, getNotFoundData, readNotFoundData } from "@/lib/not-found";
+import { scriptSafeJson } from "@/lib/seo";
 import { getFeatureFlagsFn, getSessionFn } from "@/lib/server-fns";
 import { buildSiteSchemas } from "@/lib/site-schema";
 
@@ -73,7 +74,7 @@ export const Route = createFileRoute("/{-$locale}")({
 				: [],
 			scripts: (loaderData?.schemas ?? []).map((schema) => ({
 				type: "application/ld+json",
-				children: JSON.stringify(schema),
+				children: scriptSafeJson(JSON.stringify(schema)),
 			})),
 		};
 	},
