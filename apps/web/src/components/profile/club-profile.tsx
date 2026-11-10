@@ -516,7 +516,7 @@ export function ClubProfile({ club, extras, user, tab }: ClubProfileProps) {
 			}
 		>
 			<ClubInviteAcceptance invites={extras.invites} />
-			<ClubBanner club={club} extras={extras} />
+			{club.headerImage ? <ClubBanner club={club} extras={extras} /> : null}
 			{extras.hasOwner ? (
 				<>
 					<ClubTabsNav club={club} extras={extras} tab={tab} />

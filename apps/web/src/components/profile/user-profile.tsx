@@ -308,7 +308,7 @@ export function UserProfile({ user, reviews, tab }: UserProfileProps) {
 				</>
 			}
 		>
-			<ProfileBanner name={user.name} kind="person" image={user.headerImage} />
+			{user.headerImage ? <ProfileBanner name={user.name} kind="person" image={user.headerImage} /> : null}
 			<UserTabsNav user={user} reviews={reviews} tab={tab} showEvents={!user.isPrivateStats} />
 			<UserStats user={user} />
 			<TabContent user={user} reviews={reviews} tab={tab} />
