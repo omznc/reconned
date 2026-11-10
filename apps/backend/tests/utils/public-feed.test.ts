@@ -386,7 +386,8 @@ describe("GET /public/feed: players, new clubs and alliances", () => {
 		expect(joins).toHaveLength(1);
 		expect(joins[0]?.count).toBe(2);
 		const ids = (joins[0]?.members as { id: string }[]).map((m) => m.id);
-		expect(ids).toEqual([first.id, second.id]);
+		// Both joins can land in the same millisecond, so the order between them is not fixed.
+		expect(ids.toSorted()).toEqual([first.id, second.id].toSorted());
 		expect(JSON.stringify(joins)).not.toContain(owner.id);
 	});
 
