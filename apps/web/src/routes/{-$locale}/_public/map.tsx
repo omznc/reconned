@@ -126,7 +126,7 @@ function MapPage() {
 	}
 
 	return (
-		<div className="fixed top-0 left-0 z-40 h-dvh w-full">
+		<div data-map-page={true} className="fixed top-0 left-0 z-40 h-dvh w-full">
 			<h1 className="sr-only">{t("Airsoft Clubs Map")}</h1>
 			<ClubsMapWrapper clubs={page.clubs} countries={page.countries} controlsBelowHeader={true} />
 		</div>

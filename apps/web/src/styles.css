@@ -127,6 +127,11 @@
 		background-color: var(--color-popover);
 		color: var(--color-popover-foreground);
 	}
+
+	/* The map page is a fixed full-screen layer: a wheel over a gap between its panels must not scroll the page behind it. */
+	html:has([data-map-page]) {
+		overflow: hidden;
+	}
 }
 
 @utility text-balance {
