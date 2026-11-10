@@ -49,6 +49,18 @@ describe("GET /users players listing", () => {
 		expect(new Set(seen)).toEqual(new Set(players.map((p) => p.id)));
 	});
 
+	test("a banned user is listed only for an admin", async () => {
+		const tag = marker();
+		const banned = await createUser({ name: `${tag} Banned` });
+		await testDb`UPDATE "User" SET banned = true WHERE id = ${banned.id}`;
+		const viewer = await createUser();
+		const admin = await makeAdmin(await createUser());
+
+		expect((await list(`search=${tag}`)).users).toEqual([]);
+		expect((await list(`search=${tag}`, viewer.cookie)).users).toEqual([]);
+		expect((await list(`search=${tag}`, admin.cookie)).users.map((u) => u.id)).toEqual([banned.id]);
+	});
+
 	test("search by email works only for admins", async () => {
 		const player = await createUser({ name: `${marker()} Mail` });
 		const emailPart = player.email.split("@")[0] ?? "";

@@ -2,6 +2,7 @@ import { and, count, eq, inArray, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, event, eventAttendee, review, type user } from "../drizzle/schema";
 import { db } from "./db";
+import { publicClubCondition } from "./public-club";
 import { logoTileOf, logoTileResponseSchema } from "./schemas";
 
 export const ratingSchema = z.object({ average: z.number(), count: z.number() }).nullable();
@@ -79,6 +80,7 @@ export async function loadUserClubs(
 		return result;
 	}
 
+	const clubOk = await publicClubCondition();
 	const rows = await db
 		.select({
 			userId: clubMembership.userId,
@@ -92,13 +94,7 @@ export async function loadUserClubs(
 		})
 		.from(clubMembership)
 		.innerJoin(club, eq(clubMembership.clubId, club.id))
-		.where(
-			and(
-				inArray(clubMembership.userId, userIds),
-				eq(clubMembership.status, "ACTIVE"),
-				eq(club.isPrivate, false),
-			),
-		)
+		.where(and(inArray(clubMembership.userId, userIds), eq(clubMembership.status, "ACTIVE"), clubOk))
 		.orderBy(sql`COALESCE(${clubMembership.startDate}, ${clubMembership.createdAt})`, club.name);
 
 	for (const { userId, logoTile, ...rest } of rows) {
@@ -168,6 +164,7 @@ export async function loadNextGames(clubIds: string[]): Promise<Map<string, Next
 	if (clubIds.length === 0) {
 		return new Map();
 	}
+	const clubOk = await publicClubCondition();
 	const rows = await db
 		.selectDistinctOn([event.clubId], {
 			clubId: event.clubId,
@@ -179,7 +176,10 @@ export async function loadNextGames(clubIds: string[]): Promise<Map<string, Next
 			maxAttendees: event.maxAttendees,
 		})
 		.from(event)
-		.where(and(inArray(event.clubId, clubIds), eq(event.isPrivate, false), sql`${event.dateStart} >= NOW()`))
+		.innerJoin(club, eq(event.clubId, club.id))
+		.where(
+			and(inArray(event.clubId, clubIds), eq(event.isPrivate, false), sql`${event.dateStart} >= NOW()`, clubOk),
+		)
 		.orderBy(event.clubId, event.dateStart);
 
 	const counts = await loadAttendeeCounts(rows.map((row) => row.id));

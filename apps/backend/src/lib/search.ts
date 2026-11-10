@@ -13,6 +13,7 @@ import {
 	ratingSchema,
 	userClubSchema,
 } from "./people-stats";
+import { clubListedCondition, publicClubCondition, userNotBanned } from "./public-club";
 import { baseEventSchema, logoTileOf, logoTileResponseSchema } from "./schemas";
 
 /** Enough for the two clamped lines a result card shows. */
@@ -98,7 +99,7 @@ export async function searchClubs(o: SearchOptions, withItems: boolean): Promise
 	const { search } = o;
 	const { contains, prefix } = patterns(search);
 	const where = and2([
-		eq(club.isPrivate, false),
+		await publicClubCondition(),
 		search ? or(ilike(club.name, contains), ilike(club.location, contains)) : undefined,
 		o.countryId === undefined ? undefined : eq(club.countryId, o.countryId),
 		o.verifiedOnly ? eq(club.verified, true) : undefined,
@@ -169,6 +170,7 @@ export async function searchClubs(o: SearchOptions, withItems: boolean): Promise
 export async function searchUsers(o: SearchOptions, withItems: boolean): Promise<TypeResult> {
 	const { search } = o;
 	const { contains, prefix } = patterns(search);
+	const clubOk = await publicClubCondition();
 	const inCountry =
 		o.countryId === undefined
 			? undefined
@@ -181,13 +183,14 @@ export async function searchUsers(o: SearchOptions, withItems: boolean): Promise
 							and(
 								eq(clubMembership.userId, user.id),
 								eq(clubMembership.status, "ACTIVE"),
-								eq(club.isPrivate, false),
+								clubOk,
 								eq(club.countryId, o.countryId),
 							),
 						),
 				);
 	const where = and2([
 		eq(user.isPrivate, false),
+		userNotBanned(o.viewer),
 		search ? or(ilike(user.name, contains), ilike(user.callsign, contains), ilike(user.bio, contains)) : undefined,
 		inCountry,
 	]);
@@ -271,6 +274,7 @@ export async function searchEvents(o: SearchOptions, withItems: boolean): Promis
 	const where = and2([
 		search ? or(ilike(event.name, contains), ilike(event.location, contains)) : undefined,
 		await eventVisibility(o.viewer),
+		await clubListedCondition(),
 		o.countryId === undefined ? undefined : eq(club.countryId, o.countryId),
 		o.upcomingOnly ? sql`${event.dateStart} >= NOW()` : undefined,
 		o.registrationOpen

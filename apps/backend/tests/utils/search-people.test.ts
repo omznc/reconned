@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createUser, testDb } from "../helpers/auth";
+import { createUser, makeAdmin, testDb } from "../helpers/auth";
 import { api } from "../helpers/client";
 import { addClubReview, addMember, createClub, createEvent, DAY_MS, register } from "../helpers/people";
 
@@ -205,6 +205,36 @@ describe("GET /search", () => {
 		expect(registrable.items.map((i) => i.id)).toEqual([open.id]);
 		expect(registrable.counts.events).toBe(1);
 		expect(registrable.items[0]?.data.attendeeCount).toBe(0);
+	});
+
+	test("a banned club and its events are absent from search and from a player's clubs", async () => {
+		const tag = tagOf();
+		const owner = await createUser({ name: `${tag} owner` });
+		const club = await createClub(owner, { name: `${tag} club` });
+		await createEvent(owner, club.id, { name: `${tag} game` });
+		await testDb`UPDATE "Club" SET banned = true WHERE id = ${club.id}`;
+
+		const result = await search(`search=${tag}`);
+		expect(result.counts.clubs).toBe(0);
+		expect(result.counts.events).toBe(0);
+		expect(result.items.map((i) => i.type)).toEqual(["user"]);
+
+		const players = await api().get(`/api/users?search=${tag}`);
+		expect(players.body.users[0].clubs).toEqual([]);
+	});
+
+	test("a banned user is hidden from search except for an admin", async () => {
+		const tag = tagOf();
+		const banned = await createUser({ name: `${tag} banned` });
+		await testDb`UPDATE "User" SET banned = true WHERE id = ${banned.id}`;
+		const viewer = await createUser();
+		const admin = await makeAdmin(await createUser());
+
+		for (const cookie of [undefined, viewer.cookie]) {
+			expect((await search(`search=${tag}&filter=user`, cookie)).counts.users).toBe(0);
+		}
+		const asAdmin = await search(`search=${tag}&filter=user`, admin.cookie);
+		expect(asAdmin.items.map((i) => i.id)).toEqual([banned.id]);
 	});
 
 	test("the old params keep working", async () => {

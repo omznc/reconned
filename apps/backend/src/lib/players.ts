@@ -9,6 +9,7 @@ import {
 	userRatingAverageSql,
 	userRatingCountSql,
 } from "./people-stats";
+import { publicClubCondition, userNotBanned } from "./public-club";
 
 export type PlayerSort = "admin" | "games" | "name" | "newest";
 
@@ -31,7 +32,7 @@ export interface Viewer {
  * Users carry no country or city of their own, so these filters look at the clubs a player is an
  * active member of: the player matches when ONE public club satisfies every given filter.
  */
-function clubFilterCondition(query: PlayerListQuery): SQL | undefined {
+async function clubFilterCondition(query: PlayerListQuery): Promise<SQL | undefined> {
 	const { countryId, clubId, city } = query;
 	if (countryId === undefined && !clubId && !city) {
 		return undefined;
@@ -40,7 +41,7 @@ function clubFilterCondition(query: PlayerListQuery): SQL | undefined {
 	const conditions = [
 		eq(clubMembership.userId, user.id),
 		eq(clubMembership.status, "ACTIVE"),
-		eq(club.isPrivate, false),
+		await publicClubCondition(),
 	];
 	if (countryId !== undefined) {
 		conditions.push(eq(club.countryId, countryId));
@@ -123,7 +124,12 @@ function maskedContact(
  */
 export async function listPlayers(query: PlayerListQuery, viewer: Viewer) {
 	const { page, perPage } = query;
-	const where = and(visibilityCondition(viewer), searchCondition(query.search, viewer), clubFilterCondition(query));
+	const where = and(
+		visibilityCondition(viewer),
+		userNotBanned(viewer),
+		searchCondition(query.search, viewer),
+		await clubFilterCondition(query),
+	);
 
 	const statsHidden = statsHiddenSql(user.isPrivateStats, user.id, viewer);
 	const games = sql<number | null>`CASE WHEN ${statsHidden} THEN NULL ELSE ${gamesCountSql()} END`;
