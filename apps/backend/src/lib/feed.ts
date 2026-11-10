@@ -1,7 +1,17 @@
 import { type AnyColumn, and, desc, eq, inArray, or, type SQL, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import * as z from "zod";
-import { alliance, club, clubAlliance, clubMembership, event, post, review, user } from "../drizzle/schema";
+import {
+	alliance,
+	club,
+	clubAlliance,
+	clubAuditLog,
+	clubMembership,
+	event,
+	post,
+	review,
+	user,
+} from "../drizzle/schema";
 import { db } from "./db";
 import { isFeatureEnabled } from "./feature-flags";
 import { loadAttendeeCounts, placesLeftOf } from "./people-stats";
@@ -92,6 +102,14 @@ export const feedItemSchema = z.discriminatedUnion("kind", [
 		kind: z.literal("alliance"),
 		...feedBase,
 		alliance: z.object({ id: z.number(), name: z.string() }),
+		/** Every club that joined on that day, first joiner first. `club` is the first one. */
+		clubs: z.array(feedClubSchema),
+	}),
+	z.object({
+		kind: z.literal("claim"),
+		...feedBase,
+		/** The user who got the club. Null when that profile is private or banned. */
+		owner: feedPersonSchema.nullable(),
 	}),
 ]);
 export type FeedItem = z.infer<typeof feedItemSchema>;
@@ -102,7 +120,7 @@ export type FeedType = (typeof FEED_TYPES)[number];
 
 const cursorSchema = z.object({
 	t: z.string(),
-	k: z.enum(["game", "post", "review", "player_review", "club", "alliance"]),
+	k: z.enum(["game", "post", "review", "player_review", "club", "alliance", "claim"]),
 	id: z.string(),
 });
 type Cursor = z.infer<typeof cursorSchema>;
@@ -318,14 +336,15 @@ async function loadReviews(limit: number, cursor: Cursor | null, clubOk: SQL | u
 	});
 }
 
+const publicUser = (column: { isPrivate: AnyColumn; banned: AnyColumn }) =>
+	and(eq(column.isPrivate, false), or(eq(column.banned, false), sql`${column.banned} IS NULL`));
+
 /**
  * Reviews of players. Both the reviewed player and the author must have a public profile, so no
  * photo of a private profile is ever shown (the club reviews above mask it instead).
  */
 async function loadPlayerReviews(limit: number, cursor: Cursor | null): Promise<FeedItem[]> {
 	const author = alias(user, "author");
-	const publicUser = (column: { isPrivate: AnyColumn; banned: AnyColumn }) =>
-		and(eq(column.isPrivate, false), or(eq(column.banned, false), sql`${column.banned} IS NULL`));
 	const rows = await db
 		.select({
 			id: review.id,
@@ -390,33 +409,108 @@ async function loadNewClubs(limit: number, cursor: Cursor | null, clubOk: SQL | 
 	}));
 }
 
+type FeedClubRow = Parameters<typeof toFeedClub>[0];
+
 /**
- * A club that joined an alliance. An alliance is a group of clubs of one country, not a pair, so
- * each membership row is one item. The row id is zero-padded so text order equals numeric order.
+ * Clubs that joined an alliance, one item per alliance and day: an admin often adds several clubs at
+ * once, and one item each would repeat the same news. The id is the zero-padded alliance id and the
+ * day, so text order is stable; the time is the last join of that day.
  */
 async function loadAllianceJoins(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
-	const paddedId = sql`lpad(${clubAlliance.id}::text, 10, '0')`;
-	const rows = await db
+	const day = sql`date_trunc('day', ${clubAlliance.createdAt})`;
+	const joins = db
 		.select({
-			id: paddedId.mapWith(String),
-			createdAt: clubAlliance.createdAt,
-			allianceId: alliance.id,
-			allianceName: alliance.name,
-			...clubColumns,
+			id: sql<string>`lpad(${alliance.id}::text, 10, '0') || '-' || to_char(${day}, 'YYYYMMDD')`.as("id"),
+			lastJoin: sql`max(${clubAlliance.createdAt})`.as("last_join"),
+			// The same text form as the timestamp columns of the other sources ("…10:00:00.000").
+			createdAt: sql<string>`to_char(max(${clubAlliance.createdAt}), 'YYYY-MM-DD HH24:MI:SS.MS')`.as(
+				"created_at",
+			),
+			allianceId: sql<number>`${alliance.id}`.as("alliance_id"),
+			allianceName: sql<string>`${alliance.name}`.as("alliance_name"),
+			clubs: sql<FeedClubRow[]>`json_agg(json_build_object(
+				'clubId', ${club.id}, 'clubSlug', ${club.slug}, 'clubName', ${club.name}, 'clubLogo', ${club.logo},
+				'clubLogoTile', ${club.logoTile}, 'clubVerified', ${club.verified}
+			) ORDER BY ${clubAlliance.createdAt}, ${club.id})`.as("clubs"),
 		})
 		.from(clubAlliance)
 		.innerJoin(club, eq(clubAlliance.clubId, club.id))
 		.innerJoin(alliance, eq(clubAlliance.allianceId, alliance.id))
-		.where(and(clubOk, afterCursor("alliance", sql`${clubAlliance.createdAt}`, paddedId, cursor)))
-		.orderBy(desc(clubAlliance.createdAt), desc(paddedId))
+		.where(clubOk)
+		.groupBy(alliance.id, alliance.name, day)
+		.as("joins");
+
+	// Compare and order on the timestamp, not the text, like the other sources do.
+	const rows = await db
+		.select({
+			id: joins.id,
+			createdAt: joins.createdAt,
+			allianceId: joins.allianceId,
+			allianceName: joins.allianceName,
+			clubs: joins.clubs,
+		})
+		.from(joins)
+		.where(afterCursor("alliance", sql`${joins.lastJoin}`, sql`${joins.id}`, cursor))
+		.orderBy(desc(joins.lastJoin), desc(joins.id))
+		.limit(limit);
+
+	return rows.flatMap((row) => {
+		const clubs = row.clubs.map(toFeedClub);
+		const [first] = clubs;
+		if (!first) {
+			return [];
+		}
+		return [
+			{
+				kind: "alliance" as const,
+				id: row.id,
+				createdAt: row.createdAt,
+				club: first,
+				clubs,
+				alliance: { id: Number(row.allianceId), name: row.allianceName },
+			},
+		];
+	});
+}
+
+/**
+ * Clubs that an admin gave to an owner, from the audit log. Old rows hold actionData as a JSON
+ * string, newer rows as an object, so the owner id is read from both forms.
+ */
+async function loadClaims(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
+	const data = sql`(CASE WHEN jsonb_typeof(${clubAuditLog.actionData}) = 'string' THEN (${clubAuditLog.actionData} #>> '{}')::jsonb ELSE ${clubAuditLog.actionData} END)`;
+	const rows = await db
+		.select({
+			id: clubAuditLog.id,
+			createdAt: clubAuditLog.createdAt,
+			...clubColumns,
+			ownerId: user.id,
+			ownerSlug: user.slug,
+			ownerName: user.name,
+			ownerImage: user.image,
+		})
+		.from(clubAuditLog)
+		.innerJoin(club, eq(clubAuditLog.clubId, club.id))
+		.leftJoin(user, and(sql`${user.id} = ${data} ->> 'userId'`, publicUser(user)))
+		.where(
+			and(
+				eq(clubAuditLog.actionType, "CLUB_OWNER_ASSIGNED"),
+				clubOk,
+				afterCursor("claim", sql`${clubAuditLog.createdAt}`, sql`${clubAuditLog.id}`, cursor),
+			),
+		)
+		.orderBy(desc(clubAuditLog.createdAt), desc(clubAuditLog.id))
 		.limit(limit);
 
 	return rows.map((row) => ({
-		kind: "alliance" as const,
+		kind: "claim" as const,
 		id: row.id,
 		createdAt: row.createdAt,
 		club: toFeedClub(row),
-		alliance: { id: row.allianceId, name: row.allianceName },
+		owner:
+			row.ownerId && row.ownerName
+				? { id: row.ownerId, slug: row.ownerSlug, name: row.ownerName, image: row.ownerImage }
+				: null,
 	}));
 }
 
@@ -441,7 +535,7 @@ const TAB_SOURCES: Record<Exclude<FeedType, "all">, FeedKind[]> = {
 	games: ["game"],
 	posts: ["post"],
 	reviews: ["review", "player_review"],
-	clubs: ["club", "alliance"],
+	clubs: ["club", "alliance", "claim"],
 };
 
 function tabHas(type: FeedType, kind: FeedKind): boolean {
@@ -464,6 +558,7 @@ export async function loadFeed(params: { type: FeedType; cursor?: string; limit:
 		reviewsOn ? loadPlayerReviews(take, cursor) : none,
 		tabHas(type, "club") ? loadNewClubs(take, cursor, clubOk) : none,
 		tabHas(type, "alliance") ? loadAllianceJoins(take, cursor, clubOk) : none,
+		tabHas(type, "claim") ? loadClaims(take, cursor, clubOk) : none,
 	]);
 
 	const merged = sources.flat().sort(compareFeed);

@@ -16,7 +16,7 @@ async function bustFeedCache(clubId = "") {
 }
 
 interface FeedItem {
-	kind: "game" | "post" | "review" | "player_review" | "club" | "alliance";
+	kind: "game" | "post" | "review" | "player_review" | "club" | "alliance" | "claim";
 	id: string;
 	createdAt: string;
 	club?: { id: string; name: string };
@@ -313,6 +313,55 @@ describe("GET /public/feed: players, new clubs and alliances", () => {
 		const mine = joins.filter((i) => [club.id, privateClub.id, bannedClub.id].includes(i.club?.id ?? ""));
 		expect(mine).toHaveLength(1);
 		expect(mine[0]).toMatchObject({ club: { id: club.id }, alliance: shown });
+	});
+
+	test("clubs that join one alliance on one day are one item, another day is a new item", async () => {
+		const owner = await createUser();
+		const first = await createClub(owner);
+		const second = await createClub(owner);
+		const later = await createClub(owner);
+		const ally = await seedAlliance(first.id);
+		await testDb`INSERT INTO "ClubAlliance" ("clubId", "allianceId") VALUES (${second.id}, ${ally.id}), (${later.id}, ${ally.id})`;
+		await testDb`UPDATE "ClubAlliance" SET "createdAt" = '2099-03-04 09:00:00' WHERE "clubId" = ${first.id} AND "allianceId" = ${ally.id}`;
+		await testDb`UPDATE "ClubAlliance" SET "createdAt" = '2099-03-04 17:30:00' WHERE "clubId" = ${second.id} AND "allianceId" = ${ally.id}`;
+		await testDb`UPDATE "ClubAlliance" SET "createdAt" = '2099-03-06 12:00:00' WHERE "clubId" = ${later.id} AND "allianceId" = ${ally.id}`;
+		await bustFeedCache();
+
+		const { items } = await feed("type=clubs&limit=50");
+		const joins = items.filter((i) => i.kind === "alliance" && i.alliance.id === ally.id);
+		expect(joins).toHaveLength(2);
+		const [newer, older] = joins;
+		const clubIds = (item: FeedItem | undefined) => (item?.clubs as { id: string }[] | undefined)?.map((c) => c.id);
+		expect(clubIds(newer)).toEqual([later.id]);
+		expect(clubIds(older)).toEqual([first.id, second.id]);
+		expect(older?.createdAt).toStartWith("2099-03-04 17:30:00");
+		expect(older?.club?.id).toBe(first.id);
+		// The future dates keep these rows above every club the other tests make; take them away again.
+		await testDb`DELETE FROM "ClubAlliance" WHERE "allianceId" = ${ally.id}`;
+		await bustFeedCache();
+	});
+
+	test("a club given to an owner is a claim item, and a private owner stays anonymous", async () => {
+		const admin = await createUser();
+		const owner = await createUser();
+		const hidden = await createUser();
+		await testDb`UPDATE "User" SET "isPrivate" = true WHERE id = ${hidden.id}`;
+		const claimed = await createClub(admin);
+		const quiet = await createClub(admin);
+		const objectData = { userId: owner.id, assignedBy: admin.id };
+		// Old rows hold the data as a JSON string, so the test writes one row in each form.
+		const stringData = JSON.stringify({ userId: hidden.id, assignedBy: admin.id });
+		await testDb`INSERT INTO "ClubAuditLog" (id, "clubId", "userId", "actionType", "actionData") VALUES
+			(${crypto.randomUUID()}, ${claimed.id}, ${admin.id}, 'CLUB_OWNER_ASSIGNED', ${objectData}),
+			(${crypto.randomUUID()}, ${quiet.id}, ${admin.id}, 'CLUB_OWNER_ASSIGNED', to_jsonb(${stringData}::text))`;
+		await bustFeedCache();
+
+		const { items } = await feed("type=clubs&limit=50");
+		const claims = items.filter((i) => i.kind === "claim");
+		expect(claims.find((i) => i.club?.id === claimed.id)?.owner).toMatchObject({ id: owner.id });
+		const anonymous = claims.find((i) => i.club?.id === quiet.id);
+		expect(anonymous).toBeDefined();
+		expect(anonymous?.owner).toBeNull();
 	});
 
 	test("saving the same alliances again keeps the join time and adds only the new one", async () => {

@@ -23598,6 +23598,36 @@ export interface operations {
 										id: number;
 										name: string;
 									};
+									clubs: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									}[];
+							  }
+							| {
+									/** @enum {string} */
+									kind: "claim";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									owner: {
+										id: string;
+										slug: string | null;
+										name: string;
+										image: string | null;
+									} | null;
 							  }
 						)[];
 						nextCursor: string | null;

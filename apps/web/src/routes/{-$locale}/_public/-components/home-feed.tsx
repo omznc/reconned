@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { Building2, Calendar, MapPin, MessageSquare, Star, Users } from "lucide-react";
+import { Building2, Calendar, KeyRound, MapPin, MessageSquare, Star, Users } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import * as z from "zod";
@@ -151,7 +151,6 @@ function Stars({ rating }: { rating: number }) {
 
 type Person = { id: string; slug: string | null; name: string; image: string | null };
 
-/** Review items are written by a person; every other item belongs to a club. */
 /** Player reviews are the only items without a club. */
 function clubOf(item: FeedItem) {
 	return "club" in item ? item.club : null;
@@ -174,8 +173,19 @@ function useFeedMeta(item: FeedItem) {
 			return { icon: Star, type: t("Review"), verb: t("reviewed {name}", { name: item.review.player.name }) };
 		case "club":
 			return { icon: Building2, type: t("Club"), verb: t("joined RECONNED") };
-		default:
-			return { icon: Users, type: t("Alliance"), verb: t("joined an alliance") };
+		case "claim":
+			return { icon: KeyRound, type: t("Claimed"), verb: t("got an owner") };
+		default: {
+			const others = item.clubs.length - 1;
+			const verb =
+				others > 0
+					? t("and {count} more clubs joined {alliance}", {
+							count: String(others),
+							alliance: item.alliance.name,
+						})
+					: t("joined {alliance}", { alliance: item.alliance.name });
+			return { icon: Users, type: t("Alliance"), verb };
+		}
 	}
 }
 
@@ -201,16 +211,34 @@ function FeedImage({ src }: { src: string }) {
 	);
 }
 
-function ClubBody({ item }: { item: Extract<FeedItem, { kind: "club" | "alliance" }> }) {
+/** The clubs that joined an alliance on that day, each a link to its profile. */
+function AllianceBody({ item }: { item: Extract<FeedItem, { kind: "alliance" }> }) {
+	return (
+		<ul className="flex flex-wrap gap-2">
+			{item.clubs.map((club) => (
+				<li key={club.id}>
+					<Link
+						href={`/clubs/${club.slug || club.id}` as "/clubs"}
+						className="flex items-center gap-2 rounded-lg border bg-secondary/40 py-1.5 pr-3 pl-1.5 text-[13px] font-medium outline-none hover:bg-secondary focus-visible:ring-[3px] focus-visible:ring-ring/50"
+					>
+						<ClubAvatar name={club.name} logo={club.logo} tile={club.logoTile} size={28} />
+						{club.name}
+						{club.verified ? <VerifiedBadge label={club.name} /> : null}
+					</Link>
+				</li>
+			))}
+		</ul>
+	);
+}
+
+function ClubBody({ item }: { item: Extract<FeedItem, { kind: "club" }> }) {
 	const t = useExtracted();
 	const href = `/clubs/${item.club.slug || item.club.id}` as "/clubs";
 	return (
 		<div className="flex items-center gap-3 rounded-lg border bg-secondary/40 p-3">
 			<div className="flex min-w-0 flex-1 flex-col gap-1 text-[13px]">
-				<span className="truncate font-semibold">
-					{item.kind === "alliance" ? item.alliance.name : item.club.name}
-				</span>
-				{item.kind === "club" && item.city ? (
+				<span className="truncate font-semibold">{item.club.name}</span>
+				{item.city ? (
 					<span className="flex items-center gap-1 text-xs text-muted-foreground">
 						<MapPin className="size-3.5 shrink-0" aria-hidden={true} />
 						{item.city}
@@ -219,6 +247,36 @@ function ClubBody({ item }: { item: Extract<FeedItem, { kind: "club" | "alliance
 			</div>
 			<Button asChild={true} size="sm" variant="secondary">
 				<Link href={href}>{t("View club")}</Link>
+			</Button>
+		</div>
+	);
+}
+
+/** The new owner, when that profile is public, and a link to the club. */
+function ClaimBody({ item }: { item: Extract<FeedItem, { kind: "claim" }> }) {
+	const t = useExtracted();
+	const { owner } = item;
+	return (
+		<div className="flex items-center gap-3 rounded-lg border bg-secondary/40 p-3">
+			{owner ? (
+				<Link
+					href={`/users/${owner.slug || owner.id}` as "/users"}
+					className="flex min-w-0 flex-1 items-center gap-2 text-[13px] hover:underline"
+				>
+					<Avatar className="size-8">
+						<AvatarImage src={owner.image ?? ""} alt="" />
+						<AvatarFallback name={owner.name} />
+					</Avatar>
+					<span className="flex min-w-0 flex-col">
+						<span className="truncate font-semibold">{owner.name}</span>
+						<span className="text-xs text-muted-foreground">{t("Owner")}</span>
+					</span>
+				</Link>
+			) : (
+				<span className="flex-1 text-[13px] text-muted-foreground">{t("The club now has an owner.")}</span>
+			)}
+			<Button asChild={true} size="sm" variant="secondary">
+				<Link href={`/clubs/${item.club.slug || item.club.id}` as "/clubs"}>{t("View club")}</Link>
 			</Button>
 		</div>
 	);
@@ -255,8 +313,12 @@ function FeedBody({ item }: { item: FeedItem }) {
 					<p className="text-[13px] text-muted-foreground">{item.review.content}</p>
 				</>
 			);
-		default:
+		case "club":
 			return <ClubBody item={item} />;
+		case "claim":
+			return <ClaimBody item={item} />;
+		default:
+			return <AllianceBody item={item} />;
 	}
 }
 
