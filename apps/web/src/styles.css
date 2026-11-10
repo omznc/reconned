@@ -322,7 +322,8 @@
 	  exactly where they sit.
 	*/
 	@media (max-width: 767px) {
-		.leaflet-control-zoom {
+		.leaflet-control-zoom,
+		.maplibregl-ctrl-group:has(.maplibregl-ctrl-zoom-in) {
 			display: none;
 		}
 	}
