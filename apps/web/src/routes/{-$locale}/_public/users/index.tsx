@@ -10,6 +10,7 @@ import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { createItemListWithUsers } from "@/lib/json-ld";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
+import { getCountryNames } from "@/lib/server/country-names";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import { UsersListing } from "@/routes/{-$locale}/_public/users/-components/users-listing";
 import {
@@ -19,23 +20,15 @@ import {
 	usersSearchSchema,
 } from "@/routes/{-$locale}/_public/users/-components/users-search";
 
-type CountryTranslations = Partial<Record<string, string>>;
-
 /** Players have no country or city of their own, so the filter lists come from the clubs. */
 async function getFilterOptions(locale: string) {
-	const [clubsResult, countriesResult, citiesResult] = await Promise.all([
+	const [clubsResult, names, citiesResult] = await Promise.all([
 		apiServer.GET("/api/clubs", {
 			params: { query: { perPage: "100", sortBy: "name", sortOrder: "asc", facets: "true" } },
 		}),
-		apiServer.GET("/api/countries"),
+		getCountryNames(locale),
 		apiServer.GET("/api/public/cities"),
 	]);
-	const names = new Map(
-		(countriesResult.data ?? []).map((country) => [
-			country.id,
-			(country.translations as CountryTranslations | undefined)?.[locale] ?? country.name,
-		]),
-	);
 	return {
 		countries: (clubsResult.data?.facets?.country ?? []).map((entry) => ({
 			id: entry.countryId,

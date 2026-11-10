@@ -10,6 +10,7 @@ import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { createItemListWithClubs } from "@/lib/json-ld";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
+import { getCountryNames } from "@/lib/server/country-names";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import { ClubsListing } from "@/routes/{-$locale}/_public/clubs/-components/clubs-listing";
 import {
@@ -19,20 +20,9 @@ import {
 	toClubsQuery,
 } from "@/routes/{-$locale}/_public/clubs/-components/clubs-search";
 
-type CountryTranslations = Partial<Record<string, string>>;
-
 /** The country names and the city list for the filters. A failed lookup gives an empty list. */
 async function getFilterOptions(locale: string, countryIds: number[]) {
-	const [countriesResult, citiesResult] = await Promise.all([
-		apiServer.GET("/api/countries"),
-		apiServer.GET("/api/public/cities"),
-	]);
-	const names = new Map(
-		(countriesResult.data ?? []).map((country) => [
-			country.id,
-			(country.translations as CountryTranslations | undefined)?.[locale] ?? country.name,
-		]),
-	);
+	const [names, citiesResult] = await Promise.all([getCountryNames(locale), apiServer.GET("/api/public/cities")]);
 	return {
 		countries: countryIds.map((id) => ({ id, name: names.get(id) ?? String(id) })),
 		cities: (citiesResult.data?.cities ?? []).map((city) => ({

@@ -11,6 +11,7 @@ import apiServer from "@/lib/api/api";
 import { env } from "@/lib/env";
 import { createItemListWithEvents } from "@/lib/json-ld";
 import { buildSeoHead, type SeoInput } from "@/lib/seo";
+import { getCountryNames } from "@/lib/server/country-names";
 import { asJson } from "@/lib/server/json";
 import { constructCanonicalUrl, generatePageLanguages } from "@/lib/utils";
 import { EventsListing } from "@/routes/{-$locale}/_public/events/-components/events-listing";
@@ -80,9 +81,10 @@ const getEventsPageFn = createServerFn({ method: "GET" })
 			languages: generatePageLanguages(baseUrl, "/events", locale),
 		};
 
-		const [{ data, error }, calendarEvents] = await Promise.all([
+		const [{ data, error }, calendarEvents, countryNames] = await Promise.all([
 			fetchEventsList(query, perPage),
 			query.view === "calendar" ? fetchCalendarEvents(query.month) : Promise.resolve([]),
+			getCountryNames(locale),
 		]);
 
 		if (error || !data) {
@@ -120,7 +122,16 @@ const getEventsPageFn = createServerFn({ method: "GET" })
 			kind: "ok" as const,
 			events: asJson(data.events),
 			total: data.pagination.total,
-			facets: data.facets ?? null,
+			// The facet carries the English name; show the name in the page's language.
+			facets: data.facets
+				? {
+						...data.facets,
+						country: data.facets.country.map((entry) => ({
+							...entry,
+							name: countryNames.get(entry.countryId) ?? entry.name,
+						})),
+					}
+				: null,
 			upcomingCount: data.upcomingCount ?? 0,
 			openThisWeekendCount: data.openThisWeekendCount ?? 0,
 			calendarEvents: asJson(calendarEvents),
