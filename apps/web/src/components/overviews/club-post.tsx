@@ -2,8 +2,8 @@
 
 import { formatRelative } from "date-fns";
 import { ChevronLeft, ChevronRight, Pencil, X } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { Post } from "@/lib/api/api-type-helpers";

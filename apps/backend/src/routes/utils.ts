@@ -1,406 +1,71 @@
 import { Router } from "@reconned/router";
-import { and, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
-import { createSelectSchema } from "drizzle-zod";
+import { eq, sql } from "drizzle-orm";
 import * as z from "zod";
-import { club, clubMembership, event, user } from "../drizzle/schema";
+import { club, event, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
 import { paginationQuerySchema, paginationResponseSchema } from "../lib/schemas";
+import { runSearch, type SearchOptions, searchItemSchema } from "../lib/search";
 
 const utilsRouter = new Router();
 
-const baseUserSchema = createSelectSchema(user);
-const baseEventSchema = createSelectSchema(event);
+const booleanQuery = z.enum(["true", "false"]).optional();
 
 utilsRouter.get(
 	"/search",
 	async ({ query, response, context }) => {
-		const { page, perPage } = query;
-		const offset = (page - 1) * perPage;
-		const search = query?.search || "";
-		const filterParam = query?.filter || "club,user,event";
-		const filters = filterParam.split(",").map((f) => f.trim().toLowerCase());
-
-		const includeClubs = filters.includes("club");
-		const includeUsers = filters.includes("user");
-		const includeEvents = filters.includes("event");
-
-		const allItems: Array<{
-			type: "club" | "user" | "event";
-			id: string;
-			name: string;
-			relevanceScore: number;
-			data: unknown;
-		}> = [];
-
 		// Only the first `offset + perPage` items can ever appear on the requested page, so each
-		// branch only needs that many candidates. Items dropped by this limit rank below at least
+		// type only needs that many candidates. Items dropped by this limit rank below at least
 		// that many items of their own type, so they can never reach the page.
-		const candidateLimit = offset + perPage;
-		const containsPattern = `%${search}%`;
-		const prefixPattern = `${search}%`;
-
-		let clubTotal = 0;
-		let userTotal = 0;
-		let eventTotal = 0;
-
-		if (includeClubs) {
-			const clubWhereConditions = [eq(club.isPrivate, false)];
-			if (search) {
-				const searchCondition = or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`));
-				if (searchCondition) {
-					clubWhereConditions.push(searchCondition);
-				}
-			}
-			const clubWhere = and(...clubWhereConditions);
-
-			// Relevance scoring pushed into SQL so ranking happens before the LIMIT.
-			const clubRelevance = search
-				? sql<number>`(
-					CASE WHEN ${club.name} ILIKE ${containsPattern} THEN 10 ELSE 0 END
-					+ CASE WHEN ${club.name} ILIKE ${prefixPattern} THEN 5 ELSE 0 END
-					+ CASE WHEN ${club.location} ILIKE ${containsPattern} THEN 3 ELSE 0 END
-					+ CASE WHEN ${club.verified} THEN 1 ELSE 0 END
-				)`
-				: sql<number>`(CASE WHEN ${club.verified} THEN 2 ELSE 1 END)`;
-
-			// Grouped-count join instead of one COUNT query per club.
-			const clubMemberCounts = db
-				.select({
-					clubId: clubMembership.clubId,
-					count: count().as("member_count"),
-				})
-				.from(clubMembership)
-				.groupBy(clubMembership.clubId)
-				.as("club_member_counts");
-
-			const [clubsData, clubTotalRows] = await Promise.all([
-				db
-					.select({
-						id: club.id,
-						name: club.name,
-						slug: club.slug,
-						logo: club.logo,
-						location: club.location,
-						verified: club.verified,
-						memberCount: sql<number>`COALESCE(${clubMemberCounts.count}, 0)`,
-						relevanceScore: clubRelevance,
-					})
-					.from(club)
-					.leftJoin(clubMemberCounts, eq(club.id, clubMemberCounts.clubId))
-					.where(clubWhere)
-					.orderBy(desc(clubRelevance), desc(club.verified), club.name)
-					.limit(candidateLimit),
-				db.select({ count: count() }).from(club).where(clubWhere),
-			]);
-
-			clubTotal = Number(clubTotalRows[0]?.count || 0);
-
-			for (const c of clubsData) {
-				allItems.push({
-					type: "club",
-					id: c.id,
-					name: c.name,
-					relevanceScore: Number(c.relevanceScore),
-					data: {
-						id: c.id,
-						name: c.name,
-						slug: c.slug,
-						logo: c.logo,
-						location: c.location,
-						verified: c.verified,
-						_count: { members: Number(c.memberCount) },
-					},
-				});
-			}
-		}
-
-		if (includeUsers) {
-			const userWhereConditions = [eq(user.isPrivate, false)];
-			if (search) {
-				const searchCondition = ilike(user.name, `%${search}%`);
-				if (searchCondition) {
-					userWhereConditions.push(searchCondition);
-				}
-			}
-			const userWhere = and(...userWhereConditions);
-
-			const userRelevance = search
-				? sql<number>`(
-					CASE WHEN ${user.name} ILIKE ${containsPattern} THEN 10 ELSE 0 END
-					+ CASE WHEN ${user.name} ILIKE ${prefixPattern} THEN 5 ELSE 0 END
-				)`
-				: sql<number>`1`;
-
-			// The previous per-user membership/club fan-out was dead work: the emitted `data`
-			// payload never included memberships, so it is dropped entirely.
-			const [usersData, userTotalRows] = await Promise.all([
-				db
-					.select({
-						id: user.id,
-						name: user.name,
-						slug: user.slug,
-						image: user.image,
-						callsign: user.callsign,
-						relevanceScore: userRelevance,
-					})
-					.from(user)
-					.where(userWhere)
-					// Without a search term every row scores 1; `ORDER BY 1` would be read as a
-					// column ordinal by Postgres, so the constant is left out of the ORDER BY.
-					.orderBy(...(search ? [desc(userRelevance)] : []), desc(user.createdAt))
-					.limit(candidateLimit),
-				db.select({ count: count() }).from(user).where(userWhere),
-			]);
-
-			userTotal = Number(userTotalRows[0]?.count || 0);
-
-			for (const u of usersData) {
-				allItems.push({
-					type: "user",
-					id: u.id,
-					name: u.name || "",
-					relevanceScore: Number(u.relevanceScore),
-					data: {
-						id: u.id,
-						name: u.name,
-						slug: u.slug,
-						image: u.image,
-						callsign: u.callsign,
-					},
-				});
-			}
-		}
-
-		if (includeEvents) {
-			const eventWhereConditions = [];
-			if (search) {
-				const searchCondition = or(ilike(event.name, `%${search}%`), ilike(event.location, `%${search}%`));
-				if (searchCondition) {
-					eventWhereConditions.push(searchCondition);
-				}
-			}
-
-			const isAdmin = context.isAdmin;
-			const requestingUserId = context.user?.id;
-
-			const publicClubCondition = sql`
-				EXISTS (
-					SELECT 1
-					FROM "Club" c
-					WHERE c."id" = ${event.clubId}
-					AND c."isPrivate" = false
-				)
-			`;
-
-			if (!requestingUserId || !context.user) {
-				eventWhereConditions.push(eq(event.isPrivate, false));
-				eventWhereConditions.push(publicClubCondition);
-			} else if (!isAdmin) {
-				const userClubMemberships = await db
-					.select({ clubId: clubMembership.clubId })
-					.from(clubMembership)
-					.where(eq(clubMembership.userId, requestingUserId));
-
-				const userClubIds = userClubMemberships.map((m) => m.clubId);
-
-				if (userClubIds.length > 0) {
-					eventWhereConditions.push(
-						or(and(eq(event.isPrivate, false), publicClubCondition), inArray(event.clubId, userClubIds)),
-					);
-				} else {
-					eventWhereConditions.push(eq(event.isPrivate, false));
-					eventWhereConditions.push(publicClubCondition);
-				}
-			}
-
-			const eventWhere = eventWhereConditions.length > 0 ? and(...eventWhereConditions) : undefined;
-
-			const eventRelevance = search
-				? sql<number>`(
-					CASE WHEN ${event.name} ILIKE ${containsPattern} THEN 10 ELSE 0 END
-					+ CASE WHEN ${event.name} ILIKE ${prefixPattern} THEN 5 ELSE 0 END
-					+ CASE WHEN ${event.location} ILIKE ${containsPattern} THEN 3 ELSE 0 END
-				)`
-				: sql<number>`1`;
-
-			const [eventsWithClubs, eventTotalRows] = await Promise.all([
-				db
-					.select({
-						// Event fields
-						id: event.id,
-						name: event.name,
-						description: event.description,
-						image: event.image,
-						location: event.location,
-						slug: event.slug,
-						dateStart: event.dateStart,
-						dateEnd: event.dateEnd,
-						dateRegistrationsOpen: event.dateRegistrationsOpen,
-						dateRegistrationsClose: event.dateRegistrationsClose,
-						isPrivate: event.isPrivate,
-						gearRequirements: event.gearRequirements,
-						mapData: event.mapData,
-						costPerPerson: event.costPerPerson,
-						clubId: event.clubId,
-						createdAt: event.createdAt,
-						updatedAt: event.updatedAt,
-						// Club fields
-						clubId_alias: club.id,
-						clubName: club.name,
-						clubSlug: club.slug,
-						clubLogo: club.logo,
-						clubVerified: club.verified,
-						relevanceScore: eventRelevance,
-					})
-					.from(event)
-					.leftJoin(club, eq(event.clubId, club.id))
-					.where(eventWhere)
-					// See the users branch: a constant score must not reach the ORDER BY.
-					.orderBy(...(search ? [desc(eventRelevance)] : []), event.dateStart)
-					.limit(candidateLimit),
-				db.select({ count: count() }).from(event).where(eventWhere),
-			]);
-
-			eventTotal = Number(eventTotalRows[0]?.count || 0);
-
-			const formattedEvents = eventsWithClubs.map((e) => ({
-				relevanceScore: Number(e.relevanceScore),
-				id: e.id,
-				name: e.name,
-				description: e.description,
-				image: e.image,
-				location: e.location,
-				slug: e.slug,
-				dateStart: e.dateStart,
-				dateEnd: e.dateEnd,
-				dateRegistrationsOpen: e.dateRegistrationsOpen,
-				dateRegistrationsClose: e.dateRegistrationsClose,
-				isPrivate: e.isPrivate,
-				gearRequirements: e.gearRequirements,
-				mapData: e.mapData,
-				costPerPerson: e.costPerPerson,
-				clubId: e.clubId,
-				createdAt: e.createdAt,
-				updatedAt: e.updatedAt,
-				club: e.clubId_alias
-					? {
-							id: e.clubId_alias,
-							name: e.clubName,
-							slug: e.clubSlug,
-							logo: e.clubLogo,
-							verified: e.clubVerified,
-						}
-					: null,
-			}));
-
-			for (const { relevanceScore, ...eventData } of formattedEvents) {
-				allItems.push({
-					type: "event",
-					id: eventData.id,
-					name: eventData.name || "",
-					relevanceScore,
-					data: eventData,
-				});
-			}
-		}
-
-		// Stable sort: within an equal score, per-type DB ordering (and club > user > event
-		// type precedence) is preserved, matching the previous behaviour.
-		allItems.sort((a, b) => b.relevanceScore - a.relevanceScore);
-
-		const total = clubTotal + userTotal + eventTotal;
-		const paginatedItems = allItems.slice(offset, offset + perPage);
-
-		const _searchItemSchema = z.discriminatedUnion("type", [
-			z.object({
-				type: z.literal("club"),
-				id: z.string(),
-				name: z.string(),
-				relevanceScore: z.number(),
-				data: z.object({
-					id: z.string(),
-					name: z.string(),
-					slug: z.string().nullable(),
-					logo: z.string().nullable(),
-					location: z.string().nullable(),
-					verified: z.boolean(),
-					_count: z.object({ members: z.number() }),
-				}),
-			}),
-			z.object({
-				type: z.literal("user"),
-				id: z.string(),
-				name: z.string(),
-				relevanceScore: z.number(),
-				data: baseUserSchema.partial(),
-			}),
-			z.object({
-				type: z.literal("event"),
-				id: z.string(),
-				name: z.string(),
-				relevanceScore: z.number(),
-				data: baseEventSchema.partial(),
-			}),
-		]);
-
-		return response.json({
-			items: paginatedItems as z.infer<typeof _searchItemSchema>[],
-			pagination: {
-				page,
-				perPage,
-				total,
-				totalPages: Math.ceil(total / perPage),
-			},
-		});
+		const options: SearchOptions = {
+			search: query.search || "",
+			candidateLimit: query.page * query.perPage,
+			countryId: query.countryId,
+			upcomingOnly: query.upcomingOnly === "true",
+			registrationOpen: query.registrationOpen === "true",
+			verifiedOnly: query.verifiedOnly === "true",
+			viewer: { userId: context.user?.id, isAdmin: context.isAdmin },
+		};
+		return response.json(await runSearch(options, query));
 	},
 	{
 		schema: {
 			tags: ["Utils"],
 			summary: "Search clubs, users, and events",
-			description: "Unified search across clubs, users, and events with pagination and type filtering",
+			description:
+				"Unified search across clubs, users, and events with pagination and type filtering. `counts` always holds the total matches per type (after the refine filters, ignoring `filter` and paging). " +
+				"`topResult` is the best name match across the included types: an exact name or callsign beats a prefix match, which beats a contains match; ties follow relevance, then club, user, event. It is null without a query. " +
+				"Users match on name, callsign and bio; `matchedIn` says which. `countryId` applies to all three types (events and users through their club).",
 			query: paginationQuerySchema.extend({
-				search: z.string().optional(),
-				filter: z.string().optional(),
+				search: z.string().optional().describe("Free-text query matched against club, user, and event names"),
+				filter: z
+					.string()
+					.optional()
+					.describe(
+						'Comma-separated result types to include: "club", "user", "event". Defaults to all three.',
+					),
+				countryId: z.coerce
+					.number()
+					.int()
+					.optional()
+					.describe("Only clubs, events and members of clubs in this country"),
+				upcomingOnly: booleanQuery.describe("Events: only events that have not started"),
+				registrationOpen: booleanQuery.describe("Events: only events whose registration window is open now"),
+				verifiedOnly: booleanQuery.describe("Clubs: only verified clubs"),
 			}),
 			response: {
 				200: z.object({
-					items: z.array(
-						z.discriminatedUnion("type", [
-							z.object({
-								type: z.literal("club"),
-								id: z.string(),
-								name: z.string(),
-								relevanceScore: z.number(),
-								data: z.object({
-									id: z.string(),
-									name: z.string(),
-									slug: z.string().nullable(),
-									logo: z.string().nullable(),
-									location: z.string().nullable(),
-									verified: z.boolean(),
-									_count: z.object({ members: z.number() }),
-								}),
-							}),
-							z.object({
-								type: z.literal("user"),
-								id: z.string(),
-								name: z.string(),
-								relevanceScore: z.number(),
-								data: baseUserSchema.partial(),
-							}),
-							z.object({
-								type: z.literal("event"),
-								id: z.string(),
-								name: z.string(),
-								relevanceScore: z.number(),
-								data: baseEventSchema.partial(),
-							}),
-						]),
-					),
+					items: z.array(searchItemSchema),
+					counts: z.object({ events: z.number(), clubs: z.number(), users: z.number() }),
+					topResult: searchItemSchema.nullable(),
 					pagination: paginationResponseSchema,
 				}),
+			},
+			mcpTool: {
+				name: "search",
+				description:
+					"Search clubs, users, and events by name in one call. Prefer this over paging list_clubs/list_users/list_events when looking something up by name.",
 			},
 		},
 	},

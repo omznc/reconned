@@ -1,0 +1,8 @@
+{
+	"$schema": "https://unpkg.com/knip@6/schema.json",
+	"workspaces": {
+		"apps/web": {
+			"entry": ["src/client.tsx", "src/start.ts", "src/router.tsx", "src/routes/**/*.{ts,tsx}", "scripts/*.ts"]
+		}
+	}
+}

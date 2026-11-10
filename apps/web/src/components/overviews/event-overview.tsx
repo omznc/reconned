@@ -1,11 +1,11 @@
 import { isAfter, isBefore } from "date-fns";
 import { Eye, EyeOff, MapPin, Pencil, UserIcon } from "lucide-react";
-import Image from "next/image";
-import { getExtracted } from "next-intl/server";
+import { useExtracted } from "next-intl";
 import { Suspense } from "react";
 import AddEventToCalendarButton from "@/components/add-event-to-calendar-button";
 import { BadgeSoon } from "@/components/badge-soon";
 import { ClubCard } from "@/components/club-card";
+import { Image } from "@/components/image";
 import { LoadChildOnClick } from "@/components/load-child-on-click";
 import { normalizeMapData, snapshotHasData } from "@/components/map-editor/map-data";
 import { MapViewer } from "@/components/map-editor/map-viewer-wrapper";
@@ -15,9 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import apiServer from "@/lib/api/api";
-import type { ClubRule, Event } from "@/lib/api/api-type-helpers";
-import { isFeatureEnabled } from "@/lib/feature-flags";
+import type { ApiResponse, ClubRule, Event } from "@/lib/api/api-type-helpers";
 
 interface EventOverviewProps {
 	event: Event & {
@@ -37,24 +35,24 @@ interface EventOverviewProps {
 	user?: import("better-auth").User | null;
 	/** Remaining places, or null when the event has no attendee limit. */
 	placesLeft?: number | null;
+	/** The signed-in user's role in `clubId`, from the route loader. */
+	role?: string | null;
+	/** The `EVENT_REGISTRATION` feature flag, from the route loader. */
+	eventRegistrationEnabled?: boolean;
+	/** Loaded by the route loader. `undefined` renders no reviews. */
+	reviews?: ApiResponse<"/api/reviews/{type}/{id}", "get">["reviews"];
 }
 
-export async function EventOverview({ event, clubId, user, placesLeft = null }: EventOverviewProps) {
-	const t = await getExtracted();
-	const membershipPromise =
-		user && clubId
-			? apiServer.GET("/api/clubs/{id}/membership", {
-					params: {
-						path: {
-							id: clubId,
-						},
-					},
-				})
-			: Promise.resolve({ data: null, error: null });
-
-	const membershipResult = await membershipPromise;
-
-	const role = membershipResult.data?.membership?.role;
+export function EventOverview({
+	event,
+	clubId,
+	user,
+	placesLeft = null,
+	role,
+	eventRegistrationEnabled = false,
+	reviews,
+}: EventOverviewProps) {
+	const t = useExtracted();
 
 	const canEdit = !!clubId && !!user && (role === "MANAGER" || role === "CLUB_OWNER");
 	const mapSnapshot = normalizeMapData(event.mapData);
@@ -67,7 +65,6 @@ export async function EventOverview({ event, clubId, user, placesLeft = null }: 
 		);
 	};
 
-	const eventRegistrationEnabled = await isFeatureEnabled("EVENT_REGISTRATION");
 	const isFull = placesLeft === 0;
 
 	return (
@@ -321,7 +318,8 @@ export async function EventOverview({ event, clubId, user, placesLeft = null }: 
 			</div>
 
 			<Suspense fallback={null}>
-				<ReviewsOverview type="event" typeId={event.id} entityName={event.name} />
+				{/* TODO(tanstack): load reviews in the route loader and pass them here */}
+				<ReviewsOverview type="event" typeId={event.id} entityName={event.name} reviews={reviews} />
 			</Suspense>
 		</div>
 	);

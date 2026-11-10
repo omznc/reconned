@@ -1,17 +1,41 @@
 import { render } from "@react-email/components";
 import { apiError, Router, responseSchema } from "@reconned/router";
 import { randomUUIDv7 } from "bun";
-import { and, asc, count, desc, eq, gte, ilike, inArray, lte, ne, or, type SQL, sql } from "drizzle-orm";
+import { and, asc, count, eq, gte, ilike, inArray, lte, ne, or, type SQL, sql } from "drizzle-orm";
 import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
-import { club, clubMembership, clubRule, event, eventAttendee, eventRegistration, user } from "../drizzle/schema";
+import {
+	club,
+	clubMembership,
+	clubRule,
+	country,
+	event,
+	eventAttendee,
+	eventRegistration,
+	user,
+} from "../drizzle/schema";
 import EventInvitationEmail from "../emails/event-invitation";
 import EventPlaceReleasedEmail from "../emails/event-place-released";
 import EventWaitlistPromotedEmail from "../emails/event-waitlist-promoted";
 import { logClubAudit } from "../lib/audit-logger";
+import { bustClubPublicCaches, bustRouteCache } from "../lib/cache-bust";
+import { getActiveMembership, requireClubManager } from "../lib/club-access";
 import { db } from "../lib/db";
 import { getEmailMessages, interpolateMessage } from "../lib/email-messages";
 import { env } from "../lib/env";
+import {
+	buildEventFacets,
+	dateOnlySchema,
+	eventFacetsSchema,
+	eventFilterConditions,
+	eventListExtrasSchema,
+	getAttendeeCounts,
+	listItemExtras,
+	listOrderBy,
+	parseEventFilters,
+	placesLeftSql,
+	visibleAttendeeCounts,
+} from "../lib/event-listing";
 import { isValidLanguage } from "../lib/i18n";
 import { detach, sendEmail } from "../lib/mail";
 import { logger, posthog } from "../lib/posthog";
@@ -88,7 +112,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			userClubIds = userClubMemberships.map((m) => m.clubId);
 		}
@@ -137,24 +161,14 @@ eventsRouter.get(
 			}
 		}
 
+		// Visibility, search, "mine" and isPrivate. The new filters sit on top of this.
 		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
 
-		// Attendee counts, constrained to the events actually visible to this request.
-		// Without the inner filter this aggregates the ENTIRE EventRegistration table on
-		// every page view, including registrations for events the caller can never see.
-		const visibleEventIds = db.select({ id: event.id }).from(event).where(whereClause);
-
-		// One row per person, so a team of five now counts as five. It used to count the
-		// bookings, which made a busy event with big teams look emptier than a quiet one.
-		const attendeeCountsSubquery = db
-			.select({
-				eventId: eventAttendee.eventId,
-				attendeeCount: count(eventAttendee.id).as("attendeeCount"),
-			})
-			.from(eventAttendee)
-			.where(and(inArray(eventAttendee.eventId, visibleEventIds), eq(eventAttendee.status, "CONFIRMED")))
-			.groupBy(eventAttendee.eventId)
-			.as("attendeeCounts");
+		const attendees = visibleAttendeeCounts(whereClause);
+		const { subquery: attendeeCountsSubquery, countSql: attendeeCountSql } = attendees;
+		const now = new Date();
+		const filters = eventFilterConditions(parseEventFilters(query), now, attendeeCountSql);
+		const listWhere = and(whereClause, filters.registration, filters.country, ...filters.rest);
 
 		// Get events with club verification status and attendee counts for sorting
 		const eventsWithData = await db
@@ -188,22 +202,26 @@ eventsRouter.get(
 				clubName: club.name,
 				clubSlug: club.slug,
 				clubLogo: club.logo,
+				clubLogoTile: club.logoTile,
 				clubVerified: club.verified,
-				attendeeCount: sql`COALESCE(${attendeeCountsSubquery.attendeeCount}, 0)`.mapWith(Number),
+				clubCity: club.city,
+				clubCountryId: club.countryId,
+				currencyCode: country.currencyCode,
+				attendeeCount: attendeeCountSql.mapWith(Number),
 			})
 			.from(event)
 			.innerJoin(club, eq(event.clubId, club.id))
+			.leftJoin(country, eq(club.countryId, country.id))
 			.leftJoin(attendeeCountsSubquery, eq(event.id, attendeeCountsSubquery.eventId))
-			.where(whereClause)
-			.orderBy(
-				desc(club.verified),
-				sql`COALESCE(${attendeeCountsSubquery.attendeeCount}, 0) DESC`,
-				asc(event.name),
-			)
+			.where(listWhere)
+			.orderBy(...listOrderBy(query.sortBy, query.sortOrder, attendeeCountSql, placesLeftSql(attendeeCountSql)))
 			.limit(perPage)
 			.offset(offset);
 
 		const events = eventsWithData.map((e) => ({
+			...listItemExtras(e, e.attendeeCount, e.currencyCode, now),
+			city: e.clubCity,
+			countryId: e.clubCountryId,
 			id: e.id,
 			name: e.name,
 			description: e.description,
@@ -235,11 +253,21 @@ eventsRouter.get(
 				name: e.clubName,
 				slug: e.clubSlug,
 				logo: e.clubLogo,
+				logoTile: e.clubLogoTile,
+				verified: e.clubVerified,
 			},
 		}));
 
-		const totalData = await db.select({ count: count() }).from(event).where(whereClause);
+		const totalData = await db
+			.select({ count: count() })
+			.from(event)
+			.innerJoin(club, eq(event.clubId, club.id))
+			.leftJoin(attendeeCountsSubquery, eq(event.id, attendeeCountsSubquery.eventId))
+			.where(listWhere);
 		const total = totalData[0]?.count || 0;
+
+		const facets =
+			query.facets === "true" ? await buildEventFacets({ whereClause, filters, attendees, now }) : undefined;
 
 		logger.emit({
 			severityText: "info",
@@ -264,6 +292,7 @@ eventsRouter.get(
 				total,
 				totalPages: Math.ceil(total / perPage),
 			},
+			...facets,
 		});
 	},
 	{
@@ -271,7 +300,25 @@ eventsRouter.get(
 			key: "events",
 			ttl: 300,
 			swr: 1800,
-			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder", "isPrivate", "filter"],
+			varyByQuery: [
+				"page",
+				"perPage",
+				"search",
+				"sortBy",
+				"sortOrder",
+				"isPrivate",
+				"filter",
+				"dateFrom",
+				"dateTo",
+				"when",
+				"registration",
+				"countryId",
+				"city",
+				"maxPrice",
+				"freelancers",
+				"verifiedOnly",
+				"facets",
+			],
 			// NOT public-safe: the result set depends on the caller (private events of the
 			// user's own clubs, admin visibility, and the "mine" filter).
 			varyByUser: true,
@@ -279,29 +326,47 @@ eventsRouter.get(
 		schema: {
 			tags: ["Events"],
 			summary: "List events",
-			description: "List events with pagination, search, sorting, and privacy filtering",
+			description:
+				"List events with pagination, search, sorting, filters and privacy filtering. List-valued filters (registration, countryId) are comma separated. With facets=true the response also carries facet counts and the page header counts.",
 			query: paginationQuerySchema.extend({
 				search: z.string().max(100).optional(),
-				sortBy: z.enum(["name", "dateStart"]).optional(),
+				sortBy: z.enum(["name", "dateStart", "date", "placesLeft", "price"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
 				isPrivate: z.string().optional(),
 				filter: z.enum(["mine"]).optional(),
+				dateFrom: dateOnlySchema.optional(),
+				dateTo: dateOnlySchema.optional(),
+				when: z.enum(["weekend", "next30"]).optional(),
+				registration: z.string().max(100).optional(),
+				countryId: z.string().max(100).optional(),
+				city: z.string().max(100).optional(),
+				maxPrice: z.coerce.number().min(0).optional(),
+				freelancers: z.enum(["true", "false"]).optional(),
+				verifiedOnly: z.enum(["true", "false"]).optional(),
+				facets: z.enum(["true", "false"]).optional(),
 			}),
 			response: {
 				200: z.object({
 					events: z.array(
-						baseEventSchema.extend({
+						baseEventSchema.extend(eventListExtrasSchema.shape).extend({
+							city: z.string().nullable(),
+							countryId: z.number().nullable(),
 							club: z
 								.object({
 									id: z.string(),
 									name: z.string(),
 									slug: z.string().nullable(),
 									logo: z.string().nullable(),
+									logoTile: z.string().nullable(),
+									verified: z.boolean(),
 								})
 								.nullable(),
 						}),
 					),
 					pagination: paginationResponseSchema,
+					facets: eventFacetsSchema.optional(),
+					upcomingCount: z.number().optional(),
+					openThisWeekendCount: z.number().optional(),
 				}),
 			},
 			mcpTool: true,
@@ -335,7 +400,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
@@ -380,16 +445,29 @@ eventsRouter.get(
 				createdAt: event.createdAt,
 				updatedAt: event.updatedAt,
 				clubName: club.name,
+				clubSlug: club.slug,
+				clubLogo: club.logo,
+				clubLogoTile: club.logoTile,
 				clubVerified: club.verified,
+				clubCity: club.city,
+				clubCountryId: club.countryId,
+				currencyCode: country.currencyCode,
 			})
 			.from(event)
 			.innerJoin(club, eq(event.clubId, club.id))
+			.leftJoin(country, eq(club.countryId, country.id))
 			.where(whereClause)
 			.orderBy(event.dateStart)
 			.limit(limit);
 
+		const now = new Date();
+		const attendeeCounts = await getAttendeeCounts(eventsWithDetails.map((e) => e.id));
+
 		return response.json({
 			events: eventsWithDetails.map((e) => ({
+				...listItemExtras(e, attendeeCounts.get(e.id) ?? 0, e.currencyCode, now),
+				city: e.clubCity,
+				countryId: e.clubCountryId,
 				id: e.id,
 				name: e.name,
 				description: e.description,
@@ -417,6 +495,10 @@ eventsRouter.get(
 				createdAt: e.createdAt,
 				updatedAt: e.updatedAt,
 				club: {
+					id: e.clubId,
+					slug: e.clubSlug,
+					logo: e.clubLogo,
+					logoTile: e.clubLogoTile,
 					name: e.clubName,
 					verified: e.clubVerified,
 				},
@@ -442,9 +524,15 @@ eventsRouter.get(
 			response: {
 				200: z.object({
 					events: z.array(
-						baseEventSchema.extend({
+						baseEventSchema.extend(eventListExtrasSchema.shape).extend({
+							city: z.string().nullable(),
+							countryId: z.number().nullable(),
 							club: z
 								.object({
+									id: z.string(),
+									slug: z.string().nullable(),
+									logo: z.string().nullable(),
+									logoTile: z.string().nullable(),
 									name: z.string(),
 									verified: z.boolean(),
 								})
@@ -488,7 +576,7 @@ eventsRouter.get(
 			const userClubMemberships = await db
 				.select({ clubId: clubMembership.clubId })
 				.from(clubMembership)
-				.where(eq(clubMembership.userId, requestingUserId));
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")));
 
 			const userClubIds = userClubMemberships.map((m) => m.clubId);
 
@@ -678,16 +766,11 @@ eventsRouter.get(
 				throw apiError.notFound("Event not found");
 			}
 
-			await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, requestingUserId)))
-				.limit(1)
-				.then((rows) => {
-					if (!rows[0]) {
-						throw apiError.notFound("Event not found");
-					}
-				});
+			const membership = await getActiveMembership(eventRecord.clubId, requestingUserId);
+
+			if (!membership) {
+				throw apiError.notFound("Event not found");
+			}
 		}
 
 		return response.json({
@@ -833,7 +916,10 @@ function validateEventDates(dates: EventDates) {
 async function assertCanRegisterForEvent(eventRecord: typeof event.$inferSelect, userId: string, isAdmin: boolean) {
 	const [clubData, membershipData] = await Promise.all([
 		db.select({ isPrivate: club.isPrivate }).from(club).where(eq(club.id, eventRecord.clubId)).limit(1),
-		db.select({ clubId: clubMembership.clubId }).from(clubMembership).where(eq(clubMembership.userId, userId)),
+		db
+			.select({ clubId: clubMembership.clubId })
+			.from(clubMembership)
+			.where(and(eq(clubMembership.userId, userId), eq(clubMembership.status, "ACTIVE"))),
 	]);
 
 	if (isAdmin) {
@@ -1043,17 +1129,7 @@ async function loadBookingAttendees(bookingIds: string[], viewerId: string | und
 eventsRouter.post(
 	"/events",
 	async ({ context, body, response }) => {
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, body.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(body.clubId, context.user.id);
 
 		validateEventDates(body);
 
@@ -1104,6 +1180,8 @@ eventsRouter.post(
 				.where(and(eq(clubRule.clubId, body.clubId), inArray(clubRule.id, body.ruleIds)));
 		}
 
+		await bustClubPublicCaches(body.clubId);
+
 		await logClubAudit({
 			clubId: body.clubId,
 			actionType: "EVENT_CREATE",
@@ -1150,7 +1228,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create event",
@@ -1213,17 +1291,7 @@ eventsRouter.put(
 
 		validateEventDates(body);
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		// Only validate slug if it's provided and different from existing
 		// Normalize empty strings to null for comparison
@@ -1289,6 +1357,8 @@ eventsRouter.put(
 			}
 		}
 
+		await bustClubPublicCaches(existingEvent.clubId);
+
 		await logClubAudit({
 			clubId: existingEvent.clubId,
 			actionType: "EVENT_UPDATE",
@@ -1340,7 +1410,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Update event",
@@ -1400,17 +1470,7 @@ eventsRouter.delete(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		// EventRegistration references the event with ON DELETE RESTRICT, so the bookings have to
 		// go before the event does. Attendees cascade off the booking, and club rules fall back
@@ -1429,6 +1489,8 @@ eventsRouter.delete(
 				await deleteS3Files([imageKey], context.user.id);
 			}
 		}
+
+		await bustClubPublicCaches(existingEvent.clubId);
 
 		await logClubAudit({
 			clubId: existingEvent.clubId,
@@ -1458,7 +1520,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["events", "events:upcoming", "event:{id}"],
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event",
@@ -1499,17 +1561,7 @@ eventsRouter.post(
 
 		const existingEvent = existingEventData[0];
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		const key = `event/${eventId}/image`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size, context.user.id);
@@ -1558,17 +1610,7 @@ eventsRouter.delete(
 
 		const existingEvent = existingEventData[0];
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, existingEvent.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(existingEvent.clubId, context.user.id);
 
 		if (existingEvent.image) {
 			const imageKey = existingEvent.image.split("/").pop() || "";
@@ -1578,6 +1620,8 @@ eventsRouter.delete(
 		}
 
 		await db.update(event).set({ image: null }).where(eq(event.id, eventId));
+
+		await bustClubPublicCaches(existingEvent.clubId);
 
 		await logClubAudit({
 			clubId: existingEvent.clubId,
@@ -1593,6 +1637,7 @@ eventsRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event image",
@@ -2307,6 +2352,7 @@ eventsRouter.post(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Create or update event registration",
@@ -2379,6 +2425,7 @@ eventsRouter.delete(
 		});
 	},
 	{
+		bustCache: ["events", "events:upcoming", "events:calendar", "clubs", "public:feed", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Delete event registration",
@@ -2560,6 +2607,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["events", "events:upcoming", "event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Respond to a team invite",
@@ -2658,6 +2706,10 @@ eventsRouter.post(
 			throw apiError.validation("This invitation has already been claimed");
 		}
 
+		// The attendee list changed hands, but this route is keyed by invite token — the event
+		// it belongs to only becomes known inside the handler.
+		await bustRouteCache([`event:${attendee.eventId}`]);
+
 		posthog.capture({
 			distinctId: context.user.id,
 			event: "event_guest_place_claimed",
@@ -2712,17 +2764,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		assertAttendanceWindow(eventRecord);
 
@@ -2750,6 +2792,8 @@ eventsRouter.put(
 			return rows[0];
 		});
 
+		await bustClubPublicCaches(eventRecord.clubId);
+
 		await logClubAudit({
 			clubId: eventRecord.clubId,
 			actionType: "EVENT_ATTENDANCE_UPDATE",
@@ -2770,6 +2814,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}", "users"],
 		schema: {
 			tags: ["Events"],
 			summary: "Toggle attendance",
@@ -2809,17 +2854,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		assertAttendanceWindow(eventRecord);
 
@@ -2832,6 +2867,8 @@ eventsRouter.put(
 		if (!updated[0]) {
 			throw apiError.notFound("Attendee not found");
 		}
+
+		await bustClubPublicCaches(eventRecord.clubId);
 
 		await logClubAudit({
 			clubId: eventRecord.clubId,
@@ -2850,6 +2887,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}", "users"],
 		schema: {
 			tags: ["Events"],
 			summary: "Mark one person present or absent",
@@ -2894,17 +2932,7 @@ eventsRouter.put(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		// The booking records how somebody intends to pay; this records that they did. Marking
 		// clears back to null rather than storing `false`, so "not paid yet" and "was never
@@ -2935,6 +2963,7 @@ eventsRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["event:{id}"],
 		schema: {
 			tags: ["Events"],
 			summary: "Mark one person paid or unpaid",
@@ -2978,17 +3007,7 @@ eventsRouter.get(
 			throw apiError.notFound("Event not found");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(eventRecord.clubId, context.user.id);
 
 		const registrations = await db
 			.select()
@@ -3197,13 +3216,9 @@ eventsRouter.get(
 
 		// Check if user has access to private event
 		if (eventRecord.isPrivate) {
-			const userMembership = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, eventRecord.clubId), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
+			const userMembership = await getActiveMembership(eventRecord.clubId, context.user.id);
 
-			if (!userMembership[0]) {
+			if (!userMembership) {
 				throw apiError.notFound("Event");
 			}
 		}

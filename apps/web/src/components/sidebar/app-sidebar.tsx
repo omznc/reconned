@@ -1,10 +1,10 @@
 "use client";
 
+import { useParams } from "@tanstack/react-router";
 import type { User } from "better-auth";
 import { MailPlus, Search } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useExtracted } from "next-intl";
-import { Suspense, use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useClubs } from "@/components/clubs-provider";
 import { useCurrentClub } from "@/components/current-club-provider";
 import { ClubSwitcher } from "@/components/sidebar/club-switcher";
@@ -28,16 +28,10 @@ type InviteRequestCount = {
 	count: number;
 };
 
-/**
- * The two counts arrive as promises rather than resolved values. They only drive badges and
- * banners, so making the dashboard layout `await` them meant nothing on the page — sidebar, nav
- * or `children` — could render until both round-trips came back. Passing them unresolved lets the
- * shell paint immediately and each consumer stream in under its own Suspense boundary.
- */
 interface AppSidebarProps {
 	user: User & { role?: string | null | undefined };
-	invitesCountPromise: Promise<number>;
-	inviteRequestsCountPromise: Promise<InviteRequestCount[]>;
+	invitesCount: number;
+	inviteRequestsCount: InviteRequestCount[];
 }
 
 // Component properly using the useCommandMenu hook within the provider context
@@ -63,37 +57,19 @@ function SearchButton({ isMac }: { isMac: boolean }) {
 	);
 }
 
-/**
- * Suspends on the invite count so `NavApp` can show its badge. The fallback renders the same nav
- * with a zero badge rather than a skeleton — the nav items themselves don't depend on the count,
- * so this streams the badge in without the list shifting or flashing.
- */
-function NavAppWithInvites({
-	isAdmin,
-	invitesCountPromise,
-}: {
-	isAdmin: boolean;
-	invitesCountPromise: Promise<number>;
-}) {
-	const invitesCount = use(invitesCountPromise);
-	return <NavApp isAdmin={isAdmin} pendingInvites={invitesCount} />;
-}
-
-/** The footer notification banners. Both are conditional, so `null` is a faithful fallback. */
+/** The footer notification banners. */
 function InviteBanners({
-	invitesCountPromise,
-	inviteRequestsCountPromise,
+	invitesCount,
+	inviteRequestsCount,
 	clubId,
 	open,
 }: {
-	invitesCountPromise: Promise<number>;
-	inviteRequestsCountPromise: Promise<InviteRequestCount[]>;
+	invitesCount: number;
+	inviteRequestsCount: InviteRequestCount[];
 	clubId?: string;
 	open: boolean;
 }) {
 	const t = useExtracted();
-	const invitesCount = use(invitesCountPromise);
-	const inviteRequestsCount = use(inviteRequestsCountPromise);
 
 	const invites = inviteRequestsCount.filter((invite) => invite.id === clubId)[0];
 
@@ -142,7 +118,7 @@ function InviteBanners({
 
 export function AppSidebar(props: AppSidebarProps) {
 	const sidebar = useSidebar();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams({ strict: false }) as { clubId?: string };
 	const { clubId, setClubId } = useCurrentClub();
 	const { clubs } = useClubs();
 	const path = usePathname();
@@ -174,20 +150,16 @@ export function AppSidebar(props: AppSidebarProps) {
 				<SearchButton isMac={isMac} />
 			</SidebarHeader>
 			<SidebarContent>
-				<Suspense fallback={<NavApp isAdmin={isAdmin} pendingInvites={0} />}>
-					<NavAppWithInvites isAdmin={isAdmin} invitesCountPromise={props.invitesCountPromise} />
-				</Suspense>
+				<NavApp isAdmin={isAdmin} pendingInvites={props.invitesCount} />
 				{clubId && <NavClub clubId={clubId} clubs={clubs} />}
 			</SidebarContent>
 			<SidebarFooter>
-				<Suspense fallback={null}>
-					<InviteBanners
-						invitesCountPromise={props.invitesCountPromise}
-						inviteRequestsCountPromise={props.inviteRequestsCountPromise}
-						clubId={clubId}
-						open={sidebar.open}
-					/>
-				</Suspense>
+				<InviteBanners
+					invitesCount={props.invitesCount}
+					inviteRequestsCount={props.inviteRequestsCount}
+					clubId={clubId}
+					open={sidebar.open}
+				/>
 				<UserSwitcher user={props.user} />
 			</SidebarFooter>
 			<SidebarRail />

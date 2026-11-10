@@ -1312,7 +1312,7 @@ export interface paths {
 		};
 		/**
 		 * List users
-		 * @description Returns a paginated list of users with optional search and sorting
+		 * @description Returns a paginated list of users. Users have no country or city of their own, so `countryId`, `clubId` and `city` match the public clubs a user is an active member of (one club must match all given filters). `sort=games` orders by games played (users who hide their stats come last), `sort=newest` by sign-up date, `sort=name` by name (the default). `gamesCount` and `rating` are null when the user hides their stats.
 		 */
 		get: operations["usersGet"];
 		put?: never;
@@ -1332,7 +1332,7 @@ export interface paths {
 		};
 		/**
 		 * Get user profile
-		 * @description Returns a public user profile by ID or slug
+		 * @description Returns a public user profile by ID or slug. When the user hides their stats (`isPrivateStats`), `gamesCount` and `rating` are null and `eventRegistration` is empty for everyone but the user and admins. `gamesCount` counts finished games played.
 		 */
 		get: operations["usersidprofileGet"];
 		put?: never;
@@ -1453,26 +1453,6 @@ export interface paths {
 		 * @description Update the user's font preference
 		 */
 		put: operations["usersidfontPut"];
-		post?: never;
-		delete?: never;
-		options?: never;
-		head?: never;
-		patch?: never;
-		trace?: never;
-	};
-	"/users/{id}/style": {
-		parameters: {
-			query?: never;
-			header?: never;
-			path?: never;
-			cookie?: never;
-		};
-		get?: never;
-		/**
-		 * Update user style
-		 * @description Update the user's style preference
-		 */
-		put: operations["usersidstylePut"];
 		post?: never;
 		delete?: never;
 		options?: never;
@@ -1620,6 +1600,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/users/{id}/export": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Export all personal data
+		 * @description Returns every piece of personal data held about the authenticated user as a single JSON document, for the rights of access and data portability. Self-only. Account credentials are described rather than included.
+		 */
+		get: operations["usersidexportGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/users/{id}/delete": {
 		parameters: {
 			query?: never;
@@ -1649,7 +1649,13 @@ export interface paths {
 		};
 		/**
 		 * List clubs
-		 * @description List clubs with pagination, search, and sorting
+		 * @description List clubs with pagination, search, filters, sorting and optional facet counts.
+		 *
+		 *     Filters combine with AND. `size` buckets use the count of active, non-archived members: small is fewer than 15, medium is 15 to 40 (inclusive), large is more than 40. `allied` counts a club as allied when its legacy flag is set or it has a row in an alliance. `hasGames` means at least one upcoming public event. `verified`, `allied` and `hasGames` accept "true" (only these) or "false" (exclude these).
+		 *
+		 *     `sortBy` takes name, location, createdAt (these need `sortOrder`), and members, rating, newest (`sortOrder` defaults to desc; clubs without reviews come last when sorting by rating). Without `sortBy` the standing order applies: verified, then claimed and allied, claimed, allied, the rest.
+		 *
+		 *     `totals` counts public clubs only, ignoring filters and the viewer. With `facets=true` the response also holds `facets`: each group counts the clubs that match the search and all other active filters, but not its own filter.
 		 */
 		get: operations["clubsGet"];
 		put?: never;
@@ -1980,6 +1986,46 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/clubs/{id}/members/{memberId}/archive": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Archive club member
+		 * @description Archive a member without removing them: the membership and all its history are kept, but it grants no access. Cannot archive the club owner.
+		 */
+		post: operations["clubsidmembersmemberIdarchivePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/clubs/{id}/members/{memberId}/unarchive": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/**
+		 * Unarchive club member
+		 * @description Restore an archived membership to active. The member returns with the USER role.
+		 */
+		post: operations["clubsidmembersmemberIdunarchivePost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/clubs/{id}/invites": {
 		parameters: {
 			query?: never;
@@ -2171,6 +2217,26 @@ export interface paths {
 		 * @description Get a presigned S3 URL for uploading a post image
 		 */
 		post: operations["clubsidpostsimagesuploadUrlPost"];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/club/instagram/callback": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Instagram OAuth callback
+		 * @description Facebook OAuth redirect target for connecting a club's Instagram account
+		 */
+		get: operations["clubinstagramcallbackGet"];
+		put?: never;
+		post?: never;
 		delete?: never;
 		options?: never;
 		head?: never;
@@ -2389,6 +2455,26 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
+	"/clubs/{id}/public-rules": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get public club rules
+		 * @description Rules a visitor may read. Rules have no public flag, so this returns only the rules attached to a public event, the same rules that event page shows. Club-level rules and rules of private events are not returned. `id` is a club id or slug.
+		 */
+		get: operations["clubsidpublicRulesGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 	"/clubs/{id}/rules": {
 		parameters: {
 			query?: never;
@@ -2453,6 +2539,31 @@ export interface paths {
 		 * @description Get club statistics including members over time, role distribution, events per month, and recent events
 		 */
 		get: operations["clubsidstatsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/clubs/{id}/public-stats": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Get public club statistics
+		 * @description Public numbers for the club page. `id` is a club id or slug. Same visibility rules as the club itself.
+		 *
+		 *     - `memberCount`: active, non-archived members. `privateMemberCount`: those of them whose profile is private.
+		 *     - `gamesHosted`: public events of the club that have ended. `playersHosted`: distinct users with a CONFIRMED place at such an event who were not marked absent.
+		 *     - Both are null when the club sets `isPrivateStats` and the caller is not a member or admin.
+		 *     - `rating`: average and count of club reviews, null without reviews. `photoCount`: images on the club's public posts (Instagram media is not counted).
+		 */
+		get: operations["clubsidpublicStatsGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -2594,7 +2705,7 @@ export interface paths {
 		};
 		/**
 		 * List events
-		 * @description List events with pagination, search, sorting, and privacy filtering
+		 * @description List events with pagination, search, sorting, filters and privacy filtering. List-valued filters (registration, countryId) are comma separated. With facets=true the response also carries facet counts and the page header counts.
 		 */
 		get: operations["eventsGet"];
 		put?: never;
@@ -2934,7 +3045,7 @@ export interface paths {
 		};
 		/**
 		 * Get reviews
-		 * @description Get reviews for a user, club, or event with pagination and optional rating filtering
+		 * @description Get reviews for a user, club, or event with pagination and optional rating filtering. `id` is the club/event/user ID (a slug also works for clubs and events).
 		 */
 		get: operations["reviewstypeidGet"];
 		put?: never;
@@ -3098,7 +3209,7 @@ export interface paths {
 		};
 		/**
 		 * Search clubs, users, and events
-		 * @description Unified search across clubs, users, and events with pagination and type filtering
+		 * @description Unified search across clubs, users, and events with pagination and type filtering. `counts` always holds the total matches per type (after the refine filters, ignoring `filter` and paging). `topResult` is the best name match across the included types: an exact name or callsign beats a prefix match, which beats a contains match; ties follow relevance, then club, user, event. It is null without a query. Users match on name, callsign and bio; `matchedIn` says which. `countryId` applies to all three types (events and users through their club).
 		 */
 		get: operations["searchGet"];
 		put?: never;
@@ -3854,9 +3965,29 @@ export interface paths {
 		};
 		/**
 		 * Public platform counts
-		 * @description Aggregated counts of all clubs, events, and player profiles for marketing display
+		 * @description Aggregated counts of public clubs, public events and public player profiles for marketing display
 		 */
 		get: operations["publicstatsGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/public/feed": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * Home community feed
+		 * @description One time-ordered list (newest first) of new public games (events that have not finished), public club posts, public reviews of clubs, events and players (only when the REVIEWS feature flag is on; a player review needs a public reviewed player and a public author), new public clubs, and public clubs that joined an alliance. Types: `all`, `games`, `posts`, `reviews` (club, event and player reviews) and `clubs` (new clubs and alliance joins). Each item has a `kind` (`game`, `post`, `review`, `player_review`, `club` or `alliance`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts, reviews, clubs or alliances change.
+		 */
+		get: operations["publicfeedGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -3897,6 +4028,26 @@ export interface paths {
 		 * @description Search the seeded city reference data by name, optionally within one country. Returns the city IDs the club settings form writes.
 		 */
 		get: operations["publiccitySearchGet"];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	"/alliances": {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/**
+		 * List alliances
+		 * @description List alliances with pagination, optionally filtered by country. Use list_countries to look up a country's ID first.
+		 */
+		get: operations["alliancesGet"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -4003,7 +4154,6 @@ export interface components {
 			language?: string;
 			font?: string;
 			theme?: string;
-			style?: string;
 		};
 		Session: {
 			id?: string;
@@ -12034,7 +12184,6 @@ export interface operations {
 						language: string;
 						theme: string;
 						font: string;
-						style: string;
 					};
 				};
 			};
@@ -12068,7 +12217,10 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search?: string;
-				sort?: "admin";
+				sort?: "admin" | "games" | "name" | "newest";
+				countryId?: number;
+				clubId?: string;
+				city?: string;
 			};
 			header?: never;
 			path?: never;
@@ -12111,6 +12263,23 @@ export interface operations {
 								};
 							}[];
 							isAdmin: boolean;
+							createdAt: string;
+							/** @description Finished games played; null when stats are private */
+							gamesCount: number | null;
+							/** @description Average of reviews received; null when none or stats are private */
+							rating: {
+								average: number;
+								count: number;
+							} | null;
+							/** @description Active memberships of public clubs, every role, oldest first (the first is the main club) */
+							clubs: {
+								id: string;
+								slug: string | null;
+								name: string;
+								logo: string | null;
+								/** @enum {string|null} */
+								logoTile: "paper" | "ink" | null;
+							}[];
 						}[];
 						pagination: {
 							page: number;
@@ -12174,6 +12343,13 @@ export interface operations {
 								logo: string | null;
 							};
 						}[];
+						/** @description Member since */
+						createdAt: string;
+						gamesCount: number | null;
+						rating: {
+							average: number;
+							count: number;
+						} | null;
 						eventRegistration: {
 							id: string;
 							eventId: string;
@@ -12188,8 +12364,12 @@ export interface operations {
 								name: string;
 								slug: string | null;
 								dateStart: string;
+								location: string;
+								costPerPerson: number;
 								club: {
 									id: string;
+									name: string;
+									slug: string | null;
 									isPrivate: boolean;
 								};
 							};
@@ -12465,47 +12645,6 @@ export interface operations {
 			};
 		};
 	};
-	usersidstylePut: {
-		parameters: {
-			query?: never;
-			header?: never;
-			path: {
-				id: string;
-			};
-			cookie?: never;
-		};
-		requestBody: {
-			content: {
-				"application/json": {
-					style: string;
-				};
-			};
-		};
-		responses: {
-			/** @description Success */
-			200: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						success: boolean;
-					};
-				};
-			};
-			/** @description Unauthorized */
-			401: {
-				headers: {
-					[name: string]: unknown;
-				};
-				content: {
-					"application/json": {
-						error: string;
-					};
-				};
-			};
-		};
-	};
 	usersidlanguagePut: {
 		parameters: {
 			query?: never;
@@ -12591,6 +12730,8 @@ export interface operations {
 								isPrivate: boolean;
 								isPrivateStats: boolean;
 								logo: string | null;
+								/** @enum {string|null} */
+								logoTile: "paper" | "ink" | null;
 								contactPhone: string | null;
 								contactEmail: string | null;
 								verified: boolean;
@@ -12841,6 +12982,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -12863,6 +13006,205 @@ export interface operations {
 			};
 			/** @description Unauthorized */
 			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	usersidexportGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						meta: {
+							generatedAt: string;
+							subjectId: string;
+							format: string;
+							excluded: string[];
+						};
+						profile: {
+							id: string;
+							email: string;
+							normalizedEmail: string | null;
+							name: string;
+							emailVerified: boolean;
+							slug: string | null;
+							image: string | null;
+							headerImage: string | null;
+							bio: string | null;
+							location: string | null;
+							website: string | null;
+							phone: string | null;
+							callsign: string | null;
+							gear: unknown[] | null;
+							font: string;
+							theme: string;
+							language: string;
+							isPrivate: boolean;
+							isPrivateEmail: boolean;
+							isPrivatePhone: boolean;
+							isPrivateStats: boolean;
+							role: string | null;
+							banned: boolean | null;
+							banReason: string | null;
+							banExpires: string | null;
+							twoFactorEnabled: boolean | null;
+							createdAt: string;
+							updatedAt: string;
+						};
+						signInMethods: {
+							type: string;
+							provider: string | null;
+							name: string | null;
+							createdAt: string | null;
+						}[];
+						sessions: {
+							id: string;
+							ipAddress: string | null;
+							userAgent: string | null;
+							createdAt: string;
+							updatedAt: string;
+							expiresAt: string;
+						}[];
+						clubMemberships: {
+							id: string;
+							clubId: string;
+							clubName: string | null;
+							role: string;
+							startDate: string | null;
+							endDate: string | null;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						clubInvites: {
+							id: string;
+							clubId: string;
+							clubName: string | null;
+							email: string;
+							status: string;
+							expiresAt: string;
+							createdAt: string;
+						}[];
+						eventBookings: {
+							id: string;
+							eventId: string;
+							eventName: string | null;
+							type: string;
+							paymentMethod: string;
+							attended: boolean;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						eventAttendance: {
+							id: string;
+							eventId: string;
+							eventName: string | null;
+							bookingId: string;
+							matchedBy: string;
+							guestName: string | null;
+							guestEmail: string | null;
+							role: string;
+							status: string;
+							attended: boolean | null;
+							invitedAt: string;
+							respondedAt: string | null;
+							paidAt: string | null;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						reviewsWritten: {
+							id: string;
+							type: string;
+							rating: number;
+							content: string;
+							aboutUserId: string | null;
+							aboutClubId: string | null;
+							aboutEventId: string | null;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						reviewsReceived: {
+							id: string;
+							rating: number;
+							content: string;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						reviewEdits: {
+							id: string;
+							reviewId: string;
+							previousRating: number;
+							previousContent: string;
+							createdAt: string;
+						}[];
+						achievements: {
+							slug: string;
+							description: string | null;
+						}[];
+						clubAuditLogs: {
+							id: string;
+							clubId: string;
+							actionType: string;
+							actionData: unknown;
+							ipAddress: string | null;
+							userAgent: string | null;
+							createdAt: string;
+						}[];
+						apiKeys: {
+							id: string;
+							name: string | null;
+							prefix: string | null;
+							start: string | null;
+							enabled: boolean;
+							requestCount: number;
+							lastRequest: string | null;
+							expiresAt: string | null;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+						oauthConsents: {
+							id: string;
+							clientId: string;
+							scopes: string;
+							consentGiven: boolean;
+							createdAt: string;
+							updatedAt: string;
+						}[];
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
 				headers: {
 					[name: string]: unknown;
 				};
@@ -12954,8 +13296,15 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search?: string;
-				sortBy?: "name" | "location" | "createdAt";
+				sortBy?: "name" | "location" | "createdAt" | "members" | "rating" | "newest";
 				sortOrder?: "asc" | "desc";
+				countryId?: unknown;
+				city?: string;
+				size?: "small" | "medium" | "large";
+				verified?: unknown;
+				allied?: unknown;
+				hasGames?: unknown;
+				facets?: unknown;
 			};
 			header?: never;
 			path?: never;
@@ -12986,6 +13335,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -13004,12 +13355,47 @@ export interface operations {
 							_count: {
 								members: number;
 							};
+							/** @description Active, non-archived members */
+							memberCount: number;
+							/** @description Average and number of club reviews. Null when the club has no review. */
+							rating: {
+								average: number;
+								count: number;
+							} | null;
+							nextGame: {
+								id: string;
+								slug: string | null;
+								name: string;
+								date: string;
+								/** @description Capacity minus confirmed attendees. Null means unlimited. */
+								placesLeft: number | null;
+							} | null;
 						}[];
 						pagination: {
 							page: number;
 							perPage: number;
 							total: number;
 							totalPages: number;
+						};
+						totals?: {
+							clubCount: number;
+							cityCount: number;
+							countryCount: number;
+						};
+						facets?: {
+							country: {
+								countryId: number;
+								count: number;
+							}[];
+							size: {
+								small: number;
+								medium: number;
+								large: number;
+							};
+							verified: {
+								verified: number;
+								unverified: number;
+							};
 						};
 					};
 				};
@@ -13042,6 +13428,8 @@ export interface operations {
 					isPrivate?: boolean;
 					isPrivateStats?: boolean;
 					logo?: string;
+					/** @enum {string|null} */
+					logoTile?: "paper" | "ink" | null;
 					headerImage?: string;
 					contactPhone?: string;
 					contactEmail?: string;
@@ -13075,6 +13463,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -13151,6 +13541,8 @@ export interface operations {
 						isPrivate: boolean;
 						isPrivateStats: boolean;
 						logo: string | null;
+						/** @enum {string|null} */
+						logoTile: "paper" | "ink" | null;
 						contactPhone: string | null;
 						contactEmail: string | null;
 						verified: boolean;
@@ -13225,6 +13617,8 @@ export interface operations {
 					isPrivate?: boolean;
 					isPrivateStats?: boolean;
 					logo?: string | null;
+					/** @enum {string|null} */
+					logoTile?: "paper" | "ink" | null;
 					headerImage?: string | null;
 					contactPhone?: string;
 					contactEmail?: string;
@@ -13258,6 +13652,8 @@ export interface operations {
 							isPrivate: boolean;
 							isPrivateStats: boolean;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							contactPhone: string | null;
 							contactEmail: string | null;
 							verified: boolean;
@@ -13424,6 +13820,8 @@ export interface operations {
 						isPrivate: boolean;
 						isPrivateStats: boolean;
 						logo: string | null;
+						/** @enum {string|null} */
+						logoTile: "paper" | "ink" | null;
 						contactPhone: string | null;
 						contactEmail: string | null;
 						verified: boolean;
@@ -13764,6 +14162,8 @@ export interface operations {
 							id: string;
 							name: string | null;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 						}[];
 					};
 				};
@@ -13851,6 +14251,13 @@ export interface operations {
 							role: "USER" | "MANAGER" | "CLUB_OWNER";
 							startDate: string | null;
 							endDate: string | null;
+							/** @enum {string} */
+							status: "ACTIVE" | "ARCHIVED";
+							archivedAt: string | null;
+							archivedById: string | null;
+							/** @enum {string|null} */
+							archiveReason: "DECEASED" | "INACTIVE" | "MOVED_AWAY" | "RETIRED" | "OTHER" | null;
+							archiveNote: string | null;
 							createdAt: string;
 							updatedAt: string;
 						};
@@ -13979,6 +14386,7 @@ export interface operations {
 				perPage?: unknown;
 				search?: string;
 				role?: "all" | "USER" | "MANAGER" | "CLUB_OWNER";
+				status?: "ACTIVE" | "ARCHIVED" | "ALL";
 				sortBy?: "userName" | "userCallsign" | "role" | "createdAt";
 				sortOrder?: "asc" | "desc";
 			};
@@ -14011,6 +14419,12 @@ export interface operations {
 							endDate: string | null;
 							createdAt: string;
 							updatedAt: string;
+							/** @enum {string} */
+							status: "ACTIVE" | "ARCHIVED";
+							archivedAt: string | null;
+							/** @enum {string|null} */
+							archiveReason: "DECEASED" | "INACTIVE" | "MOVED_AWAY" | "RETIRED" | "OTHER" | null;
+							archiveNote: string | null;
 							userName: string;
 							userCallsign: string | null;
 							userAvatar: string | null;
@@ -14103,6 +14517,13 @@ export interface operations {
 							role: "USER" | "MANAGER" | "CLUB_OWNER";
 							startDate: string | null;
 							endDate: string | null;
+							/** @enum {string} */
+							status: "ACTIVE" | "ARCHIVED";
+							archivedAt: string | null;
+							archivedById: string | null;
+							/** @enum {string|null} */
+							archiveReason: "DECEASED" | "INACTIVE" | "MOVED_AWAY" | "RETIRED" | "OTHER" | null;
+							archiveNote: string | null;
 							createdAt: string;
 							updatedAt: string;
 						};
@@ -14474,6 +14895,13 @@ export interface operations {
 							role: "USER" | "MANAGER" | "CLUB_OWNER";
 							startDate: string | null;
 							endDate: string | null;
+							/** @enum {string} */
+							status: "ACTIVE" | "ARCHIVED";
+							archivedAt: string | null;
+							archivedById: string | null;
+							/** @enum {string|null} */
+							archiveReason: "DECEASED" | "INACTIVE" | "MOVED_AWAY" | "RETIRED" | "OTHER" | null;
+							archiveNote: string | null;
 							createdAt: string;
 							updatedAt: string;
 						} | null;
@@ -14482,6 +14910,152 @@ export interface operations {
 			};
 			/** @description Bad Request */
 			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidmembersmemberIdarchivePost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+				memberId: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				"application/json": {
+					/** @enum {string} */
+					reason: "DECEASED" | "INACTIVE" | "MOVED_AWAY" | "RETIRED" | "OTHER";
+					note?: string;
+				};
+			};
+		};
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
+	clubsidmembersmemberIdunarchivePost: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+				memberId: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						success: boolean;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Forbidden */
+			403: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
 				headers: {
 					[name: string]: unknown;
 				};
@@ -15481,6 +16055,31 @@ export interface operations {
 			};
 		};
 	};
+	clubinstagramcallbackGet: {
+		parameters: {
+			query?: {
+				code?: string;
+				state?: string;
+				clubId?: string;
+				error?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Response */
+			302: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": Record<string, never>;
+				};
+			};
+		};
+	};
 	clubsidinstagramauthUrlGet: {
 		parameters: {
 			query?: never;
@@ -16399,6 +16998,50 @@ export interface operations {
 			};
 		};
 	};
+	clubsidpublicRulesGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						rules: {
+							id: string;
+							name: string;
+							description: string | null;
+							content: string;
+							updatedAt: string;
+							eventId: string;
+							eventName: string;
+							eventSlug: string | null;
+						}[];
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	clubsidrulesGet: {
 		parameters: {
 			query?: never;
@@ -16859,6 +17502,49 @@ export interface operations {
 			};
 		};
 	};
+	clubsidpublicStatsGet: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						memberCount: number;
+						privateMemberCount: number;
+						gamesHosted: number | null;
+						playersHosted: number | null;
+						rating: {
+							average: number;
+							count: number;
+						} | null;
+						photoCount: number;
+					};
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						error: string;
+					};
+				};
+			};
+		};
+	};
 	clubsidstorageQuotaGet: {
 		parameters: {
 			query?: never;
@@ -16986,6 +17672,13 @@ export interface operations {
 								| null;
 							createdAt: string;
 							updatedAt: string;
+							attendeeCount: number;
+							capacity: number | null;
+							placesLeft: number | null;
+							/** @enum {string} */
+							registrationState: "open" | "notOpenYet" | "closed" | "full";
+							price: number;
+							currency: string;
 							_count: {
 								eventRegistration: number;
 							};
@@ -17362,10 +18055,20 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search?: string;
-				sortBy?: "name" | "dateStart";
+				sortBy?: "name" | "dateStart" | "date" | "placesLeft" | "price";
 				sortOrder?: "asc" | "desc";
 				isPrivate?: string;
 				filter?: "mine";
+				dateFrom?: string;
+				dateTo?: string;
+				when?: "weekend" | "next30";
+				registration?: string;
+				countryId?: string;
+				city?: string;
+				maxPrice?: number;
+				freelancers?: "true" | "false";
+				verifiedOnly?: "true" | "false";
+				facets?: "true" | "false";
 			};
 			header?: never;
 			path?: never;
@@ -17407,11 +18110,22 @@ export interface operations {
 							mapData: unknown;
 							createdAt: string;
 							updatedAt: string;
+							attendeeCount: number;
+							capacity: number | null;
+							placesLeft: number | null;
+							/** @enum {string} */
+							registrationState: "open" | "notOpenYet" | "closed" | "full";
+							price: number;
+							currency: string;
+							city: string | null;
+							countryId: number | null;
 							club: {
 								id: string;
 								name: string;
 								slug: string | null;
 								logo: string | null;
+								logoTile: string | null;
+								verified: boolean;
 							} | null;
 						}[];
 						pagination: {
@@ -17420,6 +18134,21 @@ export interface operations {
 							total: number;
 							totalPages: number;
 						};
+						facets?: {
+							registration: {
+								open: number;
+								notOpenYet: number;
+								closed: number;
+								full: number;
+							};
+							country: {
+								countryId: number;
+								name: string;
+								count: number;
+							}[];
+						};
+						upcomingCount?: number;
+						openThisWeekendCount?: number;
 					};
 				};
 			};
@@ -17581,7 +18310,20 @@ export interface operations {
 							mapData: unknown;
 							createdAt: string;
 							updatedAt: string;
+							attendeeCount: number;
+							capacity: number | null;
+							placesLeft: number | null;
+							/** @enum {string} */
+							registrationState: "open" | "notOpenYet" | "closed" | "full";
+							price: number;
+							currency: string;
+							city: string | null;
+							countryId: number | null;
 							club: {
+								id: string;
+								slug: string | null;
+								logo: string | null;
+								logoTile: string | null;
 								name: string;
 								verified: boolean;
 							} | null;
@@ -19224,6 +19966,8 @@ export interface operations {
 							id: string;
 							name: string;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							/** @enum {string} */
 							membershipRole: "USER" | "MANAGER" | "CLUB_OWNER";
 							events: {
@@ -19422,6 +20166,10 @@ export interface operations {
 				perPage?: unknown;
 				search?: string;
 				filter?: string;
+				countryId?: number;
+				upcomingOnly?: "true" | "false";
+				registrationOpen?: "true" | "false";
+				verifiedOnly?: "true" | "false";
 			};
 			header?: never;
 			path?: never;
@@ -19448,8 +20196,30 @@ export interface operations {
 										name: string;
 										slug: string | null;
 										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
 										location: string | null;
 										verified: boolean;
+										/** @description First 240 characters */
+										description: string | null;
+										/** @description Active members */
+										memberCount: number;
+										/** @description Average of the club's reviews */
+										rating: {
+											average: number;
+											count: number;
+										} | null;
+										/** @description Soonest upcoming public event */
+										nextGame: {
+											id: string;
+											slug: string | null;
+											name: string;
+											dateStart: string;
+											location: string;
+											maxAttendees: number | null;
+											attendeeCount: number;
+											placesLeft: number | null;
+										} | null;
 										_count: {
 											members: number;
 										};
@@ -19485,7 +20255,6 @@ export interface operations {
 											| null;
 										font?: string;
 										theme?: string;
-										style?: string;
 										language?: string;
 										isPrivate?: boolean;
 										isPrivateEmail?: boolean;
@@ -19499,6 +20268,20 @@ export interface operations {
 										createdAt?: string;
 										updatedAt?: string;
 										headerImage?: string | null;
+										/**
+										 * @description Which field matched the query; null without a query
+										 * @enum {string|null}
+										 */
+										matchedIn: "name" | "callsign" | "bio" | null;
+										/** @description The user's oldest active membership of a public club */
+										mainClub: {
+											id: string;
+											slug: string | null;
+											name: string;
+											logo: string | null;
+											/** @enum {string|null} */
+											logoTile: "paper" | "ink" | null;
+										} | null;
 									};
 							  }
 							| {
@@ -19507,6 +20290,7 @@ export interface operations {
 									id: string;
 									name: string;
 									relevanceScore: number;
+									/** @description Event fields; attendeeCount is the number of CONFIRMED attendees */
 									data: {
 										id?: string;
 										name?: string;
@@ -19530,29 +20314,175 @@ export interface operations {
 										hasSnacks?: boolean;
 										hasDrinks?: boolean;
 										hasPrizes?: boolean;
-										gearRequirements?:
-											| (
-													| (string | number | boolean | null)
-													| {
-															[key: string]: unknown;
-													  }
-													| unknown[]
-											  )[]
-											| null;
-										mapData?:
-											| (
-													| (string | number | boolean | null)
-													| {
-															[key: string]: unknown;
-													  }
-													| unknown[]
-											  )
-											| null;
+										gearRequirements?: unknown[] | null;
+										mapData?: unknown;
 										createdAt?: string;
 										updatedAt?: string;
+										club: {
+											id: string;
+											name: string;
+											slug: string | null;
+											logo: string | null;
+											verified: boolean;
+										} | null;
+										attendeeCount: number;
+										placesLeft: number | null;
 									};
 							  }
 						)[];
+						counts: {
+							events: number;
+							clubs: number;
+							users: number;
+						};
+						topResult:
+							| (
+									| {
+											/** @enum {string} */
+											type: "club";
+											id: string;
+											name: string;
+											relevanceScore: number;
+											data: {
+												id: string;
+												name: string;
+												slug: string | null;
+												logo: string | null;
+												/** @enum {string|null} */
+												logoTile: "paper" | "ink" | null;
+												location: string | null;
+												verified: boolean;
+												/** @description First 240 characters */
+												description: string | null;
+												/** @description Active members */
+												memberCount: number;
+												/** @description Average of the club's reviews */
+												rating: {
+													average: number;
+													count: number;
+												} | null;
+												/** @description Soonest upcoming public event */
+												nextGame: {
+													id: string;
+													slug: string | null;
+													name: string;
+													dateStart: string;
+													location: string;
+													maxAttendees: number | null;
+													attendeeCount: number;
+													placesLeft: number | null;
+												} | null;
+												_count: {
+													members: number;
+												};
+											};
+									  }
+									| {
+											/** @enum {string} */
+											type: "user";
+											id: string;
+											name: string;
+											relevanceScore: number;
+											data: {
+												id?: string;
+												email?: string;
+												name?: string;
+												emailVerified?: boolean;
+												normalizedEmail?: string | null;
+												image?: string | null;
+												slug?: string | null;
+												bio?: string | null;
+												location?: string | null;
+												website?: string | null;
+												phone?: string | null;
+												callsign?: string | null;
+												gear?:
+													| (
+															| (string | number | boolean | null)
+															| {
+																	[key: string]: unknown;
+															  }
+															| unknown[]
+													  )[]
+													| null;
+												font?: string;
+												theme?: string;
+												language?: string;
+												isPrivate?: boolean;
+												isPrivateEmail?: boolean;
+												isPrivatePhone?: boolean;
+												isPrivateStats?: boolean;
+												role?: string | null;
+												banned?: boolean | null;
+												banReason?: string | null;
+												banExpires?: string | null;
+												twoFactorEnabled?: boolean | null;
+												createdAt?: string;
+												updatedAt?: string;
+												headerImage?: string | null;
+												/**
+												 * @description Which field matched the query; null without a query
+												 * @enum {string|null}
+												 */
+												matchedIn: "name" | "callsign" | "bio" | null;
+												/** @description The user's oldest active membership of a public club */
+												mainClub: {
+													id: string;
+													slug: string | null;
+													name: string;
+													logo: string | null;
+													/** @enum {string|null} */
+													logoTile: "paper" | "ink" | null;
+												} | null;
+											};
+									  }
+									| {
+											/** @enum {string} */
+											type: "event";
+											id: string;
+											name: string;
+											relevanceScore: number;
+											/** @description Event fields; attendeeCount is the number of CONFIRMED attendees */
+											data: {
+												id?: string;
+												name?: string;
+												description?: string;
+												clubId?: string;
+												image?: string | null;
+												slug?: string | null;
+												dateStart?: string;
+												dateEnd?: string;
+												dateRegistrationsClose?: string;
+												dateRegistrationsOpen?: string;
+												isPrivate?: boolean;
+												allowFreelancers?: boolean;
+												maxAttendees?: number | null;
+												location?: string;
+												googleMapsLink?: string | null;
+												costPerPerson?: number;
+												hasBreakfast?: boolean;
+												hasLunch?: boolean;
+												hasDinner?: boolean;
+												hasSnacks?: boolean;
+												hasDrinks?: boolean;
+												hasPrizes?: boolean;
+												gearRequirements?: unknown[] | null;
+												mapData?: unknown;
+												createdAt?: string;
+												updatedAt?: string;
+												club: {
+													id: string;
+													name: string;
+													slug: string | null;
+													logo: string | null;
+													verified: boolean;
+												} | null;
+												attendeeCount: number;
+												placesLeft: number | null;
+											};
+									  }
+							  )
+							| null;
 						pagination: {
 							page: number;
 							perPage: number;
@@ -20374,6 +21304,9 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -20449,6 +21382,8 @@ export interface operations {
 					name: string;
 					countryId?: number;
 					location?: string;
+					/** @description City ID from the seeded city reference table. Groups the club onto that city's landing page; the display name and URL slug are copied server-side. */
+					cityId?: number | null;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
@@ -20477,6 +21412,9 @@ export interface operations {
 							id: string;
 							name: string;
 							location: string | null;
+							cityId: number | null;
+							city: string | null;
+							citySlug: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							description: string | null;
@@ -20573,6 +21511,9 @@ export interface operations {
 						id: string;
 						name: string;
 						location: string | null;
+						cityId: number | null;
+						city: string | null;
+						citySlug: string | null;
 						latitude: number | null;
 						longitude: number | null;
 						description: string | null;
@@ -20665,6 +21606,8 @@ export interface operations {
 					name?: string;
 					countryId?: number;
 					location?: string;
+					/** @description City ID from the seeded city reference table. Groups the club onto that city's landing page; the display name and URL slug are copied server-side. */
+					cityId?: number | null;
 					latitude?: number;
 					longitude?: number;
 					description?: string;
@@ -22247,9 +23190,25 @@ export interface operations {
 							name: string;
 							slug: string | null;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
+							headerImage: string | null;
 							latitude: number | null;
 							longitude: number | null;
 							location: string | null;
+							city: string | null;
+							citySlug: string | null;
+							countryId: number | null;
+							/** @description Active members */
+							memberCount: number;
+							description: string | null;
+							verified: boolean;
+							dateFounded: string | null;
+							website: string | null;
+							instagramUsername: string | null;
+							contactEmail: string | null;
+							contactPhone: string | null;
+							isAllied: boolean;
 						}[];
 					};
 				};
@@ -22425,10 +23384,15 @@ export interface operations {
 							description: string | null;
 							location: string | null;
 							logo: string | null;
+							/** @enum {string|null} */
+							logoTile: "paper" | "ink" | null;
 							latitude: number | null;
 							longitude: number | null;
 							verified: boolean;
 							updatedAt: string;
+							_count: {
+								members: number;
+							};
 						}[];
 						events: {
 							id: string;
@@ -22466,6 +23430,229 @@ export interface operations {
 							events: number;
 							players: number;
 						};
+					};
+				};
+			};
+		};
+	};
+	publicfeedGet: {
+		parameters: {
+			query?: {
+				type?: "all" | "games" | "posts" | "reviews" | "clubs";
+				cursor?: string;
+				limit?: number;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						items: (
+							| {
+									/** @enum {string} */
+									kind: "game";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									event: {
+										slug: string | null;
+										name: string;
+										/** @description First 400 characters */
+										description: string;
+										image: string | null;
+										location: string;
+										dateStart: string;
+										dateEnd: string;
+										dateRegistrationsOpen: string;
+										dateRegistrationsClose: string;
+										costPerPerson: number;
+										maxAttendees: number | null;
+										attendeeCount: number;
+										placesLeft: number | null;
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "post";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									post: {
+										title: string;
+										/** @description First 400 characters */
+										content: string;
+										images: string[];
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "review";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									review: {
+										rating: number;
+										/** @description First 400 characters */
+										content: string;
+										target: {
+											/** @enum {string} */
+											type: "club" | "event";
+											id: string;
+											slug: string | null;
+											name: string;
+										};
+										author: {
+											id: string;
+											slug: string | null;
+											name: string;
+											image: string | null;
+										};
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "player_review";
+									id: string;
+									createdAt: string;
+									review: {
+										rating: number;
+										/** @description First 400 characters */
+										content: string;
+										player: {
+											id: string;
+											slug: string | null;
+											name: string;
+											image: string | null;
+										};
+										author: {
+											id: string;
+											slug: string | null;
+											name: string;
+											image: string | null;
+										};
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "club";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									city: string | null;
+							  }
+							| {
+									/** @enum {string} */
+									kind: "alliance";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									alliance: {
+										id: number;
+										name: string;
+									};
+									clubs: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									}[];
+							  }
+							| {
+									/** @enum {string} */
+									kind: "claim";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									owner: {
+										id: string;
+										slug: string | null;
+										name: string;
+										image: string | null;
+									} | null;
+							  }
+							| {
+									/** @enum {string} */
+									kind: "members";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									members: {
+										id: string;
+										slug: string | null;
+										name: string;
+										image: string | null;
+									}[];
+									count: number;
+							  }
+						)[];
+						nextCursor: string | null;
 					};
 				};
 			};
@@ -22522,6 +23709,53 @@ export interface operations {
 							stateCode: string | null;
 							countryId: number;
 						}[];
+					};
+				};
+			};
+		};
+	};
+	alliancesGet: {
+		parameters: {
+			query?: {
+				page?: unknown;
+				perPage?: unknown;
+				countryId?: number;
+				search?: string;
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Success */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					"application/json": {
+						alliances: {
+							id: number;
+							name: string;
+							description: string | null;
+							countryId: number;
+							link: string | null;
+							country: {
+								id: number;
+								name: string;
+								iso2: string;
+							};
+							_count: {
+								clubs: number;
+							};
+						}[];
+						pagination: {
+							page: number;
+							perPage: number;
+							total: number;
+							totalPages: number;
+						};
 					};
 				};
 			};

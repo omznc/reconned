@@ -4,6 +4,7 @@ import * as z from "zod";
 import { club, clubInvite, clubMembership, event, eventRegistration, review, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { logger } from "../lib/posthog";
+import { logoTileOf, logoTileResponseSchema } from "../lib/schemas";
 
 const dashboardRouter = new Router();
 
@@ -17,7 +18,7 @@ dashboardRouter.get(
 				role: clubMembership.role,
 			})
 			.from(clubMembership)
-			.where(eq(clubMembership.userId, context.user.id));
+			.where(and(eq(clubMembership.userId, context.user.id), eq(clubMembership.status, "ACTIVE")));
 
 		logger.emit({
 			severityText: "debug",
@@ -63,7 +64,7 @@ dashboardRouter.get(
 			db
 				.select({ clubId: clubMembership.clubId, count: count() })
 				.from(clubMembership)
-				.where(inArray(clubMembership.clubId, clubIds))
+				.where(and(inArray(clubMembership.clubId, clubIds), eq(clubMembership.status, "ACTIVE")))
 				.groupBy(clubMembership.clubId),
 			db
 				.select({ clubId: event.clubId, count: count() })
@@ -118,6 +119,7 @@ dashboardRouter.get(
 				id: clubData.id,
 				name: clubData.name,
 				logo: clubData.logo,
+				logoTile: logoTileOf(clubData.logoTile),
 				membershipRole: membership?.role || "USER",
 				memberCount: memberCountMap.get(clubData.id) || 0,
 				eventCount: eventCountMap.get(clubData.id) || 0,
@@ -132,6 +134,7 @@ dashboardRouter.get(
 			id: c.id,
 			name: c.name,
 			logo: c.logo,
+			logoTile: c.logoTile,
 			membershipRole: c.membershipRole,
 			events: c.upcomingEvent
 				? [
@@ -165,6 +168,7 @@ dashboardRouter.get(
 							id: z.string(),
 							name: z.string(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
 							membershipRole: z.enum(["USER", "MANAGER", "CLUB_OWNER"]),
 							events: z.array(
 								z.object({
@@ -230,6 +234,7 @@ dashboardRouter.get(
 			.where(
 				and(
 					eq(clubMembership.userId, context.user.id),
+					eq(clubMembership.status, "ACTIVE"),
 					inArray(clubMembership.role, ["MANAGER", "CLUB_OWNER"]),
 				),
 			);
@@ -302,7 +307,10 @@ dashboardRouter.get(
 					.select({ count: count() })
 					.from(eventRegistration)
 					.where(eq(eventRegistration.createdById, context.user.id)),
-				db.select({ count: count() }).from(clubMembership).where(eq(clubMembership.userId, context.user.id)),
+				db
+					.select({ count: count() })
+					.from(clubMembership)
+					.where(and(eq(clubMembership.userId, context.user.id), eq(clubMembership.status, "ACTIVE"))),
 				db.select({ count: count() }).from(review).where(eq(review.authorId, context.user.id)),
 				db.select({ count: count() }).from(review).where(eq(review.userId, context.user.id)),
 			]);
@@ -314,13 +322,13 @@ dashboardRouter.get(
 				clubId: clubMembership.clubId,
 			})
 			.from(clubMembership)
-			.where(eq(clubMembership.userId, context.user.id));
+			.where(and(eq(clubMembership.userId, context.user.id), eq(clubMembership.status, "ACTIVE")));
 
 		const clubIds = memberships.map((m) => m.clubId);
 
 		// Batch fetch all clubs
 		const clubsData = await db
-			.select({ id: club.id, name: club.name, logo: club.logo })
+			.select({ id: club.id, name: club.name, logo: club.logo, logoTile: club.logoTile })
 			.from(club)
 			.where(inArray(club.id, clubIds));
 
@@ -329,7 +337,7 @@ dashboardRouter.get(
 			db
 				.select({ clubId: clubMembership.clubId, count: count() })
 				.from(clubMembership)
-				.where(inArray(clubMembership.clubId, clubIds))
+				.where(and(inArray(clubMembership.clubId, clubIds), eq(clubMembership.status, "ACTIVE")))
 				.groupBy(clubMembership.clubId),
 			db
 				.select({ clubId: event.clubId, count: count() })

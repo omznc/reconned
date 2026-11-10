@@ -33,7 +33,7 @@ export function SingleImageUpload({
     accept = {
         "image/*": [".jpg", ".jpeg", ".png", ".webp"],
     },
-    maxFileSize = 4 * 1024 * 1024,
+    maxFileSize = 5 * 1024 * 1024,
     variant = "logo",
     className,
 }: SingleImageUploadProps) {

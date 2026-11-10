@@ -1,14 +1,19 @@
 import { Router } from "@reconned/router";
-import { and, count, eq, ilike, or, type SQL, sql } from "drizzle-orm";
+import { and, count, eq, exists, ilike, or, type SQL, sql } from "drizzle-orm";
 import * as z from "zod";
-import { city, club, clubAlliance, event, featureFlag, user } from "../drizzle/schema";
+import { city, club, clubAlliance, clubMembership, event, featureFlag, user } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
+import { FEED_TYPES, feedItemSchema, loadFeed } from "../lib/feed";
 import { logger } from "../lib/posthog";
 import { redis } from "../lib/redis";
+import { logoTileResponseSchema } from "../lib/schemas";
 
 const STATS_CACHE_KEY = "public:stats";
-const STATS_CACHE_TTL = 86400;
+const STATS_CACHE_TTL = 600;
+
+/** Enough for the three clamped lines the map panel shows, and no more. */
+const MAP_DESCRIPTION_CHARS = 240;
 
 const publicRouter = new Router();
 
@@ -30,6 +35,7 @@ publicRouter.get(
 
 		const whereConditions = [
 			eq(club.isPrivate, false),
+			sql`(${club.banned} = false OR ${club.banned} IS NULL)`,
 			sql`${club.latitude} IS NOT NULL`,
 			sql`${club.longitude} IS NOT NULL`,
 		];
@@ -38,17 +44,47 @@ publicRouter.get(
 			whereConditions.push(eq(club.verified, true));
 		}
 
+		const memberCounts = db
+			.select({ clubId: clubMembership.clubId, count: count().as("member_count") })
+			.from(clubMembership)
+			.where(eq(clubMembership.status, "ACTIVE"))
+			.groupBy(clubMembership.clubId)
+			.as("map_member_counts");
+
 		const clubs = await db
 			.select({
 				id: club.id,
 				name: club.name,
 				slug: club.slug,
 				logo: club.logo,
+				logoTile: club.logoTile,
+				headerImage: club.headerImage,
 				latitude: club.latitude,
 				longitude: club.longitude,
 				location: club.location,
+				city: club.city,
+				citySlug: club.citySlug,
+				countryId: club.countryId,
+				memberCount: sql<number>`COALESCE(${memberCounts.count}, 0)`.mapWith(Number),
+				// The map panel only ever shows three clamped lines, and this payload is
+				// every public club at once — a full description per club would multiply
+				// the response for text nobody reads here.
+				description: sql<string | null>`left(${club.description}, ${sql.raw(String(MAP_DESCRIPTION_CHARS))})`,
+				verified: club.verified,
+				dateFounded: club.dateFounded,
+				website: club.website,
+				instagramUsername: club.instagramUsername,
+				contactEmail: club.contactEmail,
+				contactPhone: club.contactPhone,
+				// In at least one alliance, by the join table or the legacy flag. Built
+				// with `exists()` rather than a raw subquery so drizzle qualifies the
+				// correlated `Club.id` — unqualified, it binds to ClubAlliance's own id.
+				isAllied: sql<boolean>`(${club.isAllied} OR ${exists(
+					db.select({ n: sql`1` }).from(clubAlliance).where(eq(clubAlliance.clubId, club.id)),
+				)})`,
 			})
 			.from(club)
+			.leftJoin(memberCounts, eq(club.id, memberCounts.clubId))
 			.where(and(...whereConditions));
 
 		logger.emit({
@@ -76,9 +112,23 @@ publicRouter.get(
 							name: z.string(),
 							slug: z.string().nullable(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
+							headerImage: z.string().nullable(),
 							latitude: z.number().nullable(),
 							longitude: z.number().nullable(),
 							location: z.string().nullable(),
+							city: z.string().nullable(),
+							citySlug: z.string().nullable(),
+							countryId: z.number().nullable(),
+							memberCount: z.number().describe("Active members"),
+							description: z.string().nullable(),
+							verified: z.boolean(),
+							dateFounded: z.string().nullable(),
+							website: z.string().nullable(),
+							instagramUsername: z.string().nullable(),
+							contactEmail: z.string().nullable(),
+							contactPhone: z.string().nullable(),
+							isAllied: z.boolean(),
 						}),
 					),
 				}),
@@ -394,6 +444,11 @@ publicRouter.get(
 					),
 				}),
 			},
+			mcpTool: {
+				name: "list_cities",
+				description:
+					"List cities that have an airsoft scene on the platform, with club counts. Pass a returned citySlug to get_city for that city's clubs and events. For the seeded city reference data used when setting a club's location, use search_cities instead.",
+			},
 		},
 	},
 );
@@ -405,6 +460,17 @@ publicRouter.get(
 		// which carry every path param as optional.
 		const citySlug = params.citySlug ?? "";
 		const clubConditions = await publicClubConditions();
+
+		const memberCountSubquery = db
+			.select({
+				clubId: clubMembership.clubId,
+				count: count().as("member_count"),
+			})
+			.from(clubMembership)
+			.where(eq(clubMembership.status, "ACTIVE"))
+			.groupBy(clubMembership.clubId)
+			.as("member_counts");
+
 		const clubs = await db
 			.select({
 				id: club.id,
@@ -414,12 +480,15 @@ publicRouter.get(
 				location: club.location,
 				city: club.city,
 				logo: club.logo,
+				logoTile: club.logoTile,
 				latitude: club.latitude,
 				longitude: club.longitude,
 				verified: club.verified,
 				updatedAt: club.updatedAt,
+				memberCount: sql<number>`COALESCE(${memberCountSubquery.count}, 0)`,
 			})
 			.from(club)
+			.leftJoin(memberCountSubquery, eq(club.id, memberCountSubquery.clubId))
 			.where(and(eq(club.citySlug, citySlug), ...clubConditions))
 			.orderBy(club.name);
 
@@ -445,7 +514,10 @@ publicRouter.get(
 			{
 				city: clubs[0]?.city ?? null,
 				citySlug,
-				clubs: clubs.map(({ city: _city, ...rest }) => rest),
+				clubs: clubs.map(({ city: _city, memberCount, ...rest }) => ({
+					...rest,
+					_count: { members: Number(memberCount) },
+				})),
 				events,
 			},
 			"public, max-age=3600, stale-while-revalidate=86400",
@@ -471,10 +543,14 @@ publicRouter.get(
 							description: z.string().nullable(),
 							location: z.string().nullable(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
 							latitude: z.number().nullable(),
 							longitude: z.number().nullable(),
 							verified: z.boolean(),
 							updatedAt: z.string(),
+							_count: z.object({
+								members: z.number(),
+							}),
 						}),
 					),
 					events: z.array(
@@ -490,6 +566,11 @@ publicRouter.get(
 						}),
 					),
 				}),
+			},
+			mcpTool: {
+				name: "get_city",
+				description:
+					"Get the public clubs based in a city and the events those clubs are running. Takes a citySlug from list_cities.",
 			},
 		},
 	},
@@ -511,9 +592,14 @@ publicRouter.get(
 			});
 		}
 
-		const [clubCountRow] = await db.select({ value: count() }).from(club);
-		const [eventCountRow] = await db.select({ value: count() }).from(event);
-		const [userCountRow] = await db.select({ value: count() }).from(user);
+		// Public figures only: private clubs and users, and events that are private or belong to a private club, are not counted.
+		const [clubCountRow] = await db.select({ value: count() }).from(club).where(eq(club.isPrivate, false));
+		const [eventCountRow] = await db
+			.select({ value: count() })
+			.from(event)
+			.innerJoin(club, eq(event.clubId, club.id))
+			.where(and(eq(event.isPrivate, false), eq(club.isPrivate, false)));
+		const [userCountRow] = await db.select({ value: count() }).from(user).where(eq(user.isPrivate, false));
 
 		const stats = {
 			stats: {
@@ -539,7 +625,8 @@ publicRouter.get(
 		schema: {
 			tags: ["Public"],
 			summary: "Public platform counts",
-			description: "Aggregated counts of all clubs, events, and player profiles for marketing display",
+			description:
+				"Aggregated counts of public clubs, public events and public player profiles for marketing display",
 			response: {
 				200: z.object({
 					stats: z.object({
@@ -549,9 +636,36 @@ publicRouter.get(
 					}),
 				}),
 			},
+			mcpTool: {
+				name: "get_platform_stats",
+				description: "Total number of clubs, events, and player profiles on the platform.",
+			},
 		},
 	},
 );
+
+publicRouter.get("/public/feed", async ({ query, response }) => response.json(await loadFeed(query)), {
+	cache: { key: "public:feed", ttl: 60, varyByQuery: ["type", "cursor", "limit"] },
+	schema: {
+		tags: ["Public"],
+		summary: "Home community feed",
+		description:
+			"One time-ordered list (newest first) of new public games (events that have not finished), public club posts, public reviews of clubs, events and players (only when the REVIEWS feature flag is on; a player review needs a public reviewed player and a public author), new public clubs, and public clubs that joined an alliance. " +
+			"Types: `all`, `games`, `posts`, `reviews` (club, event and player reviews) and `clubs` (new clubs and alliance joins). " +
+			"Each item has a `kind` (`game`, `post`, `review`, `player_review`, `club` or `alliance`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts, reviews, clubs or alliances change.",
+		query: z.object({
+			type: z.enum(FEED_TYPES).optional().default("all"),
+			cursor: z.string().max(500).optional(),
+			limit: z.coerce.number().int().min(1).max(50).optional().default(20),
+		}),
+		response: {
+			200: z.object({
+				items: z.array(feedItemSchema),
+				nextCursor: z.string().nullable(),
+			}),
+		},
+	},
+});
 
 publicRouter.get(
 	"/public/feature-flags",
@@ -666,6 +780,11 @@ publicRouter.get(
 						}),
 					),
 				}),
+			},
+			mcpTool: {
+				name: "search_cities",
+				description:
+					"Search the seeded city reference data by name, optionally within one country. Use this to resolve the cityId a club's location is set to. For cities that actually have clubs on the platform, use list_cities.",
 			},
 		},
 	},

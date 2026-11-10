@@ -119,10 +119,51 @@ export const env = createEnv({
 			.optional()
 			.describe("Facebook application secret"),
 
+		FACEBOOK_GRAPH_API_VERSION: z
+			.string()
+			.regex(/^v\d+\.\d+$/, "FACEBOOK_GRAPH_API_VERSION must look like v23.0")
+			.optional()
+			.describe("Graph API version to call. Meta retires versions ~2 years after release"),
+
 		POSTHOG_PUBLIC_KEY: z
 			.string()
 			.min(1, "POSTHOG_PUBLIC_KEY is required for PostHog logging")
 			.describe("PostHog public API key"),
+
+		// The management API, not the ingest host (`POSTHOG_HOST`) — different hostname, same
+		// region. Configurable so a region move does not leave erasure pointed at the old cluster,
+		// still deleting nothing while reporting success.
+		POSTHOG_API_HOST: z
+			.url("POSTHOG_API_HOST must be a valid URL")
+			.default("https://eu.posthog.com")
+			.transform((val) => val.replace(/\/+$/, ""))
+			.describe("PostHog management API base URL, used for person erasure"),
+
+		// The public key above cannot delete anything; erasing a person needs a personal key scoped
+		// to person:write. Optional so the app still boots, but erasure is then incomplete.
+		POSTHOG_PERSONAL_API_KEY: z
+			.string()
+			.min(1)
+			.optional()
+			.describe(
+				"PostHog personal API key (person:write) — required to erase person profiles on account deletion",
+			),
+
+		// Plural, and it matters: analytics is split across two projects ("backend" and "web", the
+		// latter holding session recordings) and a person exists separately in each.
+		POSTHOG_PROJECT_IDS: z
+			.string()
+			.min(1)
+			.optional()
+			.transform((val) =>
+				val
+					?.split(",")
+					.map((id) => id.trim())
+					.filter(Boolean),
+			)
+			.describe(
+				"Comma-separated PostHog project IDs to erase people from — required alongside POSTHOG_PERSONAL_API_KEY",
+			),
 
 		CI: z.string().optional().describe("CI environment indicator"),
 	},

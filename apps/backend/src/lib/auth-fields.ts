@@ -33,12 +33,6 @@ export const userAdditionalFields = {
 		type: "string",
 		required: false,
 	},
-	style: {
-		type: "string",
-		default: "relaxed",
-		input: true,
-		required: false,
-	},
 } as const;
 
 export type UserAdditionalFields = typeof userAdditionalFields;

@@ -42,12 +42,6 @@ const userAdditionalFields = {
 		type: "string",
 		required: false,
 	},
-	style: {
-		type: "string",
-		default: "relaxed",
-		input: true,
-		required: false,
-	},
 } as const satisfies UserAdditionalFields;
 
 export const authClient = createAuthClient({

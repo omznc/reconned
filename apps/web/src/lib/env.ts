@@ -1,14 +1,15 @@
-import { createEnv } from "@t3-oss/env-nextjs";
+import { createEnv } from "@t3-oss/env-core";
 import * as z from "zod";
 
-export const env = createEnv({
-	skipValidation: process.env.NEXT_PHASE === "phase-production-build" || process.env.CI === "true",
-	server: {
-		ADMIN_WEBHOOK_TOKEN: z
-			.string()
-			.min(32, "ADMIN_WEBHOOK_TOKEN must be at least 32 characters for security")
-			.describe("Secret token for admin webhook authentication"),
+const isServer = typeof window === "undefined";
+// Vite inlines `import.meta.env.NEXT_PUBLIC_*` into the browser bundle. The server reads the live process env.
+const source: Record<string, string | undefined> = isServer ? process.env : import.meta.env;
 
+export const env = createEnv({
+	clientPrefix: "NEXT_PUBLIC_",
+	isServer,
+	skipValidation: isServer && process.env.CI === "true",
+	server: {
 		TURNSTILE_SECRET_KEY: z
 			.string()
 			.min(1, "TURNSTILE_SECRET_KEY is required")
@@ -21,11 +22,6 @@ export const env = createEnv({
 			.describe("Secret key for bypassing rate limits on internal API calls"),
 
 		CI: z.string().optional().describe("CI environment indicator"),
-
-		NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: z
-			.string()
-			.min(32, "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY must be at least 32 characters")
-			.describe("Encryption key for server actions. Generate with: openssl rand -base64 32"),
 	},
 	client: {
 		NEXT_PUBLIC_BACKEND_URL: z
@@ -60,14 +56,17 @@ export const env = createEnv({
 			.min(1, "NEXT_PUBLIC_AXIOM_TOKEN is required for logging")
 			.describe("Axiom API token"),
 	},
-	experimental__runtimeEnv: {
-		NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
-		NEXT_PUBLIC_CDN_URL: process.env.NEXT_PUBLIC_CDN_URL,
-		NEXT_PUBLIC_WEB_URL: process.env.NEXT_PUBLIC_WEB_URL,
-		NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-		NEXT_PUBLIC_SOURCE_COMMIT: process.env.SOURCE_COMMIT,
-		NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
-		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
-		NEXT_PUBLIC_AXIOM_TOKEN: process.env.NEXT_PUBLIC_AXIOM_TOKEN,
+	runtimeEnv: {
+		INTERNAL_API_SECRET: source.INTERNAL_API_SECRET,
+		TURNSTILE_SECRET_KEY: source.TURNSTILE_SECRET_KEY,
+		CI: source.CI,
+		NEXT_PUBLIC_BACKEND_URL: source.NEXT_PUBLIC_BACKEND_URL,
+		NEXT_PUBLIC_CDN_URL: source.NEXT_PUBLIC_CDN_URL,
+		NEXT_PUBLIC_WEB_URL: source.NEXT_PUBLIC_WEB_URL,
+		NEXT_PUBLIC_GOOGLE_CLIENT_ID: source.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+		NEXT_PUBLIC_SOURCE_COMMIT: source.NEXT_PUBLIC_SOURCE_COMMIT ?? source.SOURCE_COMMIT,
+		NEXT_PUBLIC_TURNSTILE_SITE_KEY: source.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+		NEXT_PUBLIC_AXIOM_DATASET: source.NEXT_PUBLIC_AXIOM_DATASET,
+		NEXT_PUBLIC_AXIOM_TOKEN: source.NEXT_PUBLIC_AXIOM_TOKEN,
 	},
 });

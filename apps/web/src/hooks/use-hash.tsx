@@ -1,14 +1,12 @@
-"use client";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 /**
  * A hook to handle scrolling to an element when a hash is present in the URL
- * This fixes issues with Next.js not scrolling to hash fragments on initial load
+ * This fixes the browser not scrolling to hash fragments on initial load
  */
 export function useHash() {
-	const pathname = usePathname();
-	const searchParams = useSearchParams();
+	const { pathname, searchStr } = useLocation();
 
 	useEffect(() => {
 		// Get the hash from the URL (if any)
@@ -28,5 +26,5 @@ export function useHash() {
 				}, 100);
 			}
 		}
-	}, [pathname, searchParams]); // Re-run when pathname or search params change
+	}, [pathname, searchStr]); // Re-run when pathname or search params change
 }
