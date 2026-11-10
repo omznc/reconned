@@ -18,6 +18,7 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
+import { switchClubPath } from "@/lib/club-path";
 
 type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
 
@@ -27,7 +28,7 @@ interface ClubSwitcherProps {
 
 export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 	const router = useRouter();
-	const params = useParams({ strict: false }) as { clubId?: string; id?: string };
+	const params = useParams({ strict: false }) as { clubId?: string };
 	const pathname = usePathname();
 	const { clubId, setClubId } = useCurrentClub();
 	const t = useExtracted();
@@ -70,16 +71,10 @@ export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 
 		document.addEventListener("keydown", handleKeyDown);
 		return () => document.removeEventListener("keydown", handleKeyDown);
-	}, [clubId, clubs]);
+	}, [clubId, clubs, pathname]);
 
 	const navigateToClub = (club: DashboardClubs[number]) => {
-		const prefix = `/dashboard/${clubId}`;
-		if (!(clubId && pathname.startsWith(prefix))) {
-			return router.push(`/dashboard/${club.id}`);
-		}
-		// An event id (`events/$id`) belongs to the old club, so go to the event list.
-		const rest = params.id ? "/events" : pathname.slice(prefix.length);
-		router.push(`/dashboard/${club.id}${rest}`);
+		router.push(switchClubPath(pathname, clubId, club.id));
 	};
 
 	if (clubs.length === 0) {

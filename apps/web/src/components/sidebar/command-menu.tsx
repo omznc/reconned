@@ -37,7 +37,8 @@ import {
 	CommandShortcut,
 } from "@/components/ui/command";
 import { Credenza, CredenzaContent, CredenzaTitle, CredenzaTrigger } from "@/components/ui/credenza";
-import { useRouter } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { switchClubPath } from "@/lib/club-path";
 
 interface CommandMenuProps {
 	user: User & { role?: string | null | undefined };
@@ -47,6 +48,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 	const { open, setOpen } = useCommandMenu();
 	const [search, setSearch] = useState("");
 	const router = useRouter();
+	const pathname = usePathname();
 	const { clubId } = useCurrentClub();
 	const { clubs } = useClubs();
 	const t = useExtracted();
@@ -81,14 +83,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 	};
 
 	const handleClubSelection = (club: DashboardClubs[number]) => {
-		const currentFullUrl = window.location.href;
-
-		if (clubId && currentFullUrl.includes(clubId)) {
-			const newUrl = currentFullUrl.replace(clubId, club.id);
-			router.push(newUrl);
-		} else {
-			router.push(`/dashboard/${club.id}`);
-		}
+		router.push(switchClubPath(pathname, clubId, club.id));
 		setOpen(false);
 	};
 
@@ -199,7 +194,7 @@ export function CommandMenu({ user }: CommandMenuProps) {
 		return () => {
 			document.removeEventListener("keydown", handleShiftNumberPress);
 		};
-	}, [clubs]);
+	}, [clubs, clubId, pathname]);
 
 	// Focus input when dialog opens
 	useEffect(() => {
