@@ -102,7 +102,7 @@ function SortField({ sort }: { sort: NonNullable<ListingShellProps["sort"]> }) {
 	const t = useExtracted();
 	const id = useId();
 	return (
-		<div className="hidden h-11 w-[200px] items-center gap-2 rounded-md border border-input bg-background px-3.5 focus-within:border-ring @min-[821px]:flex">
+		<div className="hidden h-11 min-w-[200px] items-center gap-2 rounded-md border border-input bg-background px-3.5 focus-within:border-ring @min-[821px]:flex">
 			<label htmlFor={id} className="text-xs text-muted-foreground">
 				{t("Sort")}
 			</label>
@@ -110,7 +110,7 @@ function SortField({ sort }: { sort: NonNullable<ListingShellProps["sort"]> }) {
 				id={id}
 				value={sort.value}
 				onChange={(event) => sort.onChange(event.target.value)}
-				className="w-full min-w-0 flex-1 border-0 bg-transparent text-sm text-foreground outline-none"
+				className="flex-1 cursor-pointer border-0 bg-transparent text-sm text-foreground outline-none"
 			>
 				{sort.options.map((option) => (
 					<option key={option.value} value={option.value}>

@@ -121,6 +121,12 @@
 	::file-selector-button {
 		border-color: var(--color-gray-200, currentColor);
 	}
+
+	/* A native select popup ignores a transparent option background, so the light popup got the dark theme's white text. */
+	option {
+		background-color: var(--color-popover);
+		color: var(--color-popover-foreground);
+	}
 }
 
 @utility text-balance {
