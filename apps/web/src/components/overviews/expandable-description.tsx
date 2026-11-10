@@ -35,12 +35,12 @@ export function ExpandableDescription({ description }: ExpandableDescriptionProp
 					{isExpanded ? (
 						<>
 							{t("Show less")}
-							<ChevronUp className="h-4 w-4 ml-1" />
+							<ChevronUp className="h-4 w-4" />
 						</>
 					) : (
 						<>
 							{t("Read more")}
-							<ChevronDown className="h-4 w-4 ml-1" />
+							<ChevronDown className="h-4 w-4" />
 						</>
 					)}
 				</Button>

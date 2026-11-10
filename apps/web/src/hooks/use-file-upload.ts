@@ -1,10 +1,10 @@
 "use client";
 
-import { useLogger } from "next-axiom";
 import { useExtracted } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { FileUploadItem } from "@/components/ui/file-upload";
+import { useLogger } from "@/lib/logger";
 
 export interface UseFileUploadOptions {
 	/** Function to upload a single file and return the CDN URL */

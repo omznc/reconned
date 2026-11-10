@@ -1,32 +1,17 @@
-"use client";
-
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
-import { cn } from "@/lib/utils";
 
-interface FontBodyProps {
-	children: ReactNode;
-	geistMonoVariable: string;
-	geistSansVariable: string;
-}
-
-export function FontBody({ children, geistMonoVariable, geistSansVariable }: FontBodyProps) {
+/**
+ * Applies the font preference to `<body>`, so portals (dropdowns, dialogs) inherit it too.
+ * The server renders the sans class; the stored preference is applied after mount.
+ */
+export function FontBody({ children }: { children: ReactNode }) {
 	const { font } = useFont();
-	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
-		setMounted(true);
-	}, []);
+		document.body.classList.toggle("font-geist-mono", font === "mono");
+		document.body.classList.toggle("font-geist-sans", font !== "mono");
+	}, [font]);
 
-	// During SSR and initial render, always use sans
-	const fontVariable = mounted ? (font === "mono" ? geistMonoVariable : geistSansVariable) : geistSansVariable;
-
-	return (
-		<body
-			className={cn(fontVariable, "antialiased min-h-dvh flex flex-col items-center justify-center")}
-			suppressHydrationWarning
-		>
-			{children}
-		</body>
-	);
+	return children;
 }

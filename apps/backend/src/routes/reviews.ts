@@ -3,6 +3,7 @@ import { and, count, desc, eq, gte, lte } from "drizzle-orm";
 import * as z from "zod";
 import { club, event, eventAttendee, review, reviewEditHistory, user } from "../drizzle/schema";
 import { rateLimitKey, redisRateLimitStore } from "../lib/cache";
+import { bustReviewCache } from "../lib/cache-bust";
 import { db } from "../lib/db";
 import { isFeatureEnabled } from "../lib/feature-flags";
 import { logger } from "../lib/posthog";
@@ -22,21 +23,6 @@ function cachedJson<T>(data: T, cacheControl: string): Response {
 			"Cache-Control": cacheControl,
 		},
 	});
-}
-
-async function bustReviewCache(type: string, entityId: string): Promise<void> {
-	try {
-		const keys = await redis.keys(`reviews:${type}:${entityId}:page:*`);
-		if (keys.length > 0) {
-			await redis.del(...keys);
-		}
-	} catch (error) {
-		logger.emit({
-			severityText: "error",
-			body: "Error busting review cache",
-			attributes: { error: error instanceof Error ? error.message : String(error) },
-		});
-	}
 }
 
 const reviewWithAuthorSchema = z.object({
@@ -219,7 +205,8 @@ reviewsRouter.get(
 		schema: {
 			tags: ["Reviews"],
 			summary: "Get reviews",
-			description: "Get reviews for a user, club, or event with pagination and optional rating filtering",
+			description:
+				"Get reviews for a user, club, or event with pagination and optional rating filtering. `id` is the club/event/user ID (a slug also works for clubs and events).",
 			params: z.object({
 				type: z.enum(["user", "club", "event"]),
 				id: z.string(),
@@ -235,6 +222,7 @@ reviewsRouter.get(
 					pagination: paginationResponseSchema,
 				}),
 			},
+			mcpTool: true,
 		},
 	},
 );
@@ -494,7 +482,7 @@ reviewsRouter.post(
 
 			const bustEntityId = userId || clubId || eventId;
 			if (bustEntityId) {
-				void bustReviewCache(body.type.toLowerCase(), bustEntityId);
+				await bustReviewCache(body.type.toLowerCase(), bustEntityId);
 			}
 
 			return response.json({
@@ -531,7 +519,7 @@ reviewsRouter.post(
 
 		const bustEntityId = userId || clubId || eventId;
 		if (bustEntityId) {
-			void bustReviewCache(type.toLowerCase(), bustEntityId);
+			await bustReviewCache(type.toLowerCase(), bustEntityId);
 		}
 
 		return response.json(
@@ -663,7 +651,7 @@ reviewsRouter.patch(
 		const bustType = existingReview.type.toLowerCase();
 		const bustEntityId = existingReview.userId || existingReview.clubId || existingReview.eventId;
 		if (bustEntityId) {
-			void bustReviewCache(bustType, bustEntityId);
+			await bustReviewCache(bustType, bustEntityId);
 		}
 
 		return response.json({ review: updatedReview });
@@ -750,7 +738,7 @@ reviewsRouter.delete(
 		const bustType = existingReview.type.toLowerCase();
 		const bustEntityId = existingReview.userId || existingReview.clubId || existingReview.eventId;
 		if (bustEntityId) {
-			void bustReviewCache(bustType, bustEntityId);
+			await bustReviewCache(bustType, bustEntityId);
 		}
 
 		return response.json({ success: true });

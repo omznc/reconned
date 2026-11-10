@@ -35,6 +35,8 @@ async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 5):
 				throw error;
 			}
 
+			// Close the old client, or its socket leaks and exhausts the ephemeral ports.
+			redisInstance?.close();
 			redisInstance = null;
 			await new Promise((resolve) => setTimeout(resolve, retryDelays[attempt] ?? 500));
 		}

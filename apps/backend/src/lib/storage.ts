@@ -13,7 +13,14 @@ const s3 = new S3Client({
 
 const allowedFileTypes: string[] = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-const maxFileSize = 5 * 1024 * 1024; // 5 MB
+/**
+ * The one upload cap. Presign routes validate against it and the upload UIs are
+ * told the same number — a route that advertised more than this rejected the
+ * file only after the user had picked it, with "Failed to get upload URL".
+ */
+export const MAX_UPLOAD_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+const maxFileSize = MAX_UPLOAD_FILE_SIZE;
 
 export interface UploadUrlRequest {
 	type: string;
@@ -96,6 +103,27 @@ export async function getS3UploadUrl(
 		cdnUrl: `${env.CDN_URL}/${keyWithSize}`,
 		key: keyWithSize,
 	};
+}
+
+/**
+ * The S3 key behind a stored CDN URL. Keys carry a `_{size}b` suffix and images
+ * carry a `?v=` cache-buster, so the base key a route composed at upload time
+ * ("club/x/logo") is never the key that was actually written — the stored URL is
+ * the only record of it. Returns null for anything not served off our CDN.
+ */
+export function keyFromCdnUrl(url: string | null | undefined): string | null {
+	if (!url) {
+		return null;
+	}
+
+	const prefix = `${env.CDN_URL}/`;
+	const withoutQuery = url.split("?")[0] ?? "";
+
+	if (!withoutQuery.startsWith(prefix)) {
+		return null;
+	}
+
+	return withoutQuery.slice(prefix.length) || null;
 }
 
 export async function deleteS3Files(keys: string[], userId?: string): Promise<void> {

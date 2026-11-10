@@ -1,0 +1,581 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/archivo";
+@import "@fontsource-variable/archivo-narrow";
+
+/* Same variables and classes that `next/font/google` produced. */
+:root {
+	--font-archivo: "Archivo Variable";
+	--font-archivo-narrow: "Archivo Narrow Variable";
+}
+
+.font-geist-sans {
+	font-family: "Geist Variable", sans-serif;
+}
+
+.font-geist-mono {
+	font-family: "Geist Mono Variable", monospace;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+
+	--color-card: hsl(var(--card));
+	--color-card-foreground: hsl(var(--card-foreground));
+
+	--color-popover: hsl(var(--popover));
+	--color-popover-foreground: hsl(var(--popover-foreground));
+
+	--color-primary: hsl(var(--primary));
+	--color-primary-foreground: hsl(var(--primary-foreground));
+
+	--color-secondary: hsl(var(--secondary));
+	--color-secondary-foreground: hsl(var(--secondary-foreground));
+
+	--color-muted: hsl(var(--muted));
+	--color-muted-foreground: hsl(var(--muted-foreground));
+
+	--color-accent: hsl(var(--accent));
+	--color-accent-foreground: hsl(var(--accent-foreground));
+
+	--color-destructive: hsl(var(--destructive));
+	--color-destructive-foreground: hsl(var(--destructive-foreground));
+
+	--color-border: hsl(var(--border));
+	--color-input: hsl(var(--input));
+	--color-ring: hsl(var(--ring));
+
+	--color-chart-1: hsl(var(--chart-1));
+	--color-chart-2: hsl(var(--chart-2));
+	--color-chart-3: hsl(var(--chart-3));
+	--color-chart-4: hsl(var(--chart-4));
+	--color-chart-5: hsl(var(--chart-5));
+
+	--color-sidebar: hsl(var(--sidebar-background));
+	--color-sidebar-foreground: hsl(var(--sidebar-foreground));
+	--color-sidebar-primary: hsl(var(--sidebar-primary));
+	--color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+	--color-sidebar-accent: hsl(var(--sidebar-accent));
+	--color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+	--color-sidebar-border: hsl(var(--sidebar-border));
+	--color-sidebar-ring: hsl(var(--sidebar-ring));
+
+	/* Identity marks. `font-club-mark` is the condensed 700 reserved for clubs;
+	   `font-person-mark` is the quieter 600 used for people. */
+	--font-club-mark: var(--font-archivo-narrow), "Archivo Narrow", sans-serif;
+	--font-person-mark: var(--font-archivo), Archivo, sans-serif;
+	--font-club: var(--font-archivo-narrow), "Archivo Narrow", "Arial Narrow", sans-serif;
+	--font-person: var(--font-archivo), Archivo, system-ui, sans-serif;
+
+	/* Redesign tokens. The status colours stay the same in both themes. */
+	--color-brand: hsl(var(--brand));
+	--color-brand-soft: hsl(var(--brand-soft));
+	--color-glow: hsl(var(--glow));
+	--color-status-open: hsl(var(--status-open));
+	--color-status-soon: hsl(var(--status-soon));
+	--color-status-full: hsl(var(--status-full));
+
+	--radius-lg: var(--radius);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-sm: calc(var(--radius) - 4px);
+
+	--animate-accordion-down: accordion-down 0.2s ease-out;
+	--animate-accordion-up: accordion-up 0.2s ease-out;
+
+	@keyframes accordion-down {
+		from {
+			height: 0;
+		}
+		to {
+			height: var(--radix-accordion-content-height);
+		}
+	}
+	@keyframes accordion-up {
+		from {
+			height: var(--radix-accordion-content-height);
+		}
+		to {
+			height: 0;
+		}
+	}
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentColor);
+	}
+
+	/* A native select popup ignores a transparent option background, so the light popup got the dark theme's white text. */
+	option {
+		background-color: var(--color-popover);
+		color: var(--color-popover-foreground);
+	}
+
+	/* The map page is a fixed full-screen layer: a wheel over a gap between its panels must not scroll the page behind it. */
+	html:has([data-map-page]) {
+		overflow: hidden;
+	}
+}
+
+@utility text-balance {
+	text-wrap: balance;
+}
+
+/*
+  Person avatars scale their initials off the avatar box rather than a passed-in
+  pixel size, so every existing call site keeps sizing with plain h-/w- classes.
+  0.37 x size is the ratio from the identity sheet. Below 24px the initials are
+  dropped and the tint stands alone, where letters would only turn to mush.
+*/
+@layer components {
+	.identity-avatar {
+		container-type: size;
+	}
+
+	.identity-initials {
+		font-size: 37cqw;
+		line-height: 1;
+		/* Initials are a mark, not text — dragging across a list shouldn't select them. */
+		user-select: none;
+		-webkit-user-select: none;
+	}
+
+	@container (max-width: 23.9px) {
+		.identity-initials {
+			display: none;
+		}
+	}
+}
+
+/*
+  Map pins. Every state — zoomed out, hovered, selected — is the same pin at a
+  different scale about its tip, so the browser only ever interpolates a
+  transform and the pin's point never leaves the coordinate it marks.
+*/
+@layer components {
+	.map-marker {
+		background: none;
+		border: 0;
+	}
+
+	.map-pin {
+		transition:
+			transform 280ms cubic-bezier(0.32, 0.72, 0, 1),
+			filter 280ms cubic-bezier(0.32, 0.72, 0, 1);
+		will-change: transform;
+	}
+
+	/* Selecting is a commit, so it lands with a touch of overshoot. */
+	.map-pin-settling {
+		transition-timing-function: cubic-bezier(0.34, 1.32, 0.64, 1);
+	}
+
+	.map-pin-plate {
+		transition:
+			background-color 200ms cubic-bezier(0.32, 0.72, 0, 1),
+			padding 280ms cubic-bezier(0.32, 0.72, 0, 1);
+	}
+
+	.map-pin-label {
+		transform: translateX(-50%);
+		animation: map-pin-label-in 140ms cubic-bezier(0.32, 0.72, 0, 1) both;
+	}
+
+	.map-marker-in {
+		animation: map-marker-in 220ms cubic-bezier(0.32, 0.72, 0, 1) both;
+	}
+
+	@keyframes map-pin-label-in {
+		from {
+			opacity: 0;
+			transform: translateX(-50%) translateY(-3px);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(-50%) translateY(0);
+		}
+	}
+
+	@keyframes map-marker-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	/*
+	  Regrouping, seen rather than inferred. A pin that arrives starts at the pin it
+	  came out of and is thrown to its own spot, overshooting slightly the way a
+	  released thing does; a pin that leaves travels to whatever absorbed it and
+	  shrinks out. Both are the same journey, so a fan opening and the same fan
+	  closing trace one path in two directions.
+	*/
+	.map-marker-emerge {
+		animation: map-marker-emerge 400ms cubic-bezier(0.34, 1.26, 0.64, 1) both;
+	}
+
+	.map-marker-vanish {
+		animation: map-marker-vanish 280ms cubic-bezier(0.32, 0.72, 0, 1) both;
+		pointer-events: none;
+	}
+
+	@keyframes map-marker-emerge {
+		from {
+			opacity: 0;
+			transform: translate3d(var(--map-dx, 0px), var(--map-dy, 0px), 0) scale(0.62);
+		}
+		45% {
+			opacity: 1;
+		}
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+	}
+
+	@keyframes map-marker-vanish {
+		from {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+		to {
+			opacity: 0;
+			transform: translate3d(var(--map-dx, 0px), var(--map-dy, 0px), 0) scale(0.58);
+		}
+	}
+
+	/*
+	  The fan's leader lines and the dot they converge on. The lines only mean
+	  anything once the pins they explain have arrived, so they come up under them
+	  rather than with them.
+	*/
+	.map-leader {
+		animation: map-leader-in 320ms cubic-bezier(0.32, 0.72, 0, 1) 80ms both;
+	}
+
+	.map-anchor {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: map-anchor-in 340ms cubic-bezier(0.34, 1.26, 0.64, 1) both;
+	}
+
+	@keyframes map-leader-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes map-anchor-in {
+		from {
+			opacity: 0;
+			transform: scale(0.2);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	/*
+	  The phone's club card. It rises from the edge it's attached to, which is the
+	  only motion that explains where it came from and where dismissing sends it.
+	*/
+	.map-sheet {
+		animation: map-sheet-in 260ms cubic-bezier(0.32, 0.72, 0, 1) both;
+	}
+
+	@keyframes map-sheet-in {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/*
+	  Zoom buttons are a desktop affordance — a phone pinches, and the sheet lands
+	  exactly where they sit.
+	*/
+	@media (max-width: 767px) {
+		.leaflet-control-zoom,
+		.maplibregl-ctrl-group:has(.maplibregl-ctrl-zoom-in) {
+			display: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.map-pin,
+		.map-pin-plate {
+			transition-duration: 1ms;
+		}
+
+		.map-pin-label,
+		.map-marker-in,
+		.map-sheet {
+			animation-duration: 1ms;
+		}
+
+		/*
+		  Regrouping still needs to read as a change rather than a jump cut, so the
+		  travel goes and a plain cross-fade stays.
+		*/
+		.map-marker-emerge,
+		.map-marker-vanish,
+		.map-leader,
+		.map-anchor {
+			animation-name: map-marker-fade;
+			animation-duration: 160ms;
+			animation-delay: 0ms;
+			animation-timing-function: ease;
+		}
+
+		.map-marker-vanish {
+			animation-direction: reverse;
+		}
+
+		@keyframes map-marker-fade {
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+@utility grid-span-last-odd {
+	> :last-child:nth-child(odd) {
+		grid-column: 1 / -1;
+	}
+}
+
+@layer base {
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 0 0% 3.9%;
+		--card: 0 0% 100%;
+		--card-foreground: 0 0% 3.9%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 0 0% 3.9%;
+		--primary: 0 0% 9%;
+		--primary-foreground: 0 0% 98%;
+		--secondary: 0 0% 96.1%;
+		--secondary-foreground: 0 0% 9%;
+		--muted: 0 0% 96.1%;
+		--muted-foreground: 0 0% 45.1%;
+		--accent: 0 0% 96.1%;
+		--accent-foreground: 0 0% 9%;
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 0 0% 98%;
+		--border: 0 0% 89.8%;
+		--input: 0 0% 89.8%;
+		--ring: 0 0% 3.9%;
+		--chart-1: 12 76% 61%;
+		--chart-2: 173 58% 39%;
+		--chart-3: 197 37% 24%;
+		--chart-4: 43 74% 66%;
+		--chart-5: 27 87% 67%;
+		--radius: 1rem;
+		--brand: 0 78% 46%;
+		--brand-soft: 0 80% 96%;
+		--glow: 0 60% 97%;
+		--status-open: 173 58% 39%;
+		--status-soon: 43 74% 66%;
+		--status-full: 12 76% 61%;
+		--sidebar-background: 0 0% 98%;
+		--sidebar-foreground: 240 5.3% 26.1%;
+		--sidebar-primary: 240 5.9% 10%;
+		--sidebar-primary-foreground: 0 0% 98%;
+		--sidebar-accent: 240 4.8% 95.9%;
+		--sidebar-accent-foreground: 240 5.9% 10%;
+		--sidebar-border: 220 13% 91%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
+		--novel-highlight-default: #ffffff;
+		--novel-highlight-purple: #f6f3f8;
+		--novel-highlight-red: #fdebeb;
+		--novel-highlight-yellow: #fbf4a2;
+		--novel-highlight-blue: #c1ecf9;
+		--novel-highlight-green: #acf79f;
+		--novel-highlight-orange: #faebdd;
+		--novel-highlight-pink: #faf1f5;
+		--novel-highlight-gray: #f1f1ef;
+	}
+	.dark {
+		.leaflet-layer,
+		.leaflet-control-zoom-in,
+		.leaflet-control-zoom-out,
+		.leaflet-control-attribution,
+		.leaflet-attribution-flag {
+			filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+		}
+		.leaflet-container,
+		.leaflet-popup-content-wrapper {
+			background: #000;
+		}
+		--background: 0 0% 0%;
+		--foreground: 0 0% 98%;
+		--card: 0 0% 3.9%;
+		--card-foreground: 0 0% 98%;
+		--popover: 0 0% 3.9%;
+		--popover-foreground: 0 0% 98%;
+		--primary: 0 0% 98%;
+		--primary-foreground: 0 0% 9%;
+		--secondary: 0 0% 14.9%;
+		--secondary-foreground: 0 0% 98%;
+		--muted: 0 0% 14.9%;
+		--muted-foreground: 0 0% 63.9%;
+		--accent: 0 0% 14.9%;
+		--accent-foreground: 0 0% 98%;
+		--destructive: 0 62.8% 50.6%;
+		--destructive-foreground: 0 0% 98%;
+		--border: 0 0% 14.9%;
+		--input: 0 0% 14.9%;
+		--ring: 0 0% 83.1%;
+		--chart-1: 220 70% 50%;
+		--chart-2: 160 60% 45%;
+		--chart-3: 30 80% 55%;
+		--chart-4: 280 65% 60%;
+		--chart-5: 340 75% 55%;
+		--brand: 0 84% 58%;
+		--brand-soft: 0 70% 12%;
+		--glow: 0 100% 9%;
+		--sidebar-background: 240 5.9% 5%;
+		--sidebar-foreground: 240 4.8% 70.9%;
+		--sidebar-primary: 224.3 76.3% 48%;
+		--sidebar-primary-foreground: 0 0% 100%;
+		--sidebar-accent: 240 3.7% 7.9%;
+		--sidebar-accent-foreground: 240 4.8% 95.9%;
+		--sidebar-border: 240 3.7% 15.9%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
+		--novel-highlight-default: #000000;
+		--novel-highlight-purple: #3f2c4b;
+		--novel-highlight-red: #5c1a1a;
+		--novel-highlight-yellow: #5c4b1a;
+		--novel-highlight-blue: #1a3d5c;
+		--novel-highlight-green: #1a5c20;
+		--novel-highlight-orange: #5c3a1a;
+		--novel-highlight-pink: #5c1a3a;
+		--novel-highlight-gray: #3a3a3a;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground;
+	}
+}
+
+@keyframes fade-in-up {
+	0% {
+		opacity: 0;
+		transform: translateY(1rem);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.fade-in-up {
+	animation: fade-in-up 0.3s ease-out;
+}
+
+/* Keep the entrance, drop the movement: a crossfade still communicates "this is new". */
+@media (prefers-reduced-motion: reduce) {
+	.fade-in-up {
+		animation-name: fade-in;
+	}
+}
+
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.fade-in {
+	animation: fade-in 0.3s ease-out;
+}
+
+/* Images should not be selectable or draggable	 */
+img {
+	user-select: none;
+	-webkit-user-drag: none;
+}
+
+/* biome-ignore lint/style/noDescendingSpecificity: I need it, don't ask */
+.leaflet-popup-content-wrapper {
+	/* biome-ignore lint/complexity/noImportantStyles: I need it, don't ask */
+	border-radius: 0px !important;
+}
+
+@layer base {
+	button:not(:disabled),
+	[role="button"]:not(:disabled) {
+		cursor: pointer;
+	}
+	input:where(:not([type="checkbox"], [type="radio"])),
+	textarea,
+	select {
+		background-color: hsl(var(--background));
+	}
+}
+
+/* Native <progress> for "places left". `data-hot` turns it red when the event is nearly full. */
+.meter {
+	appearance: none;
+	width: 100%;
+	height: 6px;
+	border: 0;
+	border-radius: 999px;
+	overflow: hidden;
+	background: hsl(var(--secondary));
+	color: hsl(var(--foreground));
+	accent-color: currentColor;
+}
+.meter[data-hot="true"] {
+	color: hsl(var(--status-full));
+}
+.meter::-webkit-progress-bar {
+	background: hsl(var(--secondary));
+}
+.meter::-webkit-progress-value {
+	background: currentColor;
+	border-radius: 999px;
+}
+.meter::-moz-progress-bar {
+	background: currentColor;
+	border-radius: 999px;
+}

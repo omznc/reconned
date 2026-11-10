@@ -11,6 +11,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
+	DropdownMenuSub,
+	DropdownMenuSubContent,
+	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -19,8 +22,18 @@ import apiClient from "@/lib/api/api.client";
 import { useIsAuthenticated } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
-export interface LanguageSwitcherProps extends ButtonProps {}
-export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitcherProps) {
+export interface LanguageSwitcherProps extends ButtonProps {
+	withinMenu?: boolean;
+	/** Only one mounted switcher may save the locale to the cookie and the account. */
+	sync?: boolean;
+}
+export function LanguageSwitcher({
+	className,
+	variant,
+	withinMenu = false,
+	sync = true,
+	...props
+}: LanguageSwitcherProps) {
 	const t = useExtracted();
 	const router = useRouter();
 	const path = usePathname();
@@ -29,6 +42,10 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 	const [isChanging, setIsChanging] = useState(false);
 
 	useEffect(() => {
+		if (!sync) {
+			return;
+		}
+
 		// Validate locale
 		if (!VALID_LOCALES.includes(locale)) {
 			return;
@@ -102,7 +119,7 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 		};
 
 		updateLanguage();
-	}, [locale, user]);
+	}, [locale, user, sync]);
 
 	const handleLanguageChange = async (localeOption: string) => {
 		if (localeOption === locale) {
@@ -132,7 +149,6 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 			const query = Object.fromEntries(new URLSearchParams(window.location.search).entries());
 			const href = Object.keys(query).length > 0 ? { pathname: path, query } : path;
 			router.replace(href, { locale: localeOption });
-			router.refresh();
 		} catch (error) {
 			console.error("Failed to change language:", error);
 			toast.error(t("Failed to change language. Please try again."));
@@ -140,6 +156,36 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 			setIsChanging(false);
 		}
 	};
+
+	const languageOptions = VALID_LOCALES.map((localeOption) => (
+		<DropdownMenuItem
+			key={localeOption}
+			onSelect={() => handleLanguageChange(localeOption)}
+			className={cn(locale === localeOption && "bg-accent")}
+			disabled={isChanging}
+		>
+			<div className="flex w-full items-center gap-2">
+				<span>{LANGUAGE_TRANSLATIONS[localeOption]}</span>
+				{locale === localeOption && <span className="ml-auto">✓</span>}
+			</div>
+		</DropdownMenuItem>
+	));
+
+	if (withinMenu) {
+		return (
+			<DropdownMenuSub>
+				<DropdownMenuSubTrigger className={cn("w-full cursor-pointer gap-2", className)}>
+					<Globe className="h-[1.2rem] w-[1.2rem] shrink-0" />
+					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}
+				</DropdownMenuSubTrigger>
+				<DropdownMenuSubContent>
+					<DropdownMenuLabel>{t("Choose a language")}</DropdownMenuLabel>
+					<DropdownMenuSeparator />
+					{languageOptions}
+				</DropdownMenuSubContent>
+			</DropdownMenuSub>
+		);
+	}
 
 	return (
 		<DropdownMenu>
@@ -150,26 +196,14 @@ export function LanguageSwitcher({ className, variant, ...props }: LanguageSwitc
 					className={cn("w-auto shrink-0 cursor-pointer items-center justify-center shadow-none", className)}
 					{...props}
 				>
-					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 ml-2 scale-100 transition-all" />
+					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="start">
 				<DropdownMenuLabel>{t("Choose a language")}</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				{VALID_LOCALES.map((localeOption) => (
-					<DropdownMenuItem
-						key={localeOption}
-						onClick={() => handleLanguageChange(localeOption)}
-						className={cn(locale === localeOption && "bg-accent")}
-						disabled={isChanging}
-					>
-						<div className="flex items-center gap-2">
-							<span>{LANGUAGE_TRANSLATIONS[localeOption]}</span>
-							{locale === localeOption && <span className="ml-auto">✓</span>}
-						</div>
-					</DropdownMenuItem>
-				))}
+				{languageOptions}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

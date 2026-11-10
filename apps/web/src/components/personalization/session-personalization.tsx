@@ -4,7 +4,6 @@ import { useTheme } from "next-themes";
 import { useEffect } from "react";
 import { ImpersonationAlert } from "@/components/impersonation-alert";
 import { useFont } from "@/components/personalization/font/font-provider";
-import { useStyle } from "@/components/personalization/style/style-provider";
 import { authClient } from "@/lib/auth-client";
 
 /**
@@ -19,8 +18,8 @@ import { authClient } from "@/lib/auth-client";
  * code.
  *
  * The session is read on the client instead, via the same `authClient.useSession()`
- * subscription that `StyleProvider` and `PosthogIdentify` already use on every
- * page, so this adds no additional network request.
+ * subscription that `PosthogIdentify` already uses on every page, so this adds no
+ * additional network request.
  *
  * Precedence is unchanged: an explicit local choice (localStorage) still wins
  * over the account preference, which still wins over the built-in default. We
@@ -31,11 +30,9 @@ export function SessionPersonalization() {
 	const { data: session } = authClient.useSession();
 	const user = session?.user;
 	const { font, setFont } = useFont();
-	const { style, setStyle } = useStyle();
 	const { setTheme } = useTheme();
 
 	const userFont = user?.font as "mono" | "sans" | null | undefined;
-	const userStyle = user?.style as "sharp" | "relaxed" | null | undefined;
 	const userTheme = user?.theme as "dark" | "light" | null | undefined;
 
 	useEffect(() => {
@@ -46,15 +43,6 @@ export function SessionPersonalization() {
 			setFont(userFont);
 		}
 	}, [userFont, font, setFont]);
-
-	useEffect(() => {
-		if (!userStyle || window.localStorage.getItem("reconned-style")) {
-			return;
-		}
-		if (userStyle !== style) {
-			setStyle(userStyle);
-		}
-	}, [userStyle, style, setStyle]);
 
 	useEffect(() => {
 		// `next-themes` persists under the `theme` key and applies it pre-hydration.

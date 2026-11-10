@@ -2,6 +2,7 @@ import { lt } from "drizzle-orm";
 import { clubInvite } from "../drizzle/schema";
 import { db } from "../lib/db";
 import { logger } from "../lib/posthog";
+import { purgeExpiredSessions, purgeExpiredVerifications, stripAgedAuditLogIdentifiers } from "./retention";
 
 interface Task {
 	name: string;
@@ -236,6 +237,81 @@ scheduler.register({
 					operation: "cleanup_expired_records",
 					domain: "maintenance",
 					table: "club_invites",
+				},
+			},
+		});
+	},
+});
+
+/*
+ * Retention enforcement — Art. 7(1)(e). Periods and rationale live in `./retention`; this file
+ * only sets cadence. Daily because the periods are measured in weeks, and the tasks are
+ * idempotent, so a missed run is caught by the next.
+ */
+
+scheduler.register({
+	name: "purge-expired-sessions",
+	interval: TimeIntervals.DAY,
+	runOnStart: true,
+	handler: async () => {
+		const { deleted, cutoffDate } = await purgeExpiredSessions();
+
+		logger.emit({
+			severityText: "info",
+			body: "Expired session purge completed",
+			attributes: {
+				deleted_count: deleted.toString(),
+				cutoff_date: cutoffDate,
+				business: {
+					operation: "enforce_retention",
+					domain: "privacy",
+					table: "sessions",
+				},
+			},
+		});
+	},
+});
+
+scheduler.register({
+	name: "purge-expired-verifications",
+	interval: TimeIntervals.DAY,
+	runOnStart: true,
+	handler: async () => {
+		const { deleted, cutoffDate } = await purgeExpiredVerifications();
+
+		logger.emit({
+			severityText: "info",
+			body: "Expired verification purge completed",
+			attributes: {
+				deleted_count: deleted.toString(),
+				cutoff_date: cutoffDate,
+				business: {
+					operation: "enforce_retention",
+					domain: "privacy",
+					table: "verifications",
+				},
+			},
+		});
+	},
+});
+
+scheduler.register({
+	name: "strip-aged-audit-log-identifiers",
+	interval: TimeIntervals.DAY,
+	runOnStart: true,
+	handler: async () => {
+		const { updated, cutoffDate } = await stripAgedAuditLogIdentifiers();
+
+		logger.emit({
+			severityText: "info",
+			body: "Aged audit log identifier strip completed",
+			attributes: {
+				updated_count: updated.toString(),
+				cutoff_date: cutoffDate,
+				business: {
+					operation: "enforce_retention",
+					domain: "privacy",
+					table: "club_audit_logs",
 				},
 			},
 		});

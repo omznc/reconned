@@ -3,12 +3,12 @@
 import NoResults from "@public/errors/no-results.png";
 import { format } from "date-fns";
 import { ArrowDownUp, ArrowDownZA, ArrowUpAZ, MoreHorizontal, Search, X } from "lucide-react";
-import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import type { ChangeEvent, ReactNode } from "react";
 import { Children, useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
+import { Image } from "@/components/image";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -51,6 +51,12 @@ interface Filter {
 	key: string;
 	label: string;
 	options: { label: string; value: string }[];
+	/**
+	 * Shown as selected when the URL carries no value for this filter. Use it when the server
+	 * applies a default of its own, so the control reflects what is actually being listed
+	 * instead of falling back to the "all" placeholder.
+	 */
+	defaultValue?: string;
 }
 
 interface GenericTableProps<T> {
@@ -390,9 +396,9 @@ export function GenericDataTable<T>({
 								{typeof column.header === "string" ? column.header : column.key.toString()}
 								{sortBy === column.key.toString() &&
 									(sortOrder === "asc" ? (
-										<ArrowUpAZ className="ml-2 h-4 w-4 inline" />
+										<ArrowUpAZ className="h-4 w-4 inline" />
 									) : (
-										<ArrowDownZA className="ml-2 h-4 w-4 inline" />
+										<ArrowDownZA className="h-4 w-4 inline" />
 									))}
 							</DropdownMenuCheckboxItem>
 						))}
@@ -402,7 +408,7 @@ export function GenericDataTable<T>({
 				{filters?.map((filter) => (
 					<Select
 						key={filter.key}
-						value={filterValues[filter.key] || "all"}
+						value={filterValues[filter.key] || filter.defaultValue || "all"}
 						onValueChange={(value) => handleFilterChange(filter.key, value)}
 					>
 						<SelectTrigger className="w-full md:w-[180px] !h-10">
@@ -458,17 +464,17 @@ export function GenericDataTable<T>({
 												<Button
 													variant="ghost"
 													onClick={() => handleSort(column.key.toString())}
-													className="-ml-4 h-8 hover:bg-transparent shadow-none"
+													className="h-8 gap-1.5 px-0 font-medium hover:bg-transparent shadow-none"
 												>
 													{column.header}
 													{sortBy === column.key.toString() ? (
 														sortOrder === "asc" ? (
-															<ArrowUpAZ className="ml-2 h-4 w-4" />
+															<ArrowUpAZ className="h-4 w-4" />
 														) : (
-															<ArrowDownZA className="ml-2 h-4 w-4" />
+															<ArrowDownZA className="h-4 w-4" />
 														)
 													) : (
-														<ArrowDownUp className="ml-2 h-4 w-4" />
+														<ArrowDownUp className="h-4 w-4 text-muted-foreground" />
 													)}
 												</Button>
 											) : (

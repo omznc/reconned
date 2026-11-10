@@ -2,8 +2,8 @@
 
 import { format } from "date-fns";
 import { CalendarDays, Clock, MapPin } from "lucide-react";
-import Image from "next/image";
 import { useExtracted, useLocale } from "next-intl";
+import { Image } from "@/components/image";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";

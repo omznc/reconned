@@ -2,6 +2,8 @@ import { apiError, Router, responseSchema } from "@reconned/router";
 import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, clubPurchase, event, eventRegistration, post } from "../../drizzle/schema";
+import { requireClubManager } from "../../lib/club-access";
+import { getClubPublicStats, loadVisibleClub } from "../../lib/club-public";
 import { db } from "../../lib/db";
 import { extractSizeFromKey } from "../../lib/storage";
 
@@ -16,17 +18,7 @@ clubsStatsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const clubData = await db.select({ createdAt: club.createdAt }).from(club).where(eq(club.id, clubId)).limit(1);
 
@@ -65,7 +57,7 @@ clubsStatsRouter.get(
 					count: count(),
 				})
 				.from(clubMembership)
-				.where(eq(clubMembership.clubId, clubId))
+				.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.status, "ACTIVE")))
 				.groupBy(clubMembership.role),
 			// Events per month for the last 12 months. The range predicate on "dateStart" is
 			// sargable, so this can use Event_clubId_dateStart_idx - unlike the previous
@@ -195,6 +187,53 @@ clubsStatsRouter.get(
 );
 
 clubsStatsRouter.get(
+	"/clubs/:id/public-stats",
+	async ({ params, response, context }) => {
+		if (!params.id) {
+			throw apiError.validation("Club ID is required");
+		}
+		const { club: found, isMember } = await loadVisibleClub(params.id, context);
+		// isPrivateStats hides the event totals from everyone but members and admins.
+		const hideEventStats = found.isPrivateStats && !isMember && !context.isAdmin;
+
+		return response.json(await getClubPublicStats(found.id, hideEventStats));
+	},
+	{
+		auth: false,
+		cache: {
+			key: "club:{id}:public-stats",
+			ttl: 300,
+			swr: 1800,
+			// Private clubs and isPrivateStats depend on who asks.
+			varyByUser: true,
+		},
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get public club statistics",
+			description: `Public numbers for the club page. \`id\` is a club id or slug. Same visibility rules as the club itself.
+
+- \`memberCount\`: active, non-archived members. \`privateMemberCount\`: those of them whose profile is private.
+- \`gamesHosted\`: public events of the club that have ended. \`playersHosted\`: distinct users with a CONFIRMED place at such an event who were not marked absent.
+- Both are null when the club sets \`isPrivateStats\` and the caller is not a member or admin.
+- \`rating\`: average and count of club reviews, null without reviews. \`photoCount\`: images on the club's public posts (Instagram media is not counted).`,
+			params: z.object({ id: z.string() }),
+			response: {
+				200: z.object({
+					memberCount: z.number(),
+					privateMemberCount: z.number(),
+					gamesHosted: z.number().nullable(),
+					playersHosted: z.number().nullable(),
+					rating: z.object({ average: z.number(), count: z.number() }).nullable(),
+					photoCount: z.number(),
+				}),
+				404: z.object({ error: z.string() }),
+			},
+			mcpTool: true,
+		},
+	},
+);
+
+clubsStatsRouter.get(
 	"/clubs/:id/storage-quota",
 	async ({ params, response, context }) => {
 		const clubId = params.id;
@@ -203,17 +242,7 @@ clubsStatsRouter.get(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const [postsUsage, receiptsUsage] = await Promise.all([
 			db.select({ images: post.images }).from(post).where(eq(post.clubId, clubId)),

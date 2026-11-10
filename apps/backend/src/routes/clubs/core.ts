@@ -6,23 +6,53 @@ import * as z from "zod";
 import { club, clubMembership, post } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
 import { NO_CITY, resolveClubCity } from "../../lib/city";
+import { getActiveMembership, requireClubManager, requireClubOwner } from "../../lib/club-access";
+import {
+	ALLIED,
+	buildFilterConditions,
+	CLAIMED,
+	CLUB_SIZES,
+	type ClubFilters,
+	clubRatings,
+	getClubFacets,
+	getNextGames,
+	getPublicClubTotals,
+	LARGE_CLUB_ABOVE,
+	nextGameSchema,
+	queryBoolean,
+	queryIntList,
+	ratingSchema,
+	SMALL_CLUB_BELOW,
+	toRating,
+} from "../../lib/club-listing";
 import { db } from "../../lib/db";
 import { isFeatureEnabled } from "../../lib/feature-flags";
 import { logger } from "../../lib/posthog";
-import { httpsUrl, paginationQuerySchema, paginationResponseSchema } from "../../lib/schemas";
-import { deleteS3Files, getS3UploadUrl } from "../../lib/storage";
+import {
+	httpsUrl,
+	logoTileOf,
+	logoTileResponseSchema,
+	logoTileSchema,
+	paginationQuerySchema,
+	paginationResponseSchema,
+} from "../../lib/schemas";
+import { deleteS3Files, getS3UploadUrl, keyFromCdnUrl, MAX_UPLOAD_FILE_SIZE } from "../../lib/storage";
 
 const clubsCoreRouter = new Router();
 
 const baseClubSchema = createSelectSchema(club);
 
-const publicClubSchema = baseClubSchema.omit({
-	instagramAccessToken: true,
-	instagramRefreshToken: true,
-	instagramTokenExpiry: true,
-	facebookPageId: true,
-	instagramTokenType: true,
-});
+const publicClubSchema = baseClubSchema
+	.omit({
+		instagramAccessToken: true,
+		instagramRefreshToken: true,
+		instagramTokenExpiry: true,
+		facebookPageId: true,
+		instagramTokenType: true,
+	})
+	// The column is plain text, but only ever holds the two tile names, and
+	// clients switch on it — so it goes out as the union rather than as `string`.
+	.extend({ logoTile: logoTileResponseSchema });
 
 const createClubBodySchema = z.object({
 	name: z.string().min(1).max(50),
@@ -44,6 +74,7 @@ const createClubBodySchema = z.object({
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().optional(),
+	logoTile: logoTileSchema,
 	headerImage: z.string().optional(),
 	contactPhone: z.string().max(20).optional(),
 	contactEmail: z.string().max(255).optional(),
@@ -71,6 +102,7 @@ const updateClubBodySchema = z.object({
 	isPrivate: z.boolean().optional(),
 	isPrivateStats: z.boolean().optional(),
 	logo: z.string().nullable().optional(),
+	logoTile: logoTileSchema,
 	headerImage: z.string().nullable().optional(),
 	contactPhone: z.string().max(20).optional(),
 	contactEmail: z.string().max(255).optional(),
@@ -81,7 +113,7 @@ const updateClubBodySchema = z.object({
 const clubLogoUploadBodySchema = z.object({
 	file: z.object({
 		type: z.string().regex(/^image\//),
-		size: z.number().max(1024 * 1024 * 4),
+		size: z.number().max(MAX_UPLOAD_FILE_SIZE),
 	}),
 });
 
@@ -98,58 +130,118 @@ async function validateSlug(slug: string, excludeClubId?: string): Promise<boole
 	return !clubBySlug[0] && !clubById[0];
 }
 
+/** Who may see which clubs: the verified-only flag, search, and private clubs for members only. */
+async function visibleClubConditions(context: { isAdmin?: boolean; user?: { id: string } | null }, search: string) {
+	const conditions: SQL[] = [];
+	const isAdmin = context.isAdmin;
+	const requestingUserId = context.user?.id;
+
+	// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
+	const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
+	if (onlyVerifiedClubs && !isAdmin) {
+		conditions.push(eq(club.verified, true));
+	}
+
+	if (search) {
+		conditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)) as SQL);
+	}
+
+	if (isAdmin) {
+		return conditions;
+	}
+
+	const userMemberships = requestingUserId
+		? await db
+				.select({ clubId: clubMembership.clubId })
+				.from(clubMembership)
+				.where(and(eq(clubMembership.userId, requestingUserId), eq(clubMembership.status, "ACTIVE")))
+		: [];
+	const memberClubIds = userMemberships.map((m) => m.clubId);
+
+	conditions.push(
+		memberClubIds.length > 0
+			? (or(eq(club.isPrivate, false), inArray(club.id, memberClubIds)) as SQL)
+			: eq(club.isPrivate, false),
+	);
+	return conditions;
+}
+
+const CLUB_SORTS = ["name", "location", "createdAt", "members", "rating", "newest"] as const;
+type ClubSort = (typeof CLUB_SORTS)[number];
+
+/** The new sorts read best descending, so they do not need a `sortOrder`. */
+const DEFAULT_DESC_SORTS: ClubSort[] = ["members", "rating", "newest"];
+
+interface SortContext {
+	order: typeof asc | typeof desc;
+	direction: "asc" | "desc";
+	memberCount: SQL;
+	ratings: ReturnType<typeof clubRatings>;
+}
+
+const CLUB_SORTERS: Record<ClubSort, (ctx: SortContext) => SQL[]> = {
+	name: ({ order }) => [order(club.name)],
+	location: ({ order }) => [order(club.location)],
+	createdAt: ({ order }) => [order(club.createdAt)],
+	newest: ({ order }) => [order(club.createdAt)],
+	members: ({ order, memberCount }) => [order(memberCount)],
+	// Clubs without a review sort last either way.
+	rating: ({ order, direction, ratings }) => [
+		sql`${ratings.average} ${sql.raw(direction)} NULLS LAST`,
+		order(sql`COALESCE(${ratings.count}, 0)`),
+	],
+};
+
+function clubOrderBy(
+	sortBy: ClubSort | undefined,
+	sortOrder: "asc" | "desc" | undefined,
+	memberCount: SQL,
+	ratings: ReturnType<typeof clubRatings>,
+) {
+	const direction = sortOrder ?? (sortBy && DEFAULT_DESC_SORTS.includes(sortBy) ? "desc" : undefined);
+	const orderBy: SQL[] =
+		sortBy && direction
+			? CLUB_SORTERS[sortBy]({ order: direction === "desc" ? desc : asc, direction, memberCount, ratings })
+			: [];
+
+	// Standing: the browse page leads with the clubs a visitor is most likely
+	// looking for. Verified first, then clubs someone actually runs — an
+	// alliance ahead of none at each level — and the unclaimed directory
+	// entries last, since nobody is behind them yet.
+	if (!sortBy) {
+		orderBy.push(sql`
+			CASE
+				WHEN ${club.verified} THEN 0
+				WHEN ${CLAIMED} AND ${ALLIED} THEN 1
+				WHEN ${CLAIMED} THEN 2
+				WHEN ${ALLIED} THEN 3
+				ELSE 4
+			END
+		`);
+	}
+
+	if (sortBy !== "name") orderBy.push(asc(club.name));
+	orderBy.push(desc(club.verified));
+	orderBy.push(desc(memberCount));
+	return orderBy;
+}
+
 clubsCoreRouter.get(
 	"/clubs",
 	async ({ response, query, context }) => {
-		const { page = 1, perPage = 25, search = "" } = query;
+		const { page = 1, perPage = 25, search = "", sortBy, sortOrder } = query;
 		const offset = (page - 1) * perPage;
 
-		const whereConditions = [];
-
-		const isAdmin = context.isAdmin;
-		const requestingUserId = context.user?.id;
-
-		// Check ONLY_VERIFIED_CLUBS_VISIBLE feature flag
-		const onlyVerifiedClubs = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
-		if (onlyVerifiedClubs && !isAdmin) {
-			whereConditions.push(eq(club.verified, true));
-		}
-
-		if (search) {
-			whereConditions.push(or(ilike(club.name, `%${search}%`), ilike(club.location, `%${search}%`)));
-		}
-
-		if (!isAdmin) {
-			if (requestingUserId) {
-				const userMemberships = await db
-					.select({ clubId: clubMembership.clubId })
-					.from(clubMembership)
-					.where(eq(clubMembership.userId, requestingUserId));
-
-				const memberClubIds = userMemberships.map((m) => m.clubId);
-
-				if (memberClubIds.length > 0) {
-					whereConditions.push(or(eq(club.isPrivate, false), inArray(club.id, memberClubIds)));
-				} else {
-					whereConditions.push(eq(club.isPrivate, false));
-				}
-			} else {
-				whereConditions.push(eq(club.isPrivate, false));
-			}
-		}
-
-		const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
-
-		const { sortBy, sortOrder } = query;
-
-		const orderBy: Array<ReturnType<typeof asc | typeof desc> | SQL> = [];
-
-		if (sortBy && sortOrder) {
-			const orderFn = sortOrder === "desc" ? desc : asc;
-			if (sortBy === "name") orderBy.push(orderFn(club.name));
-			if (sortBy === "location") orderBy.push(orderFn(club.location));
-			if (sortBy === "createdAt") orderBy.push(orderFn(club.createdAt));
-		}
+		const baseConditions = await visibleClubConditions(context, search);
+		const filters: ClubFilters = {
+			countryIds: query.countryId,
+			city: query.city,
+			size: query.size,
+			verified: query.verified,
+			allied: query.allied,
+			hasGames: query.hasGames,
+		};
+		const whereClause = and(...baseConditions, ...buildFilterConditions(filters));
 
 		// Build member count subquery once, reuse in SELECT and ORDER BY
 		const memberCountSubquery = db
@@ -158,12 +250,12 @@ clubsCoreRouter.get(
 				count: count().as("member_count"),
 			})
 			.from(clubMembership)
+			.where(eq(clubMembership.status, "ACTIVE"))
 			.groupBy(clubMembership.clubId)
 			.as("member_counts");
+		const ratings = clubRatings();
 
-		if (sortBy !== "name") orderBy.push(asc(club.name));
-		orderBy.push(desc(club.verified));
-		orderBy.push(desc(memberCountSubquery.count));
+		const orderBy = clubOrderBy(sortBy, sortOrder, sql`COALESCE(${memberCountSubquery.count}, 0)`, ratings);
 
 		const clubsWithMemberCounts = await db
 			.select({
@@ -178,6 +270,7 @@ clubsCoreRouter.get(
 				description: club.description,
 				dateFounded: club.dateFounded,
 				logo: club.logo,
+				logoTile: club.logoTile,
 				headerImage: club.headerImage,
 				isPrivate: club.isPrivate,
 				isPrivateStats: club.isPrivateStats,
@@ -198,51 +291,36 @@ clubsCoreRouter.get(
 				instagramProfilePictureUrl: club.instagramProfilePictureUrl,
 				instagramBusinessId: club.instagramBusinessId,
 				memberCount: sql<number>`COALESCE(${memberCountSubquery.count}, 0)`,
+				ratingAverage: ratings.average,
+				ratingCount: ratings.count,
 			})
 			.from(club)
 			.leftJoin(memberCountSubquery, eq(club.id, memberCountSubquery.clubId))
+			.leftJoin(ratings, eq(club.id, ratings.clubId))
 			.where(whereClause)
 			.orderBy(...orderBy)
 			.limit(perPage)
 			.offset(offset);
 
-		const totalData = await db.select({ count: count() }).from(club).where(whereClause);
+		const [totalData, nextGames, totals, facets] = await Promise.all([
+			db.select({ count: count() }).from(club).where(whereClause),
+			getNextGames(clubsWithMemberCounts.map((c) => c.id)),
+			getPublicClubTotals(),
+			query.facets ? getClubFacets(baseConditions, filters) : undefined,
+		]);
 		const total = totalData[0]?.count || 0;
 
 		return response.json({
-			clubs: clubsWithMemberCounts.map((c) => ({
-				id: c.id,
-				name: c.name,
-				location: c.location,
-				cityId: c.cityId,
-				city: c.city,
-				citySlug: c.citySlug,
-				latitude: c.latitude,
-				longitude: c.longitude,
-				description: c.description,
-				dateFounded: c.dateFounded,
-				logo: c.logo,
-				headerImage: c.headerImage,
-				isPrivate: c.isPrivate,
-				isPrivateStats: c.isPrivateStats,
-				verified: c.verified,
-				isAllied: c.isAllied,
-				slug: c.slug,
-				createdAt: c.createdAt,
-				updatedAt: c.updatedAt,
-				countryId: c.countryId,
-				website: c.website,
-				banned: c.banned,
-				banReason: c.banReason,
-				banExpires: c.banExpires,
-				contactPhone: c.contactPhone,
-				contactEmail: c.contactEmail,
-				instagramConnected: c.instagramConnected,
-				instagramUsername: c.instagramUsername,
-				instagramProfilePictureUrl: c.instagramProfilePictureUrl,
-				instagramBusinessId: c.instagramBusinessId,
+			totals,
+			...(facets ? { facets } : {}),
+			clubs: clubsWithMemberCounts.map(({ ratingAverage, ratingCount, memberCount, logoTile, ...fields }) => ({
+				...fields,
+				logoTile: logoTileOf(logoTile),
+				memberCount: Number(memberCount),
+				rating: toRating(ratingAverage, ratingCount),
+				nextGame: nextGames.get(fields.id) ?? null,
 				_count: {
-					members: Number(c.memberCount),
+					members: Number(memberCount),
 				},
 			})),
 			pagination: {
@@ -258,18 +336,44 @@ clubsCoreRouter.get(
 			key: "clubs",
 			ttl: 300,
 			swr: 1800,
-			varyByQuery: ["page", "perPage", "search", "sortBy", "sortOrder"],
+			varyByQuery: [
+				"page",
+				"perPage",
+				"search",
+				"sortBy",
+				"sortOrder",
+				"countryId",
+				"city",
+				"size",
+				"verified",
+				"allied",
+				"hasGames",
+				"facets",
+			],
 			// NOT public-safe: private clubs the caller is a member of, and admin visibility.
 			varyByUser: true,
 		},
 		schema: {
 			tags: ["Clubs"],
 			summary: "List clubs",
-			description: "List clubs with pagination, search, and sorting",
+			description: `List clubs with pagination, search, filters, sorting and optional facet counts.
+
+Filters combine with AND. \`size\` buckets use the count of active, non-archived members: small is fewer than ${SMALL_CLUB_BELOW}, medium is ${SMALL_CLUB_BELOW} to ${LARGE_CLUB_ABOVE} (inclusive), large is more than ${LARGE_CLUB_ABOVE}. \`allied\` counts a club as allied when its legacy flag is set or it has a row in an alliance. \`hasGames\` means at least one upcoming public event. \`verified\`, \`allied\` and \`hasGames\` accept "true" (only these) or "false" (exclude these).
+
+\`sortBy\` takes name, location, createdAt (these need \`sortOrder\`), and members, rating, newest (\`sortOrder\` defaults to desc; clubs without reviews come last when sorting by rating). Without \`sortBy\` the standing order applies: verified, then claimed and allied, claimed, allied, the rest.
+
+\`totals\` counts public clubs only, ignoring filters and the viewer. With \`facets=true\` the response also holds \`facets\`: each group counts the clubs that match the search and all other active filters, but not its own filter.`,
 			query: paginationQuerySchema.extend({
 				search: z.string().max(100).optional(),
-				sortBy: z.enum(["name", "location", "createdAt"]).optional(),
+				sortBy: z.enum(CLUB_SORTS).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
+				countryId: queryIntList.optional().describe("Comma separated country ids, for example 1,2"),
+				city: z.string().max(100).optional().describe("City slug or exact city name (case insensitive)"),
+				size: z.enum(CLUB_SIZES).optional(),
+				verified: queryBoolean.optional(),
+				allied: queryBoolean.optional(),
+				hasGames: queryBoolean.optional(),
+				facets: queryBoolean.optional().describe("Return facet counts for country, size and verified"),
 			}),
 			response: {
 				200: z.object({
@@ -278,9 +382,28 @@ clubsCoreRouter.get(
 							_count: z.object({
 								members: z.number(),
 							}),
+							memberCount: z.number().describe("Active, non-archived members"),
+							rating: ratingSchema,
+							nextGame: nextGameSchema,
 						}),
 					),
 					pagination: paginationResponseSchema,
+					// Always sent. Typed optional only so the web page that rebuilds this
+					// object by hand still compiles; make it required with the redesign.
+					totals: z
+						.object({
+							clubCount: z.number(),
+							cityCount: z.number(),
+							countryCount: z.number(),
+						})
+						.optional(),
+					facets: z
+						.object({
+							country: z.array(z.object({ countryId: z.number(), count: z.number() })),
+							size: z.object({ small: z.number(), medium: z.number(), large: z.number() }),
+							verified: z.object({ verified: z.number(), unverified: z.number() }),
+						})
+						.optional(),
 				}),
 			},
 			mcpTool: true,
@@ -311,13 +434,9 @@ clubsCoreRouter.get(
 		let hasAccess = !clubData[0].isPrivate;
 		let isMember = false;
 		if (clubData[0].isPrivate && context.user) {
-			const membership = await db
-				.select()
-				.from(clubMembership)
-				.where(and(eq(clubMembership.clubId, clubData[0].id), eq(clubMembership.userId, context.user.id)))
-				.limit(1);
-			hasAccess = !!membership[0];
-			isMember = !!membership[0];
+			const membership = await getActiveMembership(clubData[0].id, context.user.id);
+			hasAccess = !!membership;
+			isMember = !!membership;
 		}
 
 		if (!hasAccess) {
@@ -335,12 +454,13 @@ clubsCoreRouter.get(
 		const membersCount = await db
 			.select({ count: count() })
 			.from(clubMembership)
-			.where(eq(clubMembership.clubId, clubData[0].id));
+			.where(and(eq(clubMembership.clubId, clubData[0].id), eq(clubMembership.status, "ACTIVE")));
 
 		const postsCount = await db.select({ count: count() }).from(post).where(eq(post.clubId, clubData[0].id));
 
 		return response.json({
 			...clubData[0],
+			logoTile: logoTileOf(clubData[0].logoTile),
 			_count: {
 				members: membersCount[0]?.count || 0,
 				posts: postsCount[0]?.count || 0,
@@ -393,20 +513,11 @@ clubsCoreRouter.get(
 			throw apiError.notFound("Club not found");
 		}
 
-		const membershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const membership = membershipData[0];
-
-		if (!membership || (membership.role !== "MANAGER" && membership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		const membership = await requireClubManager(clubId, context.user.id);
 
 		return response.json({
 			...clubData[0],
+			logoTile: logoTileOf(clubData[0].logoTile),
 			isCurrentUserOwner: membership.role === "CLUB_OWNER",
 		});
 	},
@@ -422,6 +533,7 @@ clubsCoreRouter.get(
 			mcpTool: true,
 			response: {
 				200: baseClubSchema.extend({
+					logoTile: logoTileResponseSchema,
 					isCurrentUserOwner: z.boolean(),
 				}),
 				400: z.object({ error: z.string() }),
@@ -482,6 +594,7 @@ clubsCoreRouter.post(
 				isPrivate: body.isPrivate || false,
 				isPrivateStats: body.isPrivateStats || false,
 				logo: body.logo || null,
+				logoTile: body.logoTile ?? null,
 				headerImage: body.headerImage || null,
 				contactPhone: body.contactPhone || null,
 				contactEmail: body.contactEmail || null,
@@ -518,11 +631,11 @@ clubsCoreRouter.post(
 			userId: context.user.id,
 		});
 
-		return response.json({ id: newClub[0].id, club: newClub[0] });
+		return response.json({ id: newClub[0].id, club: { ...newClub[0], logoTile: logoTileOf(newClub[0].logoTile) } });
 	},
 	{
 		auth: true,
-		bustCache: ["clubs"],
+		bustCache: ["clubs", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Create club",
@@ -550,17 +663,7 @@ clubsCoreRouter.put(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		// Fetch existing club data for validation checks
 		const existingClubData = await db.select({ slug: club.slug }).from(club).where(eq(club.id, clubId)).limit(1);
@@ -628,11 +731,14 @@ clubsCoreRouter.put(
 			userId: context.user.id,
 		});
 
-		return response.json({ success: true, club: updatedClub[0] });
+		return response.json({
+			success: true,
+			club: { ...updatedClub[0], logoTile: logoTileOf(updatedClub[0].logoTile) },
+		});
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club information",
@@ -665,21 +771,7 @@ clubsCoreRouter.delete(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const ownerMembershipData = await db
-			.select()
-			.from(clubMembership)
-			.where(
-				and(
-					eq(clubMembership.clubId, clubId),
-					eq(clubMembership.userId, context.user.id),
-					eq(clubMembership.role, "CLUB_OWNER"),
-				),
-			)
-			.limit(1);
-
-		if (!ownerMembershipData[0]) {
-			throw apiError.forbidden("Unauthorized - must be club owner");
-		}
+		await requireClubOwner(clubId, context.user.id);
 
 		const clubData = await db.select().from(club).where(eq(club.id, clubId)).limit(1);
 
@@ -687,13 +779,9 @@ clubsCoreRouter.delete(
 			throw apiError.notFound("Club not found");
 		}
 
-		const filesToDelete: string[] = [];
-		if (clubData[0].logo) {
-			filesToDelete.push(`club/${clubId}/logo`);
-		}
-		if (clubData[0].headerImage) {
-			filesToDelete.push(`club/${clubId}/header`);
-		}
+		const filesToDelete = [keyFromCdnUrl(clubData[0].logo), keyFromCdnUrl(clubData[0].headerImage)].filter(
+			(key): key is string => key !== null,
+		);
 
 		if (filesToDelete.length > 0) {
 			await deleteS3Files(filesToDelete, context.user.id);
@@ -717,7 +805,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club",
@@ -746,17 +834,7 @@ clubsCoreRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const key = `club/${clubId}/logo`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size);
@@ -796,17 +874,7 @@ clubsCoreRouter.post(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		const key = `club/${clubId}/header`;
 		const uploadUrl = await getS3UploadUrl(key, body.file.type, body.file.size);
@@ -825,7 +893,7 @@ clubsCoreRouter.post(
 			body: z.object({
 				file: z.object({
 					type: z.string().regex(/^image\//),
-					size: z.number().max(1024 * 1024 * 8),
+					size: z.number().max(MAX_UPLOAD_FILE_SIZE),
 				}),
 			}),
 			response: {
@@ -851,27 +919,23 @@ clubsCoreRouter.delete(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
+		await requireClubManager(clubId, context.user.id);
 
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		const [existingLogoClub] = await db.select({ logo: club.logo }).from(club).where(eq(club.id, clubId)).limit(1);
 
 		await db
 			.update(club)
 			.set({
 				logo: null,
+				logoTile: null,
 				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(club.id, clubId));
 
-		await deleteS3Files([`club/${clubId}/logo`], context.user.id);
+		const logoKey = keyFromCdnUrl(existingLogoClub?.logo);
+		if (logoKey) {
+			await deleteS3Files([logoKey], context.user.id);
+		}
 
 		await logClubAudit({
 			clubId,
@@ -886,6 +950,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club logo",
@@ -912,17 +977,13 @@ clubsCoreRouter.delete(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
+		await requireClubManager(clubId, context.user.id);
+
+		const [existingHeaderClub] = await db
+			.select({ headerImage: club.headerImage })
+			.from(club)
+			.where(eq(club.id, clubId))
 			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
 
 		await db
 			.update(club)
@@ -932,7 +993,10 @@ clubsCoreRouter.delete(
 			})
 			.where(eq(club.id, clubId));
 
-		await deleteS3Files([`club/${clubId}/header`], context.user.id);
+		const headerKey = keyFromCdnUrl(existingHeaderClub?.headerImage);
+		if (headerKey) {
+			await deleteS3Files([headerKey], context.user.id);
+		}
 
 		await logClubAudit({
 			clubId,
@@ -947,6 +1011,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club header image",
@@ -972,12 +1037,14 @@ clubsCoreRouter.get(
 				clubId: clubMembership.clubId,
 				name: club.name,
 				logo: club.logo,
+				logoTile: club.logoTile,
 			})
 			.from(clubMembership)
 			.leftJoin(club, eq(clubMembership.clubId, club.id))
 			.where(
 				and(
 					eq(clubMembership.userId, context.user.id),
+					eq(clubMembership.status, "ACTIVE"),
 					or(eq(clubMembership.role, "MANAGER"), eq(clubMembership.role, "CLUB_OWNER")),
 				),
 			);
@@ -987,6 +1054,7 @@ clubsCoreRouter.get(
 				id: m.clubId,
 				name: m.name,
 				logo: m.logo,
+				logoTile: logoTileOf(m.logoTile),
 			})),
 		});
 	},
@@ -1004,6 +1072,7 @@ clubsCoreRouter.get(
 							id: z.string(),
 							name: z.string().nullable(),
 							logo: z.string().nullable(),
+							logoTile: logoTileResponseSchema,
 						}),
 					),
 				}),
@@ -1025,7 +1094,13 @@ clubsCoreRouter.get(
 		const ownerData = await db
 			.select()
 			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.role, "CLUB_OWNER")))
+			.where(
+				and(
+					eq(clubMembership.clubId, clubId),
+					eq(clubMembership.role, "CLUB_OWNER"),
+					eq(clubMembership.status, "ACTIVE"),
+				),
+			)
 			.limit(1);
 
 		return response.json({ hasOwner: !!ownerData[0] });

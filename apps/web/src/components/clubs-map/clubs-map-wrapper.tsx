@@ -1,37 +1,16 @@
-"use client";
-
-import dynamic from "next/dynamic";
+import { lazyClientOnly } from "@/components/client-only";
+import type { MapClub } from "@/components/clubs-map/clubs-map";
+import type { MapCountry } from "@/components/clubs-map/map-panels";
 import { LoadingPage } from "../loading-page";
 
-const ClubsMap = dynamic(() => import("@/components/clubs-map/clubs-map").then((mod) => mod.ClubsMap), {
-	ssr: false,
-	loading: () => <LoadingPage />,
-});
-
-interface MapClub {
-	id: string;
-	name: string;
-	latitude: number | null;
-	longitude: number | null;
-	location: string | null;
-	logo: string | null;
-	slug?: string | null;
-	verified?: boolean;
-	description?: string | null;
-	isPrivate?: boolean;
-	isAllied?: boolean;
-	dateFounded?: string | null;
-	website?: string | null;
-	instagramUsername?: string | null;
-	contactEmail?: string | null;
-	contactPhone?: string | null;
-}
+const ClubsMap = lazyClientOnly(() => import("@/components/clubs-map/clubs-map"), <LoadingPage />);
 
 interface ClubsMapWrapperProps {
 	clubs: MapClub[];
 	onLocationSelect?: (lat: number, lng: number) => void;
 	interactive?: boolean;
 	controlsBelowHeader?: boolean;
+	countries?: MapCountry[];
 }
 
 export function ClubsMapWrapper(props: ClubsMapWrapperProps) {

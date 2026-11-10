@@ -1,0 +1,1 @@
+ALTER TABLE "Club" ADD COLUMN "logoTile" text;

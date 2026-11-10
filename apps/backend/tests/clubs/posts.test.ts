@@ -306,4 +306,33 @@ describe("club posts", () => {
 			expect(response.status).toBe(403);
 		});
 	});
+	describe("cache invalidation", () => {
+		test("a new post shows up in the club's post list immediately", async () => {
+			const owner = await createUser();
+			const club = await createClub(owner);
+
+			// Warm the cached list before mutating, so a missing bust would be visible.
+			const before = await api(owner.cookie).get(`/api/clubs/${club.id}/posts`);
+			expect(before.status).toBe(200);
+			const post = await createPost(owner, club.id);
+
+			const after = await api(owner.cookie).get(`/api/clubs/${club.id}/posts`);
+			expect(after.body.posts.map((p: { id: string }) => p.id)).toContain(post.id);
+		});
+
+		test("a deleted post disappears from the club's post list immediately", async () => {
+			const owner = await createUser();
+			const club = await createClub(owner);
+			const post = await createPost(owner, club.id);
+
+			const before = await api(owner.cookie).get(`/api/clubs/${club.id}/posts`);
+			expect(before.body.posts.map((p: { id: string }) => p.id)).toContain(post.id);
+
+			const deleted = await api(owner.cookie).delete(`/api/clubs/${club.id}/posts/${post.id}`);
+			expect(deleted.status).toBe(200);
+
+			const after = await api(owner.cookie).get(`/api/clubs/${club.id}/posts`);
+			expect(after.body.posts.map((p: { id: string }) => p.id)).not.toContain(post.id);
+		});
+	});
 });
