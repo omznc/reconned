@@ -1,11 +1,10 @@
-import { MapPin, Star, Users } from "lucide-react";
+import { ChevronRight, MapPin, Star, Users } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
 import type { ReactNode } from "react";
 import { ClubAvatar } from "@/components/identity/club-avatar";
 import { formatDateParts } from "@/components/redesign/format-event-date";
 import { VerifiedBadge } from "@/components/redesign/verified-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type {
 	ClubItem,
@@ -64,35 +63,43 @@ interface FrameProps {
 	chips?: ReactNode;
 	text?: string | null;
 	aside?: ReactNode;
-	action: { href: string; label: string };
+	href: string;
 }
 
-function Frame({ kind, lead, title, chips, text, aside, action }: FrameProps) {
+/** The title link stretches over the whole card. The next-game link sits above it, because links cannot nest. */
+function Frame({ kind, lead, title, chips, text, aside, href }: FrameProps) {
 	const t = useExtracted();
 	return (
-		<section aria-label={t("Top result")} className="@container rounded-lg border bg-card p-6 @max-md:p-4">
-			<div className="grid gap-5 @min-[640px]:grid-cols-[1fr_minmax(0,260px)]">
-				<div className="flex flex-col gap-4 @min-[420px]:flex-row">
-					<div className="shrink-0">{lead}</div>
-					<div className="flex min-w-0 flex-col gap-2">
-						<p className="text-xs text-muted-foreground">
-							{t("Top result")} · {kind}
-						</p>
-						<h2 className="flex flex-wrap items-center gap-2 text-2xl font-bold leading-tight [overflow-wrap:anywhere]">
-							{title}
-						</h2>
-						{chips ? <div className="flex flex-wrap gap-1.5">{chips}</div> : null}
-						{text ? (
-							<p className="line-clamp-2 text-[13px] leading-5 text-muted-foreground">{text}</p>
-						) : null}
+		<section
+			aria-label={t("Top result")}
+			className="@container relative rounded-lg border bg-card p-6 transition-colors hover:border-brand/50 has-[a[data-card-link]:focus-visible]:ring-[3px] has-[a[data-card-link]:focus-visible]:ring-ring/50 @max-md:p-4"
+		>
+			<div className="flex items-center gap-4">
+				<div className="grid min-w-0 flex-1 gap-5 @min-[640px]:grid-cols-[1fr_minmax(0,260px)]">
+					<div className="flex flex-col gap-4 @min-[420px]:flex-row">
+						<div className="shrink-0">{lead}</div>
+						<div className="flex min-w-0 flex-col gap-2">
+							<p className="text-xs text-muted-foreground">
+								{t("Top result")} · {kind}
+							</p>
+							<h2 className="text-2xl font-bold leading-tight [overflow-wrap:anywhere]">
+								<Link
+									href={href}
+									data-card-link={true}
+									className="flex flex-wrap items-center gap-2 outline-none after:absolute after:inset-0 after:rounded-lg"
+								>
+									{title}
+								</Link>
+							</h2>
+							{chips ? <div className="flex flex-wrap gap-1.5">{chips}</div> : null}
+							{text ? (
+								<p className="line-clamp-2 text-[13px] leading-5 text-muted-foreground">{text}</p>
+							) : null}
+						</div>
 					</div>
+					{aside ? <div className="relative z-10 flex flex-col justify-end">{aside}</div> : null}
 				</div>
-				<div className="flex flex-col justify-end gap-3">
-					{aside}
-					<Button asChild={true} variant="secondary">
-						<Link href={action.href}>{action.label}</Link>
-					</Button>
-				</div>
+				<ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden={true} />
 			</div>
 		</section>
 	);
@@ -128,7 +135,7 @@ function ClubTop({ item }: { item: ClubItem }) {
 			}
 			text={club.description}
 			aside={club.nextGame ? <NextGame game={club.nextGame} /> : null}
-			action={{ href: `/clubs/${club.slug || item.id}`, label: t("Open club") }}
+			href={`/clubs/${club.slug || item.id}`}
 		/>
 	);
 }
@@ -156,7 +163,7 @@ function PlayerTop({ item }: { item: UserItem }) {
 				</>
 			}
 			text={user.bio}
-			action={{ href: `/users/${user.slug || item.id}`, label: t("Open player") }}
+			href={`/users/${user.slug || item.id}`}
 		/>
 	);
 }
@@ -178,7 +185,7 @@ function EventTop({ item }: { item: EventItem }) {
 				</>
 			}
 			text={event.description}
-			action={{ href: `/events/${event.slug || item.id}`, label: t("Open event") }}
+			href={`/events/${event.slug || item.id}`}
 		/>
 	);
 }

@@ -1,7 +1,8 @@
 import { Calendar, Search, Shield, Users, X } from "lucide-react";
 import { useExtracted } from "next-intl";
-import { type FormEvent, type RefObject, useEffect, useRef, useState } from "react";
+import { type FormEvent, type RefObject, useEffect, useRef } from "react";
 import { ProfileTabs } from "@/components/redesign/profile-tabs";
+import { useDebouncedSearch } from "@/components/redesign/use-debounced-search";
 import { Button } from "@/components/ui/button";
 import { ClubHit, EventHit, HitSection, PlayerHit } from "@/routes/{-$locale}/_public/search/-components/search-hits";
 import { RefineDisclosure, SearchSidebar } from "@/routes/{-$locale}/_public/search/-components/search-sidebar";
@@ -21,19 +22,17 @@ import {
 
 function SearchBox({
 	query,
+	onType,
 	onSubmit,
 	inputRef,
 }: {
 	query: string;
+	onType: (value: string) => void;
 	onSubmit: (value: string) => void;
 	inputRef: React.RefObject<HTMLInputElement | null>;
 }) {
 	const t = useExtracted();
-	const [value, setValue] = useState(query);
-
-	useEffect(() => {
-		setValue(query);
-	}, [query]);
+	const { value, onChange: setValue } = useDebouncedSearch(query, onType);
 
 	const submit = (event: FormEvent) => {
 		event.preventDefault();
@@ -67,7 +66,6 @@ function SearchBox({
 						aria-label={t("Clear search")}
 						onClick={() => {
 							setValue("");
-							onSubmit("");
 							inputRef.current?.focus();
 						}}
 						className="grid size-8 shrink-0 place-items-center rounded-md text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
@@ -266,9 +264,18 @@ export function SearchPage() {
 
 	useSearchKeys(inputRef, resultsRef);
 
+	const typeQuery = (q: string) => {
+		setParams({ q }, { shallow: false });
+	};
+	// Only a submitted or opened search goes to the recent list, not each pause while typing.
 	const setQuery = (q: string) => {
 		add(q);
-		setParams({ q }, { shallow: false });
+		typeQuery(q);
+	};
+	const rememberOnOpen = (event: React.MouseEvent) => {
+		if (params.q && (event.target as HTMLElement).closest("a[href]")) {
+			add(params.q);
+		}
 	};
 	const refine = (patch: Partial<SearchParams>) => {
 		setParams(patch);
@@ -277,13 +284,14 @@ export function SearchPage() {
 	return (
 		<div className="container flex max-w-6xl flex-col gap-5 px-4 py-6">
 			<h1 className="sr-only">{t("Search")}</h1>
-			<SearchBox query={params.q} onSubmit={setQuery} inputRef={inputRef} />
+			<SearchBox query={params.q} onType={typeQuery} onSubmit={setQuery} inputRef={inputRef} />
 			<Tabs params={params} counts={counts} />
 			<p className="sr-only" role="status" aria-live="polite">
 				{total === null ? "" : t("{count} results", { count: String(total) })}
 			</p>
 			<div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-				<div ref={resultsRef} className="flex min-w-0 flex-col gap-6">
+				{/* biome-ignore lint/a11y/noStaticElementInteractions: the click only notes which search led to an opened result; the links stay the controls. */}
+				<div ref={resultsRef} onClick={rememberOnOpen} className="flex min-w-0 flex-col gap-6">
 					<RefineDisclosure params={params} onChange={refine} />
 					{summary.isError ? <ErrorState /> : null}
 					{total === 0 ? <EmptyState query={params.q} /> : null}
