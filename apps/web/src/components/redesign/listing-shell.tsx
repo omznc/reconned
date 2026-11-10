@@ -1,6 +1,7 @@
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useExtracted } from "next-intl";
 import { type ReactNode, useId, useState } from "react";
+import { AdaptiveSelect } from "@/components/redesign/adaptive-select";
 import type { IconComponent } from "@/components/redesign/types";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -103,21 +104,17 @@ function SortField({ sort }: { sort: NonNullable<ListingShellProps["sort"]> }) {
 	const id = useId();
 	return (
 		<div className="hidden h-11 min-w-[200px] items-center gap-2 rounded-md border border-input bg-background px-3.5 focus-within:border-ring @min-[821px]:flex">
-			<label htmlFor={id} className="text-xs text-muted-foreground">
+			<span id={id} className="text-xs text-muted-foreground">
 				{t("Sort")}
-			</label>
-			<select
-				id={id}
+			</span>
+			<AdaptiveSelect
 				value={sort.value}
-				onChange={(event) => sort.onChange(event.target.value)}
-				className="flex-1 cursor-pointer border-0 bg-transparent text-sm text-foreground outline-none"
-			>
-				{sort.options.map((option) => (
-					<option key={option.value} value={option.value}>
-						{option.label}
-					</option>
-				))}
-			</select>
+				onValueChange={sort.onChange}
+				options={sort.options}
+				aria-labelledby={id}
+				triggerClassName="flex-1 border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0 data-[size=default]:h-full dark:bg-transparent dark:hover:bg-transparent"
+				nativeClassName="flex-1 cursor-pointer border-0 bg-transparent text-sm text-foreground outline-none"
+			/>
 		</div>
 	);
 }

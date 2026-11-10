@@ -16,6 +16,7 @@ import { useExtracted } from "next-intl";
 import type { ComponentType, ReactNode } from "react";
 import { InstagramIcon } from "@/components/icons";
 import { ClubAvatar } from "@/components/identity/club-avatar";
+import { AdaptiveSelect } from "@/components/redesign/adaptive-select";
 import { MiniStatChip } from "@/components/redesign/mini-stat-chip";
 import { VerifiedBadge } from "@/components/redesign/verified-badge";
 import { Button } from "@/components/ui/button";
@@ -88,8 +89,9 @@ export interface ClubWithDistance<T extends PanelClub> {
 	km: number | null;
 }
 
-const chipClass =
-	"inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50";
+const chipBase =
+	"h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium outline-none transition-colors focus-visible:ring-[3px] focus-visible:ring-ring/50";
+const chipClass = `inline-flex ${chipBase}`;
 
 function ToggleChip({ pressed, onToggle, children }: { pressed: boolean; onToggle: () => void; children: string }) {
 	return (
@@ -106,6 +108,12 @@ function ToggleChip({ pressed, onToggle, children }: { pressed: boolean; onToggl
 			{pressed ? <X className="size-3" aria-hidden={true} /> : null}
 		</button>
 	);
+}
+
+function selectedClass(selected: boolean): string {
+	return selected
+		? "border-brand bg-brand-soft text-foreground dark:bg-brand-soft"
+		: "bg-transparent text-muted-foreground dark:bg-transparent";
 }
 
 interface FilterControlsProps {
@@ -126,28 +134,23 @@ export function FilterChips({ filters, countries, onChange }: FilterControlsProp
 			</ToggleChip>
 			{countries.length > 1 ? (
 				<span className="relative inline-flex">
-					<select
+					<AdaptiveSelect
 						aria-label={t("Country")}
-						value={filters.country ?? ""}
-						onChange={(event) =>
-							onChange({ country: event.target.value ? Number(event.target.value) : null })
-						}
-						className={cn(
-							chipClass,
-							"appearance-none bg-transparent pr-7",
-							filters.country === null
-								? "text-muted-foreground"
-								: "border-brand bg-brand-soft text-foreground",
+						value={filters.country === null ? "" : String(filters.country)}
+						onValueChange={(next) => onChange({ country: next ? Number(next) : null })}
+						placeholder={t("Country")}
+						options={countries.map((country) => ({ value: String(country.id), label: country.name }))}
+						triggerClassName={cn(
+							chipBase,
+							"w-auto data-[size=default]:h-8",
+							selectedClass(filters.country !== null),
 						)}
-					>
-						<option value="">{t("Country")}</option>
-						{countries.map((country) => (
-							<option key={country.id} value={country.id}>
-								{country.name}
-							</option>
-						))}
-					</select>
-					<ChevronDown className="pointer-events-none absolute top-2.5 right-2.5 size-3" aria-hidden={true} />
+						nativeClassName={cn(chipClass, "appearance-none pr-7", selectedClass(filters.country !== null))}
+					/>
+					<ChevronDown
+						className="pointer-events-none absolute top-2.5 right-2.5 size-3 pointer-fine:hidden"
+						aria-hidden={true}
+					/>
 				</span>
 			) : null}
 		</div>

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useId } from "react";
+import { AdaptiveSelect } from "@/components/redesign/adaptive-select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
@@ -67,22 +68,18 @@ export function FilterSelect({ label, value, onChange, placeholder, options }: F
 	const id = useId();
 	return (
 		<div className="flex min-w-0 flex-col gap-2">
-			<label htmlFor={id} className="text-[13px] font-medium">
+			<span id={id} className="text-[13px] font-medium">
 				{label}
-			</label>
-			<select
-				id={id}
+			</span>
+			<AdaptiveSelect
 				value={value}
-				onChange={(event) => onChange(event.target.value)}
-				className="h-9 w-full min-w-0 rounded-md border border-input bg-background px-2.5 text-[13px] text-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-			>
-				<option value="">{placeholder}</option>
-				{options.map((option) => (
-					<option key={option.value} value={option.value}>
-						{option.label}
-					</option>
-				))}
-			</select>
+				onValueChange={onChange}
+				options={options}
+				placeholder={placeholder}
+				aria-labelledby={id}
+				triggerClassName="w-full min-w-0 px-2.5 py-0 text-[13px]"
+				nativeClassName="h-9 w-full min-w-0 rounded-md border border-input bg-background px-2.5 text-[13px] text-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+			/>
 		</div>
 	);
 }
