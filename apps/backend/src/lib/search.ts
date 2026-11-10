@@ -3,6 +3,7 @@ import { createSelectSchema } from "drizzle-zod";
 import * as z from "zod";
 import { club, clubMembership, event, user } from "../drizzle/schema";
 import { db } from "./db";
+import { escapeLike } from "./like";
 import {
 	loadAttendeeCounts,
 	loadClubRatings,
@@ -88,7 +89,8 @@ interface TypeResult {
 }
 
 function patterns(search: string) {
-	return { contains: `%${search}%`, prefix: `${search}%` };
+	const escaped = escapeLike(search);
+	return { contains: `%${escaped}%`, prefix: `${escaped}%` };
 }
 
 function and2(conditions: Array<SQL | undefined>) {

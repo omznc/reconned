@@ -61,6 +61,15 @@ describe("GET /users players listing", () => {
 		expect((await list(`search=${tag}`, admin.cookie)).users.map((u) => u.id)).toEqual([banned.id]);
 	});
 
+	test("% and _ in the search match literally", async () => {
+		const tag = marker();
+		const under = await createUser({ name: `${tag} a_b` });
+		await createUser({ name: `${tag} axb` });
+
+		expect((await list("search=%25")).pagination.total).toBe(0);
+		expect((await list(`search=${tag}%20a_b`)).users.map((u) => u.id)).toEqual([under.id]);
+	});
+
 	test("search by email works only for admins", async () => {
 		const player = await createUser({ name: `${marker()} Mail` });
 		const emailPart = player.email.split("@")[0] ?? "";

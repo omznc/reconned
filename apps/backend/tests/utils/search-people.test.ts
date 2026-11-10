@@ -237,6 +237,18 @@ describe("GET /search", () => {
 		expect(asAdmin.items.map((i) => i.id)).toEqual([banned.id]);
 	});
 
+	test("% and _ in the query match literally", async () => {
+		const tag = tagOf();
+		const owner = await createUser({ name: `${tag} owner` });
+		const plain = await createClub(owner, { name: `${tag} a1 club` });
+		const underscore = await createClub(owner, { name: `${tag} a_1 club` });
+
+		expect((await search("search=%25&filter=club")).counts.clubs).toBe(0);
+		const result = await search(`search=${tag}%20a_1&filter=club`);
+		expect(result.items.map((i) => i.id)).toEqual([underscore.id]);
+		expect(result.items.map((i) => i.id)).not.toContain(plain.id);
+	});
+
 	test("the old params keep working", async () => {
 		const tag = tagOf();
 		const owner = await createUser({ name: `${tag} owner` });

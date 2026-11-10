@@ -3,6 +3,7 @@ import { and, count, eq, gte, ilike, inArray, lt, lte, or, type SQL, sql } from 
 import * as z from "zod";
 import { club, country, event, eventAttendee } from "../drizzle/schema";
 import { db } from "./db";
+import { escapeLike } from "./like";
 
 export const REGISTRATION_STATES = ["open", "notOpenYet", "closed", "full"] as const;
 export type RegistrationState = (typeof REGISTRATION_STATES)[number];
@@ -203,7 +204,9 @@ function dateConditions(input: EventFilterInput, now: Date): SQL[] {
 function attributeConditions(input: EventFilterInput): SQL[] {
 	const conditions: SQL[] = [];
 	if (input.city) {
-		conditions.push(or(ilike(club.city, input.city), ilike(event.location, `%${input.city}%`)) as SQL);
+		conditions.push(
+			or(ilike(club.city, escapeLike(input.city)), ilike(event.location, `%${escapeLike(input.city)}%`)) as SQL,
+		);
 	}
 	if (input.maxPrice !== undefined) {
 		conditions.push(lte(event.costPerPerson, input.maxPrice));

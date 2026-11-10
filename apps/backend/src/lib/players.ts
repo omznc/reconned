@@ -1,6 +1,7 @@
 import { and, count, eq, exists, ilike, or, type SQL, sql } from "drizzle-orm";
 import { club, clubMembership, user } from "../drizzle/schema";
 import { db } from "./db";
+import { escapeLike } from "./like";
 import {
 	gamesCountSql,
 	loadUserClubs,
@@ -79,7 +80,7 @@ function searchCondition(search: string | undefined, viewer: Viewer): SQL | unde
 	if (!search) {
 		return undefined;
 	}
-	const pattern = `%${search}%`;
+	const pattern = `%${escapeLike(search)}%`;
 	// Email only for admins: on a public list it tells anyone whether an address has an account.
 	if (viewer.isAdmin) {
 		return or(ilike(user.name, pattern), ilike(user.email, pattern), ilike(user.callsign, pattern));
