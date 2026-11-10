@@ -5,6 +5,7 @@ import { alliance, club, clubAlliance, event, post, review, user } from "../driz
 import { db } from "./db";
 import { isFeatureEnabled } from "./feature-flags";
 import { loadAttendeeCounts, placesLeftOf } from "./people-stats";
+import { publicClubCondition } from "./public-club";
 import { logoTileOf, logoTileResponseSchema } from "./schemas";
 
 const TEXT_CHARS = 400;
@@ -170,15 +171,6 @@ function toFeedClub(row: {
 		logoTile: logoTileOf(row.clubLogoTile),
 		verified: row.clubVerified,
 	};
-}
-
-async function publicClubCondition(): Promise<SQL | undefined> {
-	const onlyVerified = await isFeatureEnabled("ONLY_VERIFIED_CLUBS_VISIBLE");
-	return and(
-		eq(club.isPrivate, false),
-		or(eq(club.banned, false), sql`${club.banned} IS NULL`),
-		onlyVerified ? eq(club.verified, true) : undefined,
-	);
 }
 
 /** New public events that have not finished yet, newest first. */
