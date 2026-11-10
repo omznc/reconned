@@ -2,7 +2,7 @@ import { and, count, eq, inArray, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, event, eventAttendee, review, type user } from "../drizzle/schema";
 import { db } from "./db";
-import { type LogoTile, logoTileOf, logoTileResponseSchema } from "./schemas";
+import { logoTileOf, logoTileResponseSchema } from "./schemas";
 
 export const ratingSchema = z.object({ average: z.number(), count: z.number() }).nullable();
 export type Rating = z.infer<typeof ratingSchema>;
@@ -103,7 +103,7 @@ export async function loadUserClubs(
 
 	for (const { userId, logoTile, ...rest } of rows) {
 		const list = result.get(userId) ?? [];
-		list.push({ ...rest, logoTile: logoTileOf(logoTile) as LogoTile });
+		list.push({ ...rest, logoTile: logoTileOf(logoTile) });
 		result.set(userId, list);
 	}
 	return result;

@@ -86,8 +86,6 @@ interface TypeResult {
 	items: SearchItem[];
 }
 
-const EMPTY: TypeResult = { total: 0, items: [] };
-
 function patterns(search: string) {
 	return { contains: `%${search}%`, prefix: `${search}%` };
 }
@@ -343,8 +341,6 @@ export async function searchEvents(o: SearchOptions, withItems: boolean): Promis
 		})),
 	};
 }
-
-export { EMPTY as EMPTY_RESULT };
 
 /** Fills in the figures that cost one batched query per type, for the items on the page only. */
 export async function enrichItems(items: SearchItem[]): Promise<SearchItem[]> {
