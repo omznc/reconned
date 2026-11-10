@@ -635,7 +635,7 @@ clubsCoreRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs"],
+		bustCache: ["clubs", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Create club",
@@ -738,7 +738,7 @@ clubsCoreRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club information",
@@ -805,7 +805,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club",
@@ -950,7 +950,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club logo",
@@ -1011,7 +1011,7 @@ clubsCoreRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "public:feed", "users"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Delete club header image",
