@@ -1,7 +1,7 @@
 import { type AnyColumn, and, desc, eq, inArray, or, type SQL, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import * as z from "zod";
-import { alliance, club, clubAlliance, event, post, review, user } from "../drizzle/schema";
+import { alliance, club, clubAlliance, clubMembership, event, post, review, user } from "../drizzle/schema";
 import { db } from "./db";
 import { isFeatureEnabled } from "./feature-flags";
 import { loadAttendeeCounts, placesLeftOf } from "./people-stats";
@@ -368,12 +368,16 @@ async function loadPlayerReviews(limit: number, cursor: Cursor | null): Promise<
 	}));
 }
 
-/** Public clubs, by the time they joined. */
+/**
+ * Public clubs, by the time they joined. An admin imports unclaimed clubs in bulk, with no members;
+ * those are listings, not clubs that joined, and one import would fill the feed.
+ */
 async function loadNewClubs(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
+	const hasActiveMember = sql`EXISTS (SELECT 1 FROM ${clubMembership} WHERE ${clubMembership.clubId} = ${club.id} AND ${clubMembership.status} = 'ACTIVE')`;
 	const rows = await db
 		.select({ createdAt: club.createdAt, city: club.city, ...clubColumns })
 		.from(club)
-		.where(and(clubOk, afterCursor("club", sql`${club.createdAt}`, sql`${club.id}`, cursor)))
+		.where(and(clubOk, hasActiveMember, afterCursor("club", sql`${club.createdAt}`, sql`${club.id}`, cursor)))
 		.orderBy(desc(club.createdAt), desc(club.id))
 		.limit(limit);
 

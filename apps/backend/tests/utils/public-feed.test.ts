@@ -278,6 +278,18 @@ describe("GET /public/feed: players, new clubs and alliances", () => {
 		expect((await feed("type=games&limit=50")).items.map((i) => i.id)).not.toContain(club.id);
 	});
 
+	test("an imported club with no active member is not a new club until someone holds it", async () => {
+		const owner = await createUser();
+		const imported = await createClub(owner);
+		await testDb`DELETE FROM "ClubMembership" WHERE "clubId" = ${imported.id}`;
+		await bustFeedCache();
+		expect((await feed("type=clubs&limit=50")).items.map((i) => i.id)).not.toContain(imported.id);
+
+		await addMember(owner.id, imported.id, "CLUB_OWNER");
+		await bustFeedCache();
+		expect((await feed("type=clubs&limit=50")).items.map((i) => i.id)).toContain(imported.id);
+	});
+
 	test("creating a club busts the cached feed", async () => {
 		const owner = await createUser();
 		await feed("type=clubs&limit=5");
