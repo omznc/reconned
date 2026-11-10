@@ -16,7 +16,7 @@ async function bustFeedCache(clubId = "") {
 }
 
 interface FeedItem {
-	kind: "game" | "post" | "review" | "player_review" | "club" | "alliance" | "claim";
+	kind: "game" | "post" | "review" | "player_review" | "club" | "alliance" | "claim" | "members";
 	id: string;
 	createdAt: string;
 	club?: { id: string; name: string };
@@ -362,6 +362,31 @@ describe("GET /public/feed: players, new clubs and alliances", () => {
 		const anonymous = claims.find((i) => i.club?.id === quiet.id);
 		expect(anonymous).toBeDefined();
 		expect(anonymous?.owner).toBeNull();
+	});
+
+	test("members who join a club on one day are one item, with no private or banned member", async () => {
+		const owner = await createUser();
+		const club = await createClub(owner);
+		const [first, second, hidden, banned] = await Promise.all([
+			createUser(),
+			createUser(),
+			createUser(),
+			createUser(),
+		]);
+		await testDb`UPDATE "User" SET "isPrivate" = true WHERE id = ${hidden.id}`;
+		await testDb`UPDATE "User" SET banned = true WHERE id = ${banned.id}`;
+		for (const member of [first, second, hidden, banned]) {
+			await addMember(member.id, club.id, "USER");
+		}
+		await bustFeedCache();
+
+		const { items } = await feed("type=clubs&limit=50");
+		const joins = items.filter((i) => i.kind === "members" && i.club?.id === club.id);
+		expect(joins).toHaveLength(1);
+		expect(joins[0]?.count).toBe(2);
+		const ids = (joins[0]?.members as { id: string }[]).map((m) => m.id);
+		expect(ids).toEqual([first.id, second.id]);
+		expect(JSON.stringify(joins)).not.toContain(owner.id);
 	});
 
 	test("saving the same alliances again keeps the join time and adds only the new one", async () => {

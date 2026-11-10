@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { Building2, Calendar, KeyRound, MapPin, MessageSquare, Star, Users } from "lucide-react";
+import { Building2, Calendar, KeyRound, MapPin, MessageSquare, Star, UserPlus, Users } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
 import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import * as z from "zod";
@@ -232,6 +232,12 @@ function useFeedMeta(item: FeedItem) {
 			return { icon: Building2, type: t("Club"), verb: t("joined RECONNED") };
 		case "claim":
 			return { icon: KeyRound, type: t("Claimed"), verb: t("got an owner") };
+		case "members":
+			return {
+				icon: UserPlus,
+				type: t("Members"),
+				verb: t("{count, plural, one {got a new member} other {got # new members}}", { count: item.count }),
+			};
 		default: {
 			const others = item.clubs.length - 1;
 			const verb =
@@ -309,6 +315,33 @@ function ClubBody({ item }: { item: Extract<FeedItem, { kind: "club" }> }) {
 	);
 }
 
+/** The members who joined that day, each a link to the profile, and how many more there are. */
+function MembersBody({ item }: { item: Extract<FeedItem, { kind: "members" }> }) {
+	const t = useExtracted();
+	const more = item.count - item.members.length;
+	return (
+		<ul className="flex flex-wrap items-center gap-2">
+			{item.members.map((member) => (
+				<li key={member.id}>
+					<Link
+						href={`/users/${member.slug || member.id}` as "/users"}
+						className="flex items-center gap-2 rounded-lg border bg-secondary/40 py-1.5 pr-3 pl-1.5 text-[13px] font-medium outline-none hover:bg-secondary focus-visible:ring-[3px] focus-visible:ring-ring/50"
+					>
+						<Avatar className="size-7">
+							<AvatarImage src={member.image ?? ""} alt="" />
+							<AvatarFallback name={member.name} />
+						</Avatar>
+						{member.name}
+					</Link>
+				</li>
+			))}
+			{more > 0 ? (
+				<li className="text-[13px] text-muted-foreground">{t("+{count} more", { count: String(more) })}</li>
+			) : null}
+		</ul>
+	);
+}
+
 /** The new owner, when that profile is public, and a link to the club. */
 function ClaimBody({ item }: { item: Extract<FeedItem, { kind: "claim" }> }) {
 	const t = useExtracted();
@@ -374,6 +407,8 @@ function FeedBody({ item }: { item: FeedItem }) {
 			return <ClubBody item={item} />;
 		case "claim":
 			return <ClaimBody item={item} />;
+		case "members":
+			return <MembersBody item={item} />;
 		default:
 			return <AllianceBody item={item} />;
 	}

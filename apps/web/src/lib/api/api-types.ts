@@ -23629,6 +23629,28 @@ export interface operations {
 										image: string | null;
 									} | null;
 							  }
+							| {
+									/** @enum {string} */
+									kind: "members";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									members: {
+										id: string;
+										slug: string | null;
+										name: string;
+										image: string | null;
+									}[];
+									count: number;
+							  }
 						)[];
 						nextCursor: string | null;
 					};

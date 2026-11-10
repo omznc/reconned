@@ -28,7 +28,8 @@ export async function bustRouteCache(keys: string[]): Promise<void> {
 
 /** Everything that changes when a club's membership list changes. */
 export function clubMembershipCacheKeys(clubId: string): string[] {
-	return ["clubs", `club:${clubId}`, "users"];
+	// The home feed lists new members of each club.
+	return ["clubs", `club:${clubId}`, "users", "public:feed"];
 }
 
 /** The public club pages that an event or a rule change reaches. Their routes are keyed by club, not event. */

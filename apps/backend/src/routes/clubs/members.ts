@@ -121,7 +121,7 @@ clubsMembersRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}", "users"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Remove member from club",
@@ -218,7 +218,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}", "users"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Add member to club",
@@ -361,7 +361,7 @@ clubsMembersRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}", "users"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Extend membership duration",
@@ -427,7 +427,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}", "users"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Leave club",
@@ -522,7 +522,7 @@ clubsMembersRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}", "users"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update member role",
@@ -1083,7 +1083,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}", "users"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Archive club member",
@@ -1165,7 +1165,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}", "users"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Unarchive club member",

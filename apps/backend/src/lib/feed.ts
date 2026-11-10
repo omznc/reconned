@@ -111,6 +111,14 @@ export const feedItemSchema = z.discriminatedUnion("kind", [
 		/** The user who got the club. Null when that profile is private or banned. */
 		owner: feedPersonSchema.nullable(),
 	}),
+	z.object({
+		kind: z.literal("members"),
+		...feedBase,
+		/** Public members who joined the club that day, first joiner first, at most MEMBERS_SHOWN. */
+		members: z.array(feedPersonSchema),
+		/** All public members who joined that day, also the ones past MEMBERS_SHOWN. */
+		count: z.number(),
+	}),
 ]);
 export type FeedItem = z.infer<typeof feedItemSchema>;
 type FeedKind = FeedItem["kind"];
@@ -120,7 +128,7 @@ export type FeedType = (typeof FEED_TYPES)[number];
 
 const cursorSchema = z.object({
 	t: z.string(),
-	k: z.enum(["game", "post", "review", "player_review", "club", "alliance", "claim"]),
+	k: z.enum(["game", "post", "review", "player_review", "club", "alliance", "claim", "members"]),
 	id: z.string(),
 });
 type Cursor = z.infer<typeof cursorSchema>;
@@ -473,6 +481,66 @@ async function loadAllianceJoins(limit: number, cursor: Cursor | null, clubOk: S
 	});
 }
 
+const MEMBERS_SHOWN = 12;
+
+/**
+ * Members who joined a club, one item per club and day, like the alliance joins. Only members
+ * with a public profile count: a private member is not named and not counted, so the feed never
+ * shows that they joined. Owners are left out; the new club and the claim items cover them.
+ */
+async function loadNewMembers(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
+	const day = sql`date_trunc('day', ${clubMembership.createdAt})`;
+	const joins = db
+		.select({
+			id: sql<string>`${club.id} || '-' || to_char(${day}, 'YYYYMMDD')`.as("id"),
+			lastJoin: sql`max(${clubMembership.createdAt})`.as("last_join"),
+			createdAt: sql<string>`to_char(max(${clubMembership.createdAt}), 'YYYY-MM-DD HH24:MI:SS.MS')`.as(
+				"created_at",
+			),
+			// Named apart, so the group id and the club id do not both come out as "id".
+			clubId: sql<string>`${club.id}`.as("club_id"),
+			clubSlug: sql<string | null>`${club.slug}`.as("club_slug"),
+			clubName: sql<string>`${club.name}`.as("club_name"),
+			clubLogo: sql<string | null>`${club.logo}`.as("club_logo"),
+			clubLogoTile: sql<string | null>`${club.logoTile}`.as("club_logo_tile"),
+			clubVerified: sql<boolean>`${club.verified}`.as("club_verified"),
+			count: sql<number>`count(*)::int`.as("count"),
+			members: sql<{ id: string; slug: string | null; name: string; image: string | null }[]>`(array_agg(
+				json_build_object('id', ${user.id}, 'slug', ${user.slug}, 'name', ${user.name}, 'image', ${user.image})
+				ORDER BY ${clubMembership.createdAt}, ${user.id}
+			))[1:${sql.raw(String(MEMBERS_SHOWN))}]`.as("members"),
+		})
+		.from(clubMembership)
+		.innerJoin(club, eq(clubMembership.clubId, club.id))
+		.innerJoin(user, eq(clubMembership.userId, user.id))
+		.where(
+			and(
+				clubOk,
+				eq(clubMembership.status, "ACTIVE"),
+				sql`${clubMembership.role} <> 'CLUB_OWNER'`,
+				publicUser(user),
+			),
+		)
+		.groupBy(club.id, day)
+		.as("joins");
+
+	const rows = await db
+		.select()
+		.from(joins)
+		.where(afterCursor("members", sql`${joins.lastJoin}`, sql`${joins.id}`, cursor))
+		.orderBy(desc(joins.lastJoin), desc(joins.id))
+		.limit(limit);
+
+	return rows.map((row) => ({
+		kind: "members" as const,
+		id: row.id,
+		createdAt: row.createdAt,
+		club: toFeedClub(row),
+		members: row.members,
+		count: row.count,
+	}));
+}
+
 /**
  * Clubs that an admin gave to an owner, from the audit log. Old rows hold actionData as a JSON
  * string, newer rows as an object, so the owner id is read from both forms.
@@ -535,7 +603,7 @@ const TAB_SOURCES: Record<Exclude<FeedType, "all">, FeedKind[]> = {
 	games: ["game"],
 	posts: ["post"],
 	reviews: ["review", "player_review"],
-	clubs: ["club", "alliance", "claim"],
+	clubs: ["club", "alliance", "claim", "members"],
 };
 
 function tabHas(type: FeedType, kind: FeedKind): boolean {
@@ -559,6 +627,7 @@ export async function loadFeed(params: { type: FeedType; cursor?: string; limit:
 		tabHas(type, "club") ? loadNewClubs(take, cursor, clubOk) : none,
 		tabHas(type, "alliance") ? loadAllianceJoins(take, cursor, clubOk) : none,
 		tabHas(type, "claim") ? loadClaims(take, cursor, clubOk) : none,
+		tabHas(type, "members") ? loadNewMembers(take, cursor, clubOk) : none,
 	]);
 
 	const merged = sources.flat().sort(compareFeed);
