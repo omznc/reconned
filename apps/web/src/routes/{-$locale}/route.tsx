@@ -1,7 +1,14 @@
-import { createFileRoute, type NotFoundRouteProps, notFound, Outlet } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	type ErrorComponentProps,
+	type NotFoundRouteProps,
+	notFound,
+	Outlet,
+} from "@tanstack/react-router";
 import { getExtracted } from "next-intl/server";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
-import type { ReactNode } from "react";
+import posthog from "posthog-js";
+import { type ReactNode, useEffect } from "react";
 import { Toaster } from "sonner";
 import { IntlProvider } from "use-intl";
 import { ConsentBanner } from "@/components/consent-banner";
@@ -80,9 +87,17 @@ export const Route = createFileRoute("/{-$locale}")({
 	},
 	component: LocaleLayout,
 	notFoundComponent: InvalidLocaleNotFound,
-	// Errors from this route's own load render without the intl provider, so the message cannot be translated.
-	errorComponent: () => <p>Something went wrong</p>,
+	errorComponent: LayoutErrorPage,
 });
+
+// Errors from this route's own load render without the intl provider, so the message cannot be translated.
+function LayoutErrorPage({ error }: ErrorComponentProps) {
+	useEffect(() => {
+		posthog.captureException(error);
+	}, [error]);
+
+	return <p>Something went wrong</p>;
+}
 
 type LayoutData = {
 	locale: Locale;
