@@ -330,6 +330,7 @@ export const auth = betterAuth({
 											.set({
 												...CLEAR_ARCHIVE,
 												role: "USER",
+												startDate: new Date().toISOString(),
 												updatedAt: new Date().toISOString(),
 											})
 											.where(eq(clubMembership.id, priorMembership.id));
