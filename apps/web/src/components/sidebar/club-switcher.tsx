@@ -16,7 +16,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import type { ApiResponse } from "@/lib/api/api-type-helpers";
 
 type DashboardClubs = ApiResponse<"/api/dashboard/clubs", "get">["clubs"];
@@ -27,7 +27,8 @@ interface ClubSwitcherProps {
 
 export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 	const router = useRouter();
-	const params = useParams({ strict: false }) as { clubId?: string };
+	const params = useParams({ strict: false }) as { clubId?: string; id?: string };
+	const pathname = usePathname();
 	const { clubId, setClubId } = useCurrentClub();
 	const t = useExtracted();
 	const sidebar = useSidebar();
@@ -72,13 +73,13 @@ export function ClubSwitcher({ clubs }: ClubSwitcherProps) {
 	}, [clubId, clubs]);
 
 	const navigateToClub = (club: DashboardClubs[number]) => {
-		const currentFullUrl = window.location.href;
-
-		if (!(clubId && currentFullUrl.includes(clubId))) {
+		const prefix = `/dashboard/${clubId}`;
+		if (!(clubId && pathname.startsWith(prefix))) {
 			return router.push(`/dashboard/${club.id}`);
 		}
-		const newUrl = currentFullUrl.replace(clubId, club.id);
-		router.push(newUrl);
+		// An event id (`events/$id`) belongs to the old club, so go to the event list.
+		const rest = params.id ? "/events" : pathname.slice(prefix.length);
+		router.push(`/dashboard/${club.id}${rest}`);
 	};
 
 	if (clubs.length === 0) {
