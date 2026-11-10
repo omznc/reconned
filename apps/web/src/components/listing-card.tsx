@@ -1,10 +1,10 @@
 "use client";
 
 import { Calendar, MapPin, Users, VerifiedIcon, Wrench } from "lucide-react";
-import Image from "next/image";
 import { useExtracted } from "next-intl";
 import type { ReactNode } from "react";
 import { ClubAvatar } from "@/components/identity/club-avatar";
+import { Image } from "@/components/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

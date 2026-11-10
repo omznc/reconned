@@ -1,5 +1,5 @@
-import Image from "next/image";
 import type { ReactNode } from "react";
+import { Image } from "@/components/image";
 import { bannerFallbackStyle } from "@/lib/identity";
 import { cn } from "@/lib/utils";
 

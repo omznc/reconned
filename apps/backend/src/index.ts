@@ -12,6 +12,7 @@ import { user as userTable } from "./drizzle/schema";
 import { AUTHORIZATION_SERVER_METADATA_PATH, OAUTH_DISCOVERY_PATHS, withAgentAuth } from "./lib/agent-auth";
 import { auth } from "./lib/auth";
 import { rateLimitKey, redisCacheStore, redisRateLimitStore } from "./lib/cache";
+import { ROUTE_CACHE_PREFIX } from "./lib/cache-bust";
 import { db } from "./lib/db";
 import { env } from "./lib/env";
 import { loggingMiddleware } from "./lib/middlewares/logging";
@@ -55,7 +56,7 @@ const mainRouter = new Router({
 	},
 	cache: {
 		store: redisCacheStore,
-		keyPrefix: "route:",
+		keyPrefix: ROUTE_CACHE_PREFIX,
 	},
 	// Registering the same method + path shape twice makes the second one unreachable, and the
 	// OpenAPI generator publishes the *last* registration's schema while the *first* serves
@@ -160,6 +161,9 @@ async function handleRequest(request: Request): Promise<Response> {
 		try {
 			const sessionData = await auth.api.getSession({
 				headers: request.headers,
+				// A refresh here renews the session row but drops its Set-Cookie, so the browser cookie
+				// expires `expiresIn` after sign-in. Only /api/auth/get-session refreshes, with the cookie.
+				query: { disableRefresh: true },
 			});
 			if (sessionData?.user) {
 				// `role` is populated by the better-auth admin plugin, so no extra cache/DB lookup.

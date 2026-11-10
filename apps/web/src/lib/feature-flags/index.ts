@@ -26,4 +26,4 @@ export { FeatureFlagsProvider, useFeatureFlag, useFeatureFlags } from "./client"
 // Flag names and types
 export { createFeatureFlagName, isValidFeatureFlagName } from "./flags";
 // Server-side exports
-export { FEATURE_FLAGS_CACHE_TAG, getFeatureFlags, isFeatureEnabled } from "./server";
+export { getFeatureFlags, isFeatureEnabled } from "./server";

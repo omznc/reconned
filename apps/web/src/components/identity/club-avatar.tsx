@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "@/components/image";
 import { generatedClubMark, type LogoTile, logoTileStyle } from "@/lib/identity";
 import { cn } from "@/lib/utils";
 

@@ -288,7 +288,7 @@ adminUnclaimedClubsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs"],
+		bustCache: ["clubs", "public:feed"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Create unclaimed club",
@@ -722,8 +722,8 @@ adminUnclaimedClubsRouter.post(
 	{
 		auth: true,
 		// The club stops being unclaimed and gains a member, so both the listing and the
-		// club's own cached reads are now wrong.
-		bustCache: ["clubs", "club:{id}"],
+		// club's own cached reads are now wrong. The home feed shows the claim and the club.
+		bustCache: ["clubs", "club:{id}", "public:feed"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Assign club owner",

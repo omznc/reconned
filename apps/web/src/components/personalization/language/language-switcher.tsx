@@ -24,8 +24,16 @@ import { cn } from "@/lib/utils";
 
 export interface LanguageSwitcherProps extends ButtonProps {
 	withinMenu?: boolean;
+	/** Only one mounted switcher may save the locale to the cookie and the account. */
+	sync?: boolean;
 }
-export function LanguageSwitcher({ className, variant, withinMenu = false, ...props }: LanguageSwitcherProps) {
+export function LanguageSwitcher({
+	className,
+	variant,
+	withinMenu = false,
+	sync = true,
+	...props
+}: LanguageSwitcherProps) {
 	const t = useExtracted();
 	const router = useRouter();
 	const path = usePathname();
@@ -34,6 +42,10 @@ export function LanguageSwitcher({ className, variant, withinMenu = false, ...pr
 	const [isChanging, setIsChanging] = useState(false);
 
 	useEffect(() => {
+		if (!sync) {
+			return;
+		}
+
 		// Validate locale
 		if (!VALID_LOCALES.includes(locale)) {
 			return;
@@ -107,7 +119,7 @@ export function LanguageSwitcher({ className, variant, withinMenu = false, ...pr
 		};
 
 		updateLanguage();
-	}, [locale, user]);
+	}, [locale, user, sync]);
 
 	const handleLanguageChange = async (localeOption: string) => {
 		if (localeOption === locale) {
@@ -184,7 +196,7 @@ export function LanguageSwitcher({ className, variant, withinMenu = false, ...pr
 					className={cn("w-auto shrink-0 cursor-pointer items-center justify-center shadow-none", className)}
 					{...props}
 				>
-					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 ml-2 scale-100 transition-all" />
+					<Globe className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 					{LANGUAGE_TRANSLATIONS[locale as keyof typeof LANGUAGE_TRANSLATIONS]}
 				</Button>
 			</DropdownMenuTrigger>

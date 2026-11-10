@@ -54,7 +54,8 @@ export function generatePageLanguages(baseUrl: string, pathname: string, _curren
 	// Add all supported locales
 	routing.locales.forEach((locale) => {
 		// For default locale (bs), we don't add the prefix because of localePrefix: 'as-needed'
-		const localePath = locale === routing.defaultLocale ? pathname : `/${locale}${pathname}`;
+		const localePath =
+			locale === routing.defaultLocale ? pathname : `/${locale}${pathname === "/" ? "" : pathname}`;
 		// Ensure we don't have double slashes if pathname is just "/"
 		const cleanPath = localePath === "/" ? "" : localePath;
 		languages[locale] = `${baseUrl}${cleanPath}`;

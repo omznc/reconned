@@ -49,7 +49,7 @@ export function ClubWebsiteButton({ website, isVerified = false }: ClubWebsiteBu
 	if (isVerified) {
 		return (
 			<Button variant="default" onClick={handleDirectClick}>
-				<Globe className="h-4 w-4 mr-2" />
+				<Globe className="h-4 w-4" />
 				{formatWebsiteDisplay(website)}
 			</Button>
 		);
@@ -59,7 +59,7 @@ export function ClubWebsiteButton({ website, isVerified = false }: ClubWebsiteBu
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
 				<Button variant="default">
-					<Globe className="h-4 w-4 mr-2" />
+					<Globe className="h-4 w-4" />
 					{formatWebsiteDisplay(website)}
 				</Button>
 			</AlertDialogTrigger>

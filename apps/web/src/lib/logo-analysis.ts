@@ -70,7 +70,7 @@ function decode(file: File): Promise<HTMLImageElement> {
  * would otherwise report the canvas's aspect ratio rather than the mark's.
  * Returns null when every pixel is transparent.
  */
-function opaqueBounds(data: Uint8ClampedArray, width: number, height: number) {
+function opaqueBounds(data: Uint8ClampedArray | Uint8Array, width: number, height: number) {
 	let minX = width;
 	let minY = height;
 	let maxX = -1;
@@ -110,8 +110,14 @@ export async function analyzeLogo(file: File): Promise<LogoAnalysis> {
 		throw new Error("Could not read the image");
 	}
 	ctx.drawImage(image, 0, 0, width, height);
-	const { data } = ctx.getImageData(0, 0, width, height);
+	return analyzePixels(ctx.getImageData(0, 0, width, height).data, width, height);
+}
 
+/**
+ * The measuring half of `analyzeLogo`, on raw RGBA pixels. The logo tile backfill script
+ * feeds it pixels decoded on the server, so stored logos get the same answer as uploads.
+ */
+export function analyzePixels(data: Uint8ClampedArray | Uint8Array, width: number, height: number): LogoAnalysis {
 	const bounds = opaqueBounds(data, width, height);
 	// A fully transparent file has nothing to measure and nothing to show; paper
 	// is the harmless answer.
@@ -149,4 +155,4 @@ export async function analyzeLogo(file: File): Promise<LogoAnalysis> {
 	};
 }
 
-export { MAX_ASPECT_RATIO };
+export { MAX_ASPECT_RATIO, SAMPLE_SIZE };

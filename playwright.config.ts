@@ -7,15 +7,13 @@ const WEB_PORT = 3100;
 const BACKEND_URL = "http://localhost:3202";
 
 const webEnv = {
-	CI: "true", // skips t3-env validation so the dummy values below pass
+	CI: "true", // skips env validation so the dummy values below pass
 	NEXT_PUBLIC_BACKEND_URL: BACKEND_URL,
 	BACKEND_INTERNAL_URL: BACKEND_URL,
 	NEXT_PUBLIC_WEB_URL: `http://localhost:${WEB_PORT}`,
 	// Cloudflare Turnstile always-pass test site key
 	NEXT_PUBLIC_TURNSTILE_SITE_KEY: "1x00000000000000000000AA",
 	INTERNAL_API_SECRET: "test-internal-secret-test-internal-secret",
-	// Any valid 32-byte base64 value works for next's server-action encryption in tests
-	NEXT_SERVER_ACTIONS_ENCRYPTION_KEY: "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE=",
 	NEXT_PUBLIC_CDN_URL: "http://localhost:9000/test",
 	GOOGLE_CLIENT_ID: "test-google-client-id",
 	// Client-bundle env validation can't see CI=true (it's not NEXT_PUBLIC_), so every var in
@@ -23,7 +21,6 @@ const webEnv = {
 	NEXT_PUBLIC_GOOGLE_CLIENT_ID: "test-google-client-id",
 	NEXT_PUBLIC_AXIOM_DATASET: "test",
 	NEXT_PUBLIC_AXIOM_TOKEN: "test",
-	ADMIN_WEBHOOK_TOKEN: "test-admin-webhook-token",
 };
 
 export default defineConfig({
@@ -69,7 +66,9 @@ export default defineConfig({
 			timeout: 120_000,
 		},
 		{
-			command: `bun --bun next dev --turbo -p ${WEB_PORT}`,
+			// A production build, not `vite dev`: the dev server hydrates seconds after load, so specs that fill
+			// a form straight after `goto` fire before React attaches its handlers.
+			command: `bun run build && PORT=${WEB_PORT} bun run start`,
 			cwd: "./apps/web",
 			url: `http://localhost:${WEB_PORT}`,
 			reuseExistingServer: !process.env.CI,

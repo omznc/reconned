@@ -271,6 +271,8 @@ export const auth = betterAuth({
 			},
 			update: {
 				after: async (user) => {
+					// An admin ban comes through here, not through our routes; the feed names public users only.
+					await bustRouteCache(["public:feed"]);
 					if (user.emailVerified) {
 						const pendingInvites = await db
 							.select()
@@ -328,6 +330,7 @@ export const auth = betterAuth({
 											.set({
 												...CLEAR_ARCHIVE,
 												role: "USER",
+												startDate: new Date().toISOString(),
 												updatedAt: new Date().toISOString(),
 											})
 											.where(eq(clubMembership.id, priorMembership.id));

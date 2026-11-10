@@ -1,8 +1,8 @@
 "use client";
 
 import { CheckCircle, Mail, XCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { useExtracted } from "next-intl";
+import { useQueryState } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,10 @@ interface ClubInviteAcceptanceProps {
 }
 
 export function ClubInviteAcceptance({ invites }: ClubInviteAcceptanceProps) {
-	const searchParams = useSearchParams();
+	const [inviteCode] = useQueryState("invite");
 	const router = useRouter();
 	const t = useExtracted();
 	const [isLoading, setIsLoading] = useState(false);
-
-	const inviteCode = searchParams.get("invite");
 
 	// Show if there's a URL invite parameter OR if there are pending invites passed as props
 	if (!inviteCode && (!invites || invites.length === 0)) {

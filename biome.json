@@ -41,6 +41,8 @@
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off",
+				"useUniqueElementIds": "off",
+				"noNestedComponentDefinitions": "off",
 				"noUndeclaredDependencies": "off"
 			},
 			"suspicious": {
@@ -53,7 +55,7 @@
 			}
 		},
 		"domains": {
-			"next": "all"
+			"react": "all"
 		}
 	},
 	"formatter": {
@@ -78,10 +80,11 @@
 			"!**/node_modules",
 			"!**/dist",
 			"!**/build",
-			"!**/.next",
+			"!**/.output",
 			"!**/src/components/ui",
 			"!**/.unlighthouse",
 			"!**/generated",
+			"!**/routeTree.gen.ts",
 			"!**/*.d.json.ts",
 			"!apps/web/messages",
 			"!apps/backend/src/drizzle/meta",

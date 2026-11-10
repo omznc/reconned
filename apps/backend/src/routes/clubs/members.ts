@@ -121,7 +121,7 @@ clubsMembersRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Remove member from club",
@@ -180,6 +180,8 @@ clubsMembersRouter.post(
 					.set({
 						role: body.role || "USER",
 						...CLEAR_ARCHIVE,
+						// A new start, as the invite path does; the home feed lists the member by this time.
+						startDate: new Date().toISOString(),
 						updatedAt: new Date().toISOString(),
 					})
 					.where(eq(clubMembership.id, existingMembership.id))
@@ -218,7 +220,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Add member to club",
@@ -361,7 +363,7 @@ clubsMembersRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Extend membership duration",
@@ -427,7 +429,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Leave club",
@@ -522,7 +524,7 @@ clubsMembersRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update member role",
@@ -1083,7 +1085,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Archive club member",
@@ -1165,7 +1167,7 @@ clubsMembersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs", "club:{id}"],
+		bustCache: ["clubs", "club:{id}", "users", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Unarchive club member",

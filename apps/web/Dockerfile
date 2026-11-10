@@ -17,8 +17,6 @@ COPY apps/web ./apps/web
 COPY apps/backend ./apps/backend
 COPY packages/router ./packages/router
 
-ENV NEXT_TELEMETRY_DISABLED=1
-
 ARG CI
 ARG NEXT_PUBLIC_CDN_URL
 ARG NEXT_PUBLIC_WEB_URL
@@ -43,28 +41,43 @@ ENV CI=${CI:-false} \
 
 WORKDIR /app/apps/web
 
-RUN --mount=type=cache,target=/app/apps/web/.next/cache \
-    bun node_modules/next/dist/bin/next build --turbo
+RUN bun run build
 
 FROM oven/bun:canary AS runner
 WORKDIR /app
 
-ENV NEXT_TELEMETRY_DISABLED=1
+# The server reads NEXT_PUBLIC_* at runtime too (Next.js only inlined them at build time).
+# Bake the build args in, so a deploy that sets them only as build variables still starts.
+ARG NEXT_PUBLIC_CDN_URL
+ARG NEXT_PUBLIC_WEB_URL
+ARG NEXT_PUBLIC_BACKEND_URL
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ARG NEXT_PUBLIC_SOURCE_COMMIT
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ARG NEXT_PUBLIC_AXIOM_DATASET
+ARG NEXT_PUBLIC_AXIOM_TOKEN
+ARG NEXT_PUBLIC_BETA
 
 ENV NODE_ENV=production \
     PORT=3000 \
-    HOSTNAME="0.0.0.0"
+    HOSTNAME="0.0.0.0" \
+    NEXT_PUBLIC_CDN_URL=${NEXT_PUBLIC_CDN_URL} \
+    NEXT_PUBLIC_WEB_URL=${NEXT_PUBLIC_WEB_URL} \
+    NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL} \
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID} \
+    NEXT_PUBLIC_SOURCE_COMMIT=${NEXT_PUBLIC_SOURCE_COMMIT} \
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY=${NEXT_PUBLIC_TURNSTILE_SITE_KEY} \
+    NEXT_PUBLIC_AXIOM_DATASET=${NEXT_PUBLIC_AXIOM_DATASET} \
+    NEXT_PUBLIC_AXIOM_TOKEN=${NEXT_PUBLIC_AXIOM_TOKEN} \
+    NEXT_PUBLIC_BETA=${NEXT_PUBLIC_BETA}
 
 RUN groupadd -r -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs -d /app -s /sbin/nologin nextjs
+    useradd -r -u 1001 -g nodejs -d /app -s /sbin/nologin app
 
-COPY --from=builder /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=app:nodejs /app/apps/web/.output ./apps/web/.output
 
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-
-USER nextjs
+USER app
 
 EXPOSE 3000
 
-CMD ["bun", "--smol", "--no-orphans", "apps/web/server.js"]
+CMD ["bun", "--smol", "--no-orphans", "apps/web/.output/server/index.mjs"]

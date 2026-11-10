@@ -2,10 +2,10 @@ import { deleteKeysByPattern } from "./cache";
 import { logger } from "./posthog";
 
 /**
- * The prefix the router builds its cache keys with — see `cache.keyPrefix` in `src/index.ts`.
- * Kept in sync by hand because the router owns the prefix and doesn't export it.
+ * The prefix the router builds its cache keys with; `src/index.ts` passes it as `cache.keyPrefix`.
+ * Change the version when a cached response shape changes: a deploy must not serve old shapes.
  */
-const ROUTE_CACHE_PREFIX = "route:";
+export const ROUTE_CACHE_PREFIX = "route:v2:";
 
 /**
  * Drops every cached response under a set of route-cache keys.
@@ -28,7 +28,13 @@ export async function bustRouteCache(keys: string[]): Promise<void> {
 
 /** Everything that changes when a club's membership list changes. */
 export function clubMembershipCacheKeys(clubId: string): string[] {
-	return ["clubs", `club:${clubId}`];
+	// The home feed lists new members of each club.
+	return ["clubs", `club:${clubId}`, "users", "public:feed"];
+}
+
+/** The public club pages that an event or a rule change reaches. Their routes are keyed by club, not event. */
+export async function bustClubPublicCaches(clubId: string): Promise<void> {
+	await bustRouteCache([`club:${clubId}:public-stats`, `club:${clubId}:public-rules`]);
 }
 
 /** The route-cache key whose reads carry a review target's rating. */
@@ -56,8 +62,7 @@ export async function bustReviewCache(type: string, entityId: string): Promise<v
 		});
 	}
 
+	// The home feed lists recent reviews and the players listing carries each player's rating.
 	const targetKey = REVIEW_TARGET_CACHE_KEY[type]?.(entityId);
-	if (targetKey) {
-		await bustRouteCache([targetKey]);
-	}
+	await bustRouteCache([...(targetKey ? [targetKey] : []), "public:feed", ...(type === "user" ? ["users"] : [])]);
 }

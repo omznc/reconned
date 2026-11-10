@@ -1,5 +1,7 @@
 import {
+	ArrowRight,
 	ArrowUpRightIcon,
+	Building2,
 	Calendar,
 	Code2,
 	LayoutDashboard,
@@ -7,224 +9,184 @@ import {
 	Search,
 	ShieldQuestion,
 	StarIcon,
+	Users,
 } from "lucide-react";
-import { getExtracted, setRequestLocale } from "next-intl/server";
-import { Suspense } from "react";
+import { useExtracted } from "next-intl";
+import type { ReactNode } from "react";
 import { BadgeSoon } from "@/components/badge-soon";
 import { CookieSettingsButton } from "@/components/cookie-settings-button";
+import { FacebookIcon, InstagramIcon } from "@/components/icons";
 import { FooterDrawing } from "@/components/logos/drawings/footer-drawing";
+import { Logo } from "@/components/logos/logo";
+import type { Href, IconComponent } from "@/components/redesign/types";
 import { Link } from "@/i18n/navigation";
-import { env } from "@/lib/env";
+import { DEFAULT_TIME_ZONE } from "@/i18n/routing";
+import { toIntlLocale } from "@/lib/intl-locale";
 
-const CURRENT_COMMIT = env.NEXT_PUBLIC_SOURCE_COMMIT;
+type FooterCommit = { commit: string; date: string } | null;
 
-async function FooterVersion({ locale }: { locale: string }) {
-	const commitDateResponse = await fetch(`https://api.github.com/repos/omznc/reconned/commits/${CURRENT_COMMIT}`, {
-		cache: "force-cache",
-		next: {
-			revalidate: false,
-		},
-	});
-	const body = (await commitDateResponse.json()) as {
-		commit?: { committer?: { date?: string } };
-	};
+const LINK_CLASS =
+	"flex items-center gap-2 rounded-sm text-[13px] text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50";
 
-	if (!CURRENT_COMMIT || !body.commit?.committer?.date) return null;
+function FooterVersion({ locale, version }: { locale: string; version: FooterCommit }) {
+	if (!version) {
+		return null;
+	}
 
 	return (
 		<Link
-			href={`https://github.com/omznc/reconned/commit/${CURRENT_COMMIT}`}
+			href={`https://github.com/omznc/reconned/commit/${version.commit}`}
 			target="_blank"
-			className="font-mono mt-4 w-fit opacity-60 hover:opacity-100 flex items-center gap-1 transition-opacity"
+			className="flex w-fit items-center gap-1 font-mono text-xs opacity-60 transition-opacity hover:opacity-100"
 		>
-			Version {CURRENT_COMMIT.slice(0, 7)} (
-			{new Date(body.commit.committer.date).toLocaleDateString(locale, {
-				year: "numeric",
-				month: "long",
-				day: "numeric",
-			})}
+			Version {version.commit.slice(0, 7)} (
+			{/* The ICU data of the server runtime and of the browser can format the same date differently. */}
+			<span suppressHydrationWarning>
+				{new Date(version.date).toLocaleDateString(toIntlLocale(locale), {
+					timeZone: DEFAULT_TIME_ZONE,
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				})}
+			</span>
 			)
-			<ArrowUpRightIcon className="w-4 h-4 -mt-0.5" />
+			<ArrowUpRightIcon className="-mt-0.5 h-4 w-4" />
 		</Link>
 	);
 }
 
-// The locale arrives as a prop rather than via `getLocale()`. This component renders inside a
-// layout that has no `params` of its own, and without `setRequestLocale()` first, every
-// next-intl server API resolves the locale from a request header — which reads `headers()` and
-// opts the entire public route subtree out of static rendering.
-export async function Footer({ locale }: { locale: string }) {
-	setRequestLocale(locale);
-	const t = await getExtracted();
+function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
+	return (
+		<div>
+			<h3 className="mb-3 text-[15px] font-semibold">{title}</h3>
+			<ul className="flex flex-col gap-2">{children}</ul>
+		</div>
+	);
+}
+
+function FooterLink({
+	href,
+	icon: Icon,
+	external,
+	children,
+}: {
+	href: Href;
+	icon?: IconComponent;
+	external?: boolean;
+	children: ReactNode;
+}) {
+	return (
+		<li>
+			<Link href={href} target={external ? "_blank" : undefined} className={LINK_CLASS}>
+				{Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
+				{children}
+			</Link>
+		</li>
+	);
+}
+
+export function Footer({ locale, version }: { locale: string; version: FooterCommit }) {
+	const t = useExtracted();
 
 	return (
-		<footer className="relative w-full p-2 flex-col opacity-80 group hover:opacity-100 transition-opacity md:flex-row flex items-center justify-evenly bg-sidebar border-t">
-			<div className="container z-10 mx-auto px-4 py-8">
-				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-					<div>
-						<h3 className="font-bold mb-4">{t("About us")}</h3>
-						<p className="text-sm ">
+		<footer className="relative w-full border-t bg-background">
+			<div className="container relative z-10 mx-auto flex flex-col gap-8 px-4 pt-12 pb-7 sm:px-6">
+				<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+					<div className="flex flex-col gap-3">
+						<Logo className="h-6 w-auto" />
+						<p className="text-[13px] leading-5 text-muted-foreground">
 							{t(
 								"RECONNED is a new platform for airsoft enthusiasts. Discover clubs, events, and players across the world. Manage your club, organize events, and find new opportunities.",
 							)}
 						</p>
 					</div>
-					<div>
-						<h3 className="font-bold mb-4">{t("Quick links")}</h3>
-						<ul className="space-y-2 text-sm">
-							<li>
-								<Link
-									href="/#about-us"
-									className="flex items-center hover:text-red-500 transition-colors"
-								>
-									<ShieldQuestion className="w-5 h-5 mr-2" />
-									{t("About us")}
-								</Link>
-							</li>
-							<li>
-								<Link href="/events" className="flex items-center hover:text-red-500 transition-colors">
-									<Calendar className="w-5 h-5 mr-2" />
-									{t("Events")}
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/dashboard"
-									className="flex items-center hover:text-red-500 transition-colors"
-								>
-									<LayoutDashboard className="w-5 h-5 mr-2" />
-									{t("Dashboard")}
-								</Link>
-							</li>
-							<li>
-								<Link href="/map" className="flex items-center hover:text-red-500 transition-colors">
-									<MapIcon className="w-5 h-5 mr-2" />
-									{t("Map")}
-								</Link>
-							</li>
-							<li>
-								<Link href="/search" className="flex items-center hover:text-red-500 transition-colors">
-									<Search className="w-5 h-5 mr-2" />
-									{t("Search")}
-								</Link>
-							</li>{" "}
-							<li>
-								<Link
-									href="/sponsors"
-									className="flex items-center hover:text-red-500 transition-colors"
-								>
-									<StarIcon className="w-5 h-5 mr-2" />
-									{t("Sponsors")}
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="/developers"
-									className="flex items-center hover:text-red-500 transition-colors"
-								>
-									<Code2 className="w-5 h-5 mr-2" />
-									{t("For developers")}
-								</Link>
-							</li>
-							{/* <li>
-								<Link
-									href="/stats"
-									target="_blank"
-									className="flex items-center hover:text-red-500 transition-colors"
-								>
-									<BarChart2 className="w-5 h-5 mr-2" />
-									{t("Statistics")}
-								</Link>
-							</li> */}
-						</ul>
-					</div>
-					<div>
-						<h3 className="font-bold mb-4">{t("Community")}</h3>
-						<ul className="space-y-2 text-sm">
-							<li>
-								<Link
-									target="_blank"
-									href="https://discord.gg/fANDrYmFSy"
-									className="hover:text-red-500 transition-colors flex items-center gap-2"
-								>
-									{/*<Discord className="size-4" />*/}
-									<span>Discord</span>
-								</Link>
-							</li>
-							<li>
-								<Link
-									target="_blank"
-									href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
-									className="hover:text-red-500 transition-colors flex items-center gap-2"
-								>
-									<span>Instagram</span>
-								</Link>
-							</li>
-							<li>
-								<Link
-									target="_blank"
-									href="https://github.com/omznc/reconned?utm_source=reconned.com"
-									className="hover:text-red-500 transition-colors flex items-center gap-2"
-								>
-									<span>GitHub</span>
-								</Link>
-							</li>
-							<li>
-								<Link
-									href="https://www.facebook.com/profile.php?id=61572533350106"
-									className="hover:text-red-500 transition-colors flex items-center gap-2"
-								>
-									<span>Facebook</span>
-								</Link>
-							</li>
-						</ul>
-					</div>
-					<div>
-						<h3 className="font-bold mb-4">{t("Support")}</h3>
-						<ul className="space-y-2 text-sm ">
-							{/* Not links yet: a href="#" reads as navigation to assistive tech and goes nowhere.
-							    The "soon" badge already carries the meaning; make them links when the pages exist. */}
-							<li>
-								<span className="text-muted-foreground">{t("Contact")}</span>
-								<BadgeSoon className="ml-2" />
-							</li>
-							<li>
-								<span className="text-muted-foreground">{t("FAQ")}</span>
-								<BadgeSoon className="ml-2" />
-							</li>
-							<li>
-								<Link href="/privacy-policy">{t("Privacy")}</Link>
-							</li>
-							<li>
-								<Link href="/terms-of-use">{t("Terms of Use")}</Link>
-							</li>
-							<li>
-								<CookieSettingsButton label={t("Cookie settings")} />
-							</li>
-							<li>
-								<a
-									href="/sitemap.xml"
-									target="_blank"
-									rel="noopener noreferrer"
-									className="flex items-center hover:text-red-500 transition-colors"
-								>
-									{t("Sitemap")}
-								</a>
-							</li>
-						</ul>
-					</div>
+					<FooterColumn title={t("Quick links")}>
+						<FooterLink href="/#about-us" icon={ShieldQuestion}>
+							{t("About us")}
+						</FooterLink>
+						<FooterLink href="/events" icon={Calendar}>
+							{t("Events")}
+						</FooterLink>
+						<FooterLink href="/clubs" icon={Building2}>
+							{t("Clubs")}
+						</FooterLink>
+						<FooterLink href="/users" icon={Users}>
+							{t("Players")}
+						</FooterLink>
+						<FooterLink href="/dashboard" icon={LayoutDashboard}>
+							{t("Dashboard")}
+						</FooterLink>
+						<FooterLink href="/map" icon={MapIcon}>
+							{t("Map")}
+						</FooterLink>
+						<FooterLink href="/search" icon={Search}>
+							{t("Search")}
+						</FooterLink>
+						<FooterLink href="/sponsors" icon={StarIcon}>
+							{t("Sponsors")}
+						</FooterLink>
+						<FooterLink href="/developers" icon={Code2}>
+							{t("For developers")}
+						</FooterLink>
+					</FooterColumn>
+					<FooterColumn title={t("Community")}>
+						<FooterLink href="https://discord.gg/fANDrYmFSy" icon={Users} external={true}>
+							Discord
+						</FooterLink>
+						<FooterLink
+							href="https://instagram.com/reconnedairsoft?utm_source=reconned.com"
+							icon={InstagramIcon}
+							external={true}
+						>
+							Instagram
+						</FooterLink>
+						<FooterLink
+							href="https://github.com/omznc/reconned?utm_source=reconned.com"
+							icon={Code2}
+							external={true}
+						>
+							GitHub
+						</FooterLink>
+						<FooterLink href="https://www.facebook.com/profile.php?id=61572533350106" icon={FacebookIcon}>
+							Facebook
+						</FooterLink>
+					</FooterColumn>
+					<FooterColumn title={t("Support")}>
+						{/* Not links yet: a href="#" reads as navigation to assistive tech and goes nowhere.
+						    The "soon" badge already carries the meaning; make them links when the pages exist. */}
+						<li className="text-[13px] text-muted-foreground">
+							{t("Contact")}
+							<BadgeSoon className="ml-2" />
+						</li>
+						<li className="text-[13px] text-muted-foreground">
+							{t("FAQ")}
+							<BadgeSoon className="ml-2" />
+						</li>
+						<FooterLink href="/privacy-policy">{t("Privacy")}</FooterLink>
+						<FooterLink href="/terms-of-use">{t("Terms of Use")}</FooterLink>
+						<li className="text-[13px] text-muted-foreground">
+							<CookieSettingsButton label={t("Cookie settings")} />
+						</li>
+						<li>
+							<a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
+								{t("Sitemap")}
+							</a>
+						</li>
+					</FooterColumn>
 				</div>
-				<div className="mt-8 pt-8 border-t border-border/10 text-center text-sm flex flex-col items-center">
-					<p>© RECONNED, {new Date().getFullYear()} </p>
-					<Link href="/sponsors" className="text-red-500 font-bold mt-2 hover:text-red-400">
+				<div className="flex flex-wrap items-center justify-between gap-3 border-t pt-5 text-xs">
+					<p className="text-muted-foreground">© RECONNED, {new Date().getFullYear()}</p>
+					<FooterVersion locale={locale} version={version} />
+					<Link
+						href="/sponsors"
+						className="flex items-center gap-1.5 rounded-sm outline-none hover:text-brand focus-visible:ring-[3px] focus-visible:ring-ring/50"
+					>
 						{t("Check out our sponsors and partners")}
+						<ArrowRight className="size-3" aria-hidden />
 					</Link>
-					<Suspense fallback={null}>
-						<FooterVersion locale={locale} />
-					</Suspense>
 				</div>
 			</div>
-			<FooterDrawing className="opacity-50 absolute bottom-30 md:bottom-0 right-0 w-full max-w-[250px] 2xl:max-w-[350px] dark:invert pointer-events-none" />
+			<FooterDrawing className="pointer-events-none absolute right-0 bottom-14 hidden w-full max-w-[250px] opacity-30 2xl:max-w-[350px] dark:invert lg:block" />
 		</footer>
 	);
 }

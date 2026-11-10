@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@components/ui/button";
+import { useParams } from "@tanstack/react-router";
 import {
 	addMonths,
 	eachDayOfInterval,
@@ -18,8 +19,6 @@ import {
 	subMonths,
 } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import Image from "next/image";
-import { useParams } from "next/navigation";
 import { useExtracted, useLocale } from "next-intl";
 import { useQueryState } from "nuqs";
 import { Fragment, type KeyboardEvent, useEffect, useMemo, useState } from "react";
@@ -27,6 +26,7 @@ import { toast } from "sonner";
 import { BadgeSoon } from "@/components/badge-soon";
 import { VerifiedClubIcon } from "@/components/icons";
 import { ClubAvatar } from "@/components/identity/club-avatar";
+import { Image } from "@/components/image";
 import {
 	Credenza,
 	CredenzaBody,
@@ -56,7 +56,7 @@ type Months = "jan" | "feb" | "mar" | "apr" | "may" | "jun" | "jul" | "aug" | "s
 
 export function EventCalendar(props: EventCalendarProps) {
 	const t = useExtracted();
-	const params = useParams<{ clubId: string }>();
+	const params = useParams({ strict: false }) as { clubId?: string };
 	const router = useRouter();
 	const locale = useLocale();
 	const dateLocale = getDateFnsLocale(locale);
@@ -589,7 +589,7 @@ export function EventCalendar(props: EventCalendarProps) {
 																				);
 																			}}
 																		>
-																			<Plus className="h-4 w-4 mr-2" />
+																			<Plus className="h-4 w-4" />
 																			{t("Log in")}
 																			<BadgeSoon className="ml-2" />
 																		</Button>

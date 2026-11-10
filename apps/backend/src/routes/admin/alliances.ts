@@ -355,7 +355,7 @@ adminAlliancesRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["alliances"],
+		bustCache: ["alliances", "public:feed"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Delete alliance",
@@ -415,7 +415,7 @@ adminAlliancesRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["alliances"],
+		bustCache: ["alliances", "public:feed"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Add club to alliance",
@@ -469,7 +469,7 @@ adminAlliancesRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["alliances"],
+		bustCache: ["alliances", "public:feed"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Remove club from alliance",

@@ -3,6 +3,7 @@ import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import * as z from "zod";
 import { club, clubMembership, clubPurchase, event, eventRegistration, post } from "../../drizzle/schema";
 import { requireClubManager } from "../../lib/club-access";
+import { getClubPublicStats, loadVisibleClub } from "../../lib/club-public";
 import { db } from "../../lib/db";
 import { extractSizeFromKey } from "../../lib/storage";
 
@@ -181,6 +182,53 @@ clubsStatsRouter.get(
 			swr: 1800,
 			// Manager-only data; keep per-user entries so a non-manager can never read a warm entry.
 			varyByUser: true,
+		},
+	},
+);
+
+clubsStatsRouter.get(
+	"/clubs/:id/public-stats",
+	async ({ params, response, context }) => {
+		if (!params.id) {
+			throw apiError.validation("Club ID is required");
+		}
+		const { club: found, isMember } = await loadVisibleClub(params.id, context);
+		// isPrivateStats hides the event totals from everyone but members and admins.
+		const hideEventStats = found.isPrivateStats && !isMember && !context.isAdmin;
+
+		return response.json(await getClubPublicStats(found.id, hideEventStats));
+	},
+	{
+		auth: false,
+		cache: {
+			key: "club:{id}:public-stats",
+			ttl: 300,
+			swr: 1800,
+			// Private clubs and isPrivateStats depend on who asks.
+			varyByUser: true,
+		},
+		schema: {
+			tags: ["Clubs"],
+			summary: "Get public club statistics",
+			description: `Public numbers for the club page. \`id\` is a club id or slug. Same visibility rules as the club itself.
+
+- \`memberCount\`: active, non-archived members. \`privateMemberCount\`: those of them whose profile is private.
+- \`gamesHosted\`: public events of the club that have ended. \`playersHosted\`: distinct users with a CONFIRMED place at such an event who were not marked absent.
+- Both are null when the club sets \`isPrivateStats\` and the caller is not a member or admin.
+- \`rating\`: average and count of club reviews, null without reviews. \`photoCount\`: images on the club's public posts (Instagram media is not counted).`,
+			params: z.object({ id: z.string() }),
+			response: {
+				200: z.object({
+					memberCount: z.number(),
+					privateMemberCount: z.number(),
+					gamesHosted: z.number().nullable(),
+					playersHosted: z.number().nullable(),
+					rating: z.object({ average: z.number(), count: z.number() }).nullable(),
+					photoCount: z.number(),
+				}),
+				404: z.object({ error: z.string() }),
+			},
+			mcpTool: true,
 		},
 	},
 );

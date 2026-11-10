@@ -9,7 +9,11 @@ import { openConsentSettings } from "@/lib/consent";
  */
 export function CookieSettingsButton({ label }: { label: string }) {
 	return (
-		<button type="button" onClick={openConsentSettings} className="hover:text-red-500 transition-colors">
+		<button
+			type="button"
+			onClick={openConsentSettings}
+			className="rounded-sm outline-none transition-colors hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+		>
 			{label}
 		</button>
 	);

@@ -8,7 +8,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log
 
-.next
 /out
 /build
 dist
@@ -62,7 +61,6 @@ docker-compose.yml
 generated
 messages/*.d.json.ts
 *.tsbuildinfo
-next-env.d.ts
 
 .vercel
 .unlighthouse

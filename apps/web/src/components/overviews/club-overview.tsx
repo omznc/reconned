@@ -11,7 +11,7 @@ import {
 	Pencil,
 	Phone,
 } from "lucide-react";
-import { getExtracted } from "next-intl/server";
+import { useExtracted } from "next-intl";
 import { ClaimClubForm } from "@/components/claim-club-form";
 import { ClubInviteAcceptance } from "@/components/club-invite-acceptance";
 import { ClubManagerIcon, ClubOwnerIcon, InstagramIcon, VerifiedClubIcon } from "@/components/icons";
@@ -44,9 +44,11 @@ interface ClubOverviewProps {
 	alliances?: ApiResponse<"/api/clubs/{id}/alliances", "get">["alliances"];
 	instagramData?: ApiResponse<"/api/clubs/{id}/instagram/media", "get">;
 	invites?: EventInvite[];
+	/** `undefined` hides the reviews section (feature flag off or fetch failed). */
+	reviews?: ApiResponse<"/api/reviews/{type}/{id}", "get">["reviews"];
 }
 
-export async function ClubOverview({
+export function ClubOverview({
 	club,
 	isManager,
 	isMember,
@@ -59,8 +61,9 @@ export async function ClubOverview({
 	alliances = [],
 	instagramData = { media: [], username: club.instagramUsername || null },
 	invites = [],
+	reviews,
 }: ClubOverviewProps) {
-	const t = await getExtracted();
+	const t = useExtracted();
 
 	const isClubOwner = currentUserMembership?.role === "CLUB_OWNER";
 
@@ -76,7 +79,7 @@ export async function ClubOverview({
 					isManager && (
 						<Button asChild size="sm">
 							<Link href={`/dashboard/${club.id}/club/information`}>
-								<Cog className="h-4 w-4 mr-2" />
+								<Cog className="h-4 w-4" />
 								{t("Edit club")}
 							</Link>
 						</Button>
@@ -110,7 +113,7 @@ export async function ClubOverview({
 					{club.latitude && club.longitude && (
 						<Button asChild variant="outline">
 							<Link href={`/map?clubId=${club.slug || club.id}`}>
-								<MapIcon className="h-4 w-4 mr-2" />
+								<MapIcon className="h-4 w-4" />
 								{t("Map")}
 							</Link>
 						</Button>
@@ -310,7 +313,13 @@ export async function ClubOverview({
 								</Card>
 							)}
 
-							<ReviewsOverview type="club" typeId={club.id} entityName={club.name} isMember={isMember} />
+							<ReviewsOverview
+								type="club"
+								typeId={club.id}
+								entityName={club.name}
+								isMember={isMember}
+								reviews={reviews}
+							/>
 
 							{club.instagramUsername && (
 								<Card className="h-full">

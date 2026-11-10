@@ -65,7 +65,7 @@ export function ReviewEditHistory({ reviewId, open: controlledOpen, onOpenChange
 							setTimeout(() => refetch(), 0);
 						}}
 					>
-						<History className="size-3 mr-1" />
+						<History className="size-3" />
 						{t("History")}
 					</Button>
 				</CredenzaTrigger>

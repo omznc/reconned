@@ -8,6 +8,7 @@ import {
 import type * as React from "react";
 
 import { personInitials, personTint } from "@/lib/identity";
+import cloudflareLoader from "@/lib/image-loader";
 import { cn } from "@/lib/utils";
 
 /**
@@ -30,8 +31,16 @@ function Avatar({ className, ...props }: React.ComponentProps<typeof FacehashAva
  * Uploaded photos are cropped to a centre square, then masked — no tile behind
  * them, since a photo has no transparency to protect.
  */
-function AvatarImage({ className, ...props }: React.ComponentProps<typeof FacehashAvatarImage>) {
-	return <FacehashAvatarImage className={cn("aspect-square size-full object-cover", className)} {...props} />;
+function AvatarImage({ className, src, ...props }: React.ComponentProps<typeof FacehashAvatarImage>) {
+	// 256 px covers the largest avatar (profile header) at 2x.
+	const optimized = src && !src.startsWith("data:") && !src.startsWith("blob:") ? cloudflareLoader({ src, width: 256, quality: 75 }) : src;
+	return (
+		<FacehashAvatarImage
+			className={cn("aspect-square size-full object-cover", className)}
+			src={optimized}
+			{...props}
+		/>
+	);
 }
 
 /**
