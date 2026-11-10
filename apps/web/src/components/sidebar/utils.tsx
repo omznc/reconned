@@ -43,7 +43,7 @@ export const renderCollapsedItem = (item: NavItem, path: string) => (
 						{(item.items ?? []).map((subItem) => (
 							<DropdownMenuItem key={subItem.title} asChild>
 								<Link href={subItem.url}>
-									{subItem.icon && <subItem.icon className="mr-2 size-4" />}
+									{subItem.icon && <subItem.icon className="size-4" />}
 									<span>{subItem.title}</span>
 									{subItem.isSoon && <BadgeSoon className="ml-2" />}
 									{subItem.isNew && <BadgeNew className="ml-2" />}

@@ -1,13 +1,13 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useExtracted } from "next-intl";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { useConfirm } from "@/components/ui/alert-dialog-provider";
 import type { ButtonProps } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 import apiClient from "@/lib/api/api.client";
 import { cn } from "@/lib/utils";
 
@@ -108,7 +108,7 @@ export function LeaveClubButton({
 			size={size}
 			{...props}
 		>
-			{icon || <LogOut className="h-4 w-4 mr-2" />}
+			{icon || <LogOut className="h-4 w-4" />}
 			{t("Leave club")}
 		</Button>
 	);

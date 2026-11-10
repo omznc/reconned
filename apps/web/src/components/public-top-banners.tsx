@@ -1,9 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import Link from "next/link";
 import { useExtracted } from "next-intl";
-import { usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 
 export function PublicTopBanners() {
 	const t = useExtracted();

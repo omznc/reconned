@@ -1,0 +1,116 @@
+import { createFileRoute } from "@tanstack/react-router";
+import TurndownService from "turndown";
+import { resolveMarkdownSource } from "@/lib/server/markdown-source";
+
+const turndownService = new TurndownService({
+	bulletListMarker: "-",
+	codeBlockStyle: "fenced",
+	headingStyle: "atx",
+});
+// `header`/`footer` are the site chrome — dropping them cuts ~21% of the output
+// with no loss of page content. Everything else here is non-prose.
+//
+// Deliberately NOT dropping `main`-adjacent wrappers or keying off `<main>` at all:
+// under streaming SSR the landmark holds only the Suspense shell (~1.9KB), and the
+// real content is appended to the end of `<body>` in out-of-order chunks. Extracting
+// `<main>` yields an empty document — measured against production HTML, 0 of 12
+// clubs survived, versus 12 of 12 for the whole body.
+turndownService.remove(["script", "style", "noscript", "head", "meta", "link", "iframe", "template", "header"]);
+// The footer is site chrome too, except for its "Version <sha>" link: the old app kept it in the output.
+turndownService.addRule("footerVersion", {
+	filter: "footer",
+	replacement: (_content, node) => {
+		const html = findCommitLinkHtml(node);
+		return html ? `\n\n${turndownService.turndown(html)}\n\n` : "";
+	},
+});
+// `svg` goes through a filter rather than the list above: turndown types `remove`
+// against `HTMLElementTagNameMap`, which has no SVG entry.
+turndownService.remove((node) => node.nodeName.toLowerCase() === "svg");
+// `remove` does not apply to `img` — turndown's own image rule claims it first, so
+// it takes a rule override. Alt text duplicates the adjacent heading on every card,
+// so dropping images loses no information and saves roughly a third of the tokens.
+turndownService.addRule("stripImages", {
+	filter: "img",
+	replacement: () => "",
+});
+
+function findCommitLinkHtml(node: Node): string | undefined {
+	if (!("querySelector" in node) || typeof node.querySelector !== "function") {
+		return undefined;
+	}
+	const link: unknown = node.querySelector('a[href*="/commit/"]');
+	if (typeof link === "object" && link !== null && "outerHTML" in link && typeof link.outerHTML === "string") {
+		return link.outerHTML;
+	}
+	return undefined;
+}
+
+/** Content lives in `<body>`; see the note on the remove list above. */
+function extractContent(html: string): string {
+	return html.match(/<body\b[^>]*>([\s\S]*)<\/body>/i)?.[1] ?? html;
+}
+
+/**
+ * Serves a markdown rendering of any public HTML page. Not called directly — the
+ * request middleware calls here for a `.md` path suffix, passing the original path as
+ * `source`.
+ *
+ * Deliberately NOT under `/api/`: in production the edge proxy routes every
+ * `/api/*` path to the backend before it reaches the web app, so a route handler there
+ * is unreachable.
+ */
+async function GET({ request }: { request: Request }) {
+	const requestUrl = new URL(request.url);
+	const source = requestUrl.searchParams.get("source") ?? request.headers.get("x-md-source");
+
+	// Self-fetch renders the page through the full stack (locale negotiation
+	// included). Aimed at the local host rather than `request.url`: the
+	// public origin would send this request back out through the CDN and in to a
+	// fresh container, which is slow, cache-polluting, and fails outright where
+	// egress to our own hostname is blocked. The original `host` is forwarded so
+	// the app still builds absolute URLs against the public origin, and
+	// `accept: text/html` keeps the proxy from rewriting the internal request
+	// straight back here.
+	// `PORT` is what the container sets; `requestUrl.port` covers dev, where the dev server
+	// may pick another port without exporting `PORT`.
+	const port = process.env.PORT || requestUrl.port || "3000";
+	const sourceUrl = resolveMarkdownSource(source, `http://localhost:${port}`);
+	if (!sourceUrl) {
+		return new Response("Invalid path", { status: 400 });
+	}
+	const sourceResponse = await fetch(sourceUrl, {
+		headers: {
+			accept: "text/html",
+			host: request.headers.get("host") ?? requestUrl.host,
+			"accept-language": request.headers.get("accept-language") ?? "",
+		},
+		cache: "no-store",
+	});
+
+	if (sourceResponse.ok === false) {
+		return new Response("Failed to fetch source page", { status: sourceResponse.status });
+	}
+
+	const html = await sourceResponse.text();
+	// Card layouts nest several block elements per link, which turndown renders as
+	// runs of blank lines; collapsing them is a few percent of tokens for free.
+	const markdown = turndownService
+		.turndown(extractContent(html))
+		.trim()
+		.replace(/\n{3,}/g, "\n\n");
+
+	return new Response(markdown, {
+		status: 200,
+		headers: {
+			"cache-control": "public, s-maxage=300, stale-while-revalidate=600",
+			"content-type": "text/markdown; charset=utf-8",
+			// Rough token estimate (~4 chars/token) so agents can budget before reading.
+			"x-markdown-tokens": String(Math.ceil(markdown.length / 4)),
+		},
+	});
+}
+
+export const Route = createFileRoute("/markdown")({
+	server: { handlers: { GET } },
+});

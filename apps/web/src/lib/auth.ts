@@ -1,16 +1,19 @@
-import { cookies, headers } from "next/headers";
-import { cache } from "react";
+import "server-only";
+
+import { getCookie, getRequestHeaders } from "@tanstack/react-start/server";
 import { authClient } from "@/lib/auth-client";
 
 const SESSION_COOKIE_NAMES = ["better-auth.session_token", "__Secure-better-auth.session_token"];
 
-async function hasSessionCookie(): Promise<boolean> {
-	const cookieStore = await cookies();
-	return SESSION_COOKIE_NAMES.some((name) => Boolean(cookieStore.get(name)?.value));
+function hasSessionCookie(): boolean {
+	return SESSION_COOKIE_NAMES.some((name) => Boolean(getCookie(name)));
 }
 
 async function fetchSession(requestHeaders: Headers) {
 	const result = await authClient.getSession({
+		// The renewed session cookie from a refresh would stop here, never reach the browser, and the
+		// browser cookie would expire `expiresIn` after sign-in. The browser's own `useSession` refreshes.
+		query: { disableRefresh: true },
 		fetchOptions: {
 			headers: requestHeaders,
 			cache: "no-store",
@@ -28,22 +31,22 @@ async function fetchSession(requestHeaders: Headers) {
 }
 
 /**
- * Reads the current session.
+ * Reads the current session. Server-only: call it inside `createServerFn` handlers.
  *
- * Deduplicated per-request via React `cache()` — the layout and the page both
- * call this within a single render, and this collapses that to one backend call.
+ * Not deduplicated across calls. The `{-$locale}` route runs it once in `beforeLoad` and passes
+ * the user down through route context, so child routes read `context.user` instead.
  *
  * Deliberately NOT cached across requests: a module-level cache would keep a
  * revoked or banned user authenticated in SSR, and serving a *stale* session
  * when the backend is unreachable is worse still. On failure we fail closed and
  * report the request as unauthenticated.
  */
-export const isAuthenticated = cache(async () => {
-	if (!(await hasSessionCookie())) {
+export async function isAuthenticated() {
+	if (!hasSessionCookie()) {
 		return null;
 	}
 
-	const headersList = await headers();
+	const headersList = getRequestHeaders();
 
 	try {
 		return await fetchSession(headersList);
@@ -58,4 +61,6 @@ export const isAuthenticated = cache(async () => {
 			return null;
 		}
 	}
-});
+}
+
+export type SessionUser = NonNullable<Awaited<ReturnType<typeof isAuthenticated>>>;

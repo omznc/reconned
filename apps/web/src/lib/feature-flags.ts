@@ -6,9 +6,4 @@ import "server-only";
  * The real implementation lives in `@/lib/feature-flags/server`. This file is kept
  * so the many existing `@/lib/feature-flags` importers keep working.
  */
-export {
-	FEATURE_FLAGS_CACHE_TAG,
-	type FeatureFlag,
-	getFeatureFlags,
-	isFeatureEnabled,
-} from "./feature-flags/server";
+export { type FeatureFlag, getFeatureFlags, isFeatureEnabled } from "./feature-flags/server";

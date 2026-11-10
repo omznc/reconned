@@ -1,8 +1,9 @@
 import { apiError, Router, responseSchema } from "@reconned/router";
 import { and, eq, inArray } from "drizzle-orm";
 import * as z from "zod";
-import { alliance, club, clubAlliance, clubMembership } from "../../drizzle/schema";
+import { alliance, club, clubAlliance } from "../../drizzle/schema";
 import { logClubAudit } from "../../lib/audit-logger";
+import { requireClubManager } from "../../lib/club-access";
 import { db } from "../../lib/db";
 
 const clubsAlliancesRouter = new Router();
@@ -26,17 +27,7 @@ clubsAlliancesRouter.put(
 			throw apiError.validation("Club ID is required");
 		}
 
-		const managerMembershipData = await db
-			.select({ role: clubMembership.role })
-			.from(clubMembership)
-			.where(and(eq(clubMembership.clubId, clubId), eq(clubMembership.userId, context.user.id)))
-			.limit(1);
-
-		const managerMembership = managerMembershipData[0];
-
-		if (!managerMembership || (managerMembership.role !== "MANAGER" && managerMembership.role !== "CLUB_OWNER")) {
-			throw apiError.forbidden("Unauthorized - must be manager or owner");
-		}
+		await requireClubManager(clubId, context.user.id);
 
 		// Get club's country to validate alliances
 		const clubData = await db.select({ countryId: club.countryId }).from(club).where(eq(club.id, clubId)).limit(1);
@@ -59,17 +50,22 @@ clubsAlliancesRouter.put(
 			}
 		}
 
-		// Remove existing alliances
-		await db.delete(clubAlliance).where(eq(clubAlliance.clubId, clubId));
-
-		// Add new alliances
-		if (body.allianceIds && body.allianceIds.length > 0) {
-			await db.insert(clubAlliance).values(
-				body.allianceIds.map((allianceId) => ({
-					clubId,
-					allianceId,
-				})),
-			);
+		// Keep the rows that stay: their createdAt is the time the club joined, and the home feed reads it.
+		const wanted = [...new Set(body.allianceIds)];
+		const existing = await db
+			.select({ allianceId: clubAlliance.allianceId })
+			.from(clubAlliance)
+			.where(eq(clubAlliance.clubId, clubId));
+		const kept = new Set(existing.map((row) => row.allianceId));
+		const removed = [...kept].filter((id) => !wanted.includes(id));
+		if (removed.length > 0) {
+			await db
+				.delete(clubAlliance)
+				.where(and(eq(clubAlliance.clubId, clubId), inArray(clubAlliance.allianceId, removed)));
+		}
+		const added = wanted.filter((id) => !kept.has(id));
+		if (added.length > 0) {
+			await db.insert(clubAlliance).values(added.map((allianceId) => ({ clubId, allianceId })));
 		}
 
 		// Get updated alliances
@@ -93,6 +89,7 @@ clubsAlliancesRouter.put(
 	},
 	{
 		auth: true,
+		bustCache: ["clubs", "club:{id}", "alliances", "public:feed"],
 		schema: {
 			tags: ["Clubs"],
 			summary: "Update club alliances",
@@ -149,6 +146,11 @@ clubsAlliancesRouter.get(
 					alliances: z.array(allianceResponseSchema),
 				}),
 				...responseSchema([400, 404], z.object({ error: z.string() })),
+			},
+			mcpTool: {
+				name: "list_club_alliances",
+				description:
+					"List the alliances a club belongs to. Use list_alliances to go the other way and find alliances by country.",
 			},
 		},
 	},

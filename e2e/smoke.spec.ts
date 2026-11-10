@@ -24,5 +24,5 @@ test("public clubs page renders", async ({ page }) => {
 test("public events page renders", async ({ page }) => {
 	const response = await page.goto("/en/events");
 	expect(response?.status()).toBeLessThan(400);
-	await expect(page.getByRole("heading", { level: 1, name: "Upcoming events" })).toBeVisible();
+	await expect(page.getByRole("heading", { level: 1, name: "Events" })).toBeVisible();
 });

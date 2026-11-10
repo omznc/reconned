@@ -5,11 +5,13 @@ import { useExtracted } from "next-intl";
 import posthog from "posthog-js";
 import { useEffect } from "react";
 import { useFont } from "@/components/personalization/font/font-provider";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import apiClient from "@/lib/api/api.client";
 import { useIsAuthenticated } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
-export function FontSwitcher() {
+/** Forwards the props of `DropdownMenuItem asChild`: the item padding, role and keyboard handlers. */
+export function FontSwitcher({ className, onClick, ...props }: ButtonProps) {
 	const { font, setFont } = useFont();
 	const t = useExtracted();
 	const { user } = useIsAuthenticated();
@@ -49,9 +51,13 @@ export function FontSwitcher() {
 	return (
 		<Button
 			variant="ghost"
-			onClick={() => setFont(font === "sans" ? "mono" : "sans")}
+			{...props}
+			onClick={(event) => {
+				onClick?.(event);
+				setFont(font === "sans" ? "mono" : "sans");
+			}}
 			suppressHydrationWarning
-			className="w-full items-center justify-start cursor-pointer shadow-none"
+			className={cn("w-full items-center justify-start cursor-pointer shadow-none", className)}
 		>
 			<Type className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
 			{t("Change font")}

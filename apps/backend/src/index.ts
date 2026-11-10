@@ -9,8 +9,10 @@ import {
 } from "@reconned/router";
 import { eq } from "drizzle-orm";
 import { user as userTable } from "./drizzle/schema";
+import { AUTHORIZATION_SERVER_METADATA_PATH, OAUTH_DISCOVERY_PATHS, withAgentAuth } from "./lib/agent-auth";
 import { auth } from "./lib/auth";
 import { rateLimitKey, redisCacheStore, redisRateLimitStore } from "./lib/cache";
+import { ROUTE_CACHE_PREFIX } from "./lib/cache-bust";
 import { db } from "./lib/db";
 import { env } from "./lib/env";
 import { loggingMiddleware } from "./lib/middlewares/logging";
@@ -25,7 +27,7 @@ import { clubsRouter } from "./routes/clubs";
 import { countriesRouter } from "./routes/countries";
 import { dashboardRouter } from "./routes/dashboard";
 import { eventsRouter } from "./routes/events";
-import { handleMCPRequest } from "./routes/mcp";
+import { handleMCPRequest, mcpPosthog } from "./routes/mcp";
 import { publicRouter } from "./routes/public";
 import { reviewsRouter } from "./routes/reviews";
 import { usersRouter } from "./routes/users";
@@ -54,7 +56,7 @@ const mainRouter = new Router({
 	},
 	cache: {
 		store: redisCacheStore,
-		keyPrefix: "route:",
+		keyPrefix: ROUTE_CACHE_PREFIX,
 	},
 	// Registering the same method + path shape twice makes the second one unreachable, and the
 	// OpenAPI generator publishes the *last* registration's schema while the *first* serves
@@ -84,6 +86,20 @@ async function handleBetterAuth(request: Request): Promise<Response> {
 	}
 
 	const response = await auth.handler(request);
+
+	// better-auth generates RFC 8414 metadata but knows nothing about auth.md, so the
+	// `agent_auth` block is merged in here rather than upstream. Done at this layer, not in
+	// the web app's proxy, because the edge may route the discovery paths straight here —
+	// see lib/agent-auth.ts.
+	if (url.pathname === AUTHORIZATION_SERVER_METADATA_PATH && response.ok) {
+		const augmented = withAgentAuth(await response.text(), env.FRONTEND_URL);
+		const headers = new Headers(response.headers);
+		// The body length changed; forwarding the old value would describe a body we are
+		// not sending.
+		headers.delete("content-length");
+		return addCORSHeaders(new Response(augmented, { status: response.status, headers }), request, corsOrigins);
+	}
+
 	return addCORSHeaders(response, request, corsOrigins);
 }
 
@@ -120,6 +136,14 @@ async function handleRequest(request: Request): Promise<Response> {
 		return handleBetterAuth(request);
 	}
 
+	// Root-level OAuth discovery. better-auth only serves these under its own base path, but
+	// agents and scanners read them off the site root and the production edge forwards them
+	// here unprefixed, so map them onto the base path rather than 404ing.
+	if (OAUTH_DISCOVERY_PATHS.has(url.pathname)) {
+		const target = new URL(`/api/auth${url.pathname}${url.search}`, url.origin).toString();
+		return handleBetterAuth(new Request(target, request));
+	}
+
 	if (url.pathname === "/api/mcp") {
 		return handleMCPRequest(request, mainRouter);
 	}
@@ -137,6 +161,9 @@ async function handleRequest(request: Request): Promise<Response> {
 		try {
 			const sessionData = await auth.api.getSession({
 				headers: request.headers,
+				// A refresh here renews the session row but drops its Set-Cookie, so the browser cookie
+				// expires `expiresIn` after sign-in. Only /api/auth/get-session refreshes, with the cookie.
+				query: { disableRefresh: true },
 			});
 			if (sessionData?.user) {
 				// `role` is populated by the better-auth admin plugin, so no extra cache/DB lookup.
@@ -242,20 +269,22 @@ logger.emit({
 
 scheduler.start();
 
-process.on("SIGTERM", () => {
+process.on("SIGTERM", async () => {
 	logger.emit({
 		severityText: "info",
 		body: "SIGTERM received, shutting down gracefully",
 	});
 	scheduler.stop();
+	await mcpPosthog.shutdown();
 	process.exit(0);
 });
 
-process.on("SIGINT", () => {
+process.on("SIGINT", async () => {
 	logger.emit({
 		severityText: "info",
 		body: "SIGINT received, shutting down gracefully",
 	});
 	scheduler.stop();
+	await mcpPosthog.shutdown();
 	process.exit(0);
 });

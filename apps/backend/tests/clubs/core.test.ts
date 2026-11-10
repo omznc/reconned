@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { MAX_UPLOAD_FILE_SIZE } from "../../src/lib/storage";
 import { createUser, type TestUser } from "../helpers/auth";
 import { api } from "../helpers/client";
 
@@ -290,12 +291,14 @@ describe("clubs core", () => {
 			expect(response.status).toBe(400);
 		});
 
-		test("rejects a file exceeding the 4MB limit", async () => {
+		// Sized off the shared cap rather than a literal: the two drifted apart once
+		// already when the limit moved, and the test only noticed after it broke.
+		test("rejects a file exceeding the upload size limit", async () => {
 			const owner = await createUser();
 			const club = await createClub(owner);
 
 			const response = await api(owner.cookie).post(`/api/clubs/${club.id}/logo/upload-url`, {
-				file: { type: "image/png", size: 1024 * 1024 * 5 },
+				file: { type: "image/png", size: MAX_UPLOAD_FILE_SIZE + 1 },
 			});
 			expect(response.status).toBe(400);
 		});
@@ -337,12 +340,12 @@ describe("clubs core", () => {
 			expect(response.status).toBe(403);
 		});
 
-		test("rejects a file exceeding the 8MB limit", async () => {
+		test("rejects a file exceeding the upload size limit", async () => {
 			const owner = await createUser();
 			const club = await createClub(owner);
 
 			const response = await api(owner.cookie).post(`/api/clubs/${club.id}/header-image/upload-url`, {
-				file: { type: "image/png", size: 1024 * 1024 * 9 },
+				file: { type: "image/png", size: MAX_UPLOAD_FILE_SIZE + 1 },
 			});
 			expect(response.status).toBe(400);
 		});

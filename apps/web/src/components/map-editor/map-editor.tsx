@@ -2338,7 +2338,7 @@ function MapEditor({ visible = false, onClose, initialData, onSnapshotChange }: 
 							handleExport();
 						}}
 					>
-						<FileDown className="mr-2 size-4" />
+						<FileDown className="size-4" />
 						{t("Download current map")}
 					</Button>
 				</div>
