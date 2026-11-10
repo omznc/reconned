@@ -85,6 +85,9 @@ export function SpreadLines({ map, groups, dark }: { map: MapLibreMap; groups: C
 
 		return () => {
 			map.off("style.load", add);
+			// On a page leave, the map hook calls map.remove() first; a removed map has no style,
+			// and getLayer() on it throws.
+			if (!map.style) return;
 			for (const id of [LINES, ANCHORS]) {
 				if (map.getLayer(id)) map.removeLayer(id);
 			}
