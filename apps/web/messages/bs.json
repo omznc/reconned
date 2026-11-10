@@ -580,7 +580,7 @@
   "A1y3T3": "Preuzet",
   "BoOhbp": "je dobio vlasnika",
   "F18zQk": "{count, plural, one {je dobio novog člana} few {je dobio # nova člana} other {je dobio # novih članova}}",
-  "7zzmf3": "i još {count} se pridružilo savezu {alliance}",
+  "P99O9k": "{count, plural, one {i još # klub se pridružio savezu {alliance}} few {i još # kluba su se pridružila savezu {alliance}} other {i još # klubova se pridružilo savezu {alliance}}}",
   "qT5XP9": "se pridružio savezu {alliance}",
   "zmMjEn": "Savez",
   "_zFGgP": "i još {count}",

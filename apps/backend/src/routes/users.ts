@@ -800,7 +800,7 @@ usersRouter.put(
 	},
 	{
 		auth: true,
-		bustCache: ["users", "user:{id}", "user:{id}:profile"],
+		bustCache: ["users", "user:{id}", "user:{id}:profile", "public:feed"],
 		schema: {
 			tags: ["Users"],
 			summary: "Update user",
@@ -860,7 +860,7 @@ usersRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["users", "user:{id}"],
+		bustCache: ["users", "user:{id}", "public:feed"],
 		schema: {
 			tags: ["Users"],
 			summary: "Delete user image",
@@ -900,7 +900,7 @@ usersRouter.delete(
 	},
 	{
 		auth: true,
-		bustCache: ["users", "user:{id}"],
+		bustCache: ["users", "user:{id}", "public:feed"],
 		schema: {
 			tags: ["Users"],
 			summary: "Delete user header image",
@@ -2505,7 +2505,7 @@ usersRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["users", "user:{id}", "user:{id}:profile"],
+		bustCache: ["users", "user:{id}", "user:{id}:profile", "public:feed"],
 		schema: {
 			tags: ["Users"],
 			summary: "Delete user account",

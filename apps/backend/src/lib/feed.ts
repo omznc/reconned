@@ -489,14 +489,14 @@ const MEMBERS_SHOWN = 12;
  * shows that they joined. Owners are left out; the new club and the claim items cover them.
  */
 async function loadNewMembers(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
-	const day = sql`date_trunc('day', ${clubMembership.createdAt})`;
+	// A rejoin revives the archived row and keeps its createdAt; startDate is the time of this join.
+	const joinedAt = sql`coalesce(${clubMembership.startDate}, ${clubMembership.createdAt})`;
+	const day = sql`date_trunc('day', ${joinedAt})`;
 	const joins = db
 		.select({
 			id: sql<string>`${club.id} || '-' || to_char(${day}, 'YYYYMMDD')`.as("id"),
-			lastJoin: sql`max(${clubMembership.createdAt})`.as("last_join"),
-			createdAt: sql<string>`to_char(max(${clubMembership.createdAt}), 'YYYY-MM-DD HH24:MI:SS.MS')`.as(
-				"created_at",
-			),
+			lastJoin: sql`max(${joinedAt})`.as("last_join"),
+			createdAt: sql<string>`to_char(max(${joinedAt}), 'YYYY-MM-DD HH24:MI:SS.MS')`.as("created_at"),
 			// Named apart, so the group id and the club id do not both come out as "id".
 			clubId: sql<string>`${club.id}`.as("club_id"),
 			clubSlug: sql<string | null>`${club.slug}`.as("club_slug"),
@@ -507,7 +507,7 @@ async function loadNewMembers(limit: number, cursor: Cursor | null, clubOk: SQL 
 			count: sql<number>`count(*)::int`.as("count"),
 			members: sql<{ id: string; slug: string | null; name: string; image: string | null }[]>`(array_agg(
 				json_build_object('id', ${user.id}, 'slug', ${user.slug}, 'name', ${user.name}, 'image', ${user.image})
-				ORDER BY ${clubMembership.createdAt}, ${user.id}
+				ORDER BY ${joinedAt}, ${user.id}
 			))[1:${sql.raw(String(MEMBERS_SHOWN))}]`.as("members"),
 		})
 		.from(clubMembership)
@@ -546,7 +546,10 @@ async function loadNewMembers(limit: number, cursor: Cursor | null, clubOk: SQL 
  * string, newer rows as an object, so the owner id is read from both forms.
  */
 async function loadClaims(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
-	const data = sql`(CASE WHEN jsonb_typeof(${clubAuditLog.actionData}) = 'string' THEN (${clubAuditLog.actionData} #>> '{}')::jsonb ELSE ${clubAuditLog.actionData} END)`;
+	// A regex, not a ::jsonb cast, on the string form: one malformed old row must not fail the feed.
+	const ownerId = sql`(CASE WHEN jsonb_typeof(${clubAuditLog.actionData}) = 'string'
+		THEN substring(${clubAuditLog.actionData} #>> '{}' from '"userId"\\s*:\\s*"([^"]+)"')
+		ELSE ${clubAuditLog.actionData} ->> 'userId' END)`;
 	const rows = await db
 		.select({
 			id: clubAuditLog.id,
@@ -559,7 +562,7 @@ async function loadClaims(limit: number, cursor: Cursor | null, clubOk: SQL | un
 		})
 		.from(clubAuditLog)
 		.innerJoin(club, eq(clubAuditLog.clubId, club.id))
-		.leftJoin(user, and(sql`${user.id} = ${data} ->> 'userId'`, publicUser(user)))
+		.leftJoin(user, and(sql`${user.id} = ${ownerId}`, publicUser(user)))
 		.where(
 			and(
 				eq(clubAuditLog.actionType, "CLUB_OWNER_ASSIGNED"),

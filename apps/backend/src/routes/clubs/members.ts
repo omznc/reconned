@@ -180,6 +180,8 @@ clubsMembersRouter.post(
 					.set({
 						role: body.role || "USER",
 						...CLEAR_ARCHIVE,
+						// A new start, as the invite path does; the home feed lists the member by this time.
+						startDate: new Date().toISOString(),
 						updatedAt: new Date().toISOString(),
 					})
 					.where(eq(clubMembership.id, existingMembership.id))

@@ -242,10 +242,10 @@ function useFeedMeta(item: FeedItem) {
 			const others = item.clubs.length - 1;
 			const verb =
 				others > 0
-					? t("and {count} more clubs joined {alliance}", {
-							count: String(others),
-							alliance: item.alliance.name,
-						})
+					? t(
+							"{count, plural, one {and # more club joined {alliance}} other {and # more clubs joined {alliance}}}",
+							{ count: others, alliance: item.alliance.name },
+						)
 					: t("joined {alliance}", { alliance: item.alliance.name });
 			return { icon: Users, type: t("Alliance"), verb };
 		}

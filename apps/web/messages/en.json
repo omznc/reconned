@@ -580,7 +580,7 @@
   "A1y3T3": "Claimed",
   "BoOhbp": "got an owner",
   "F18zQk": "{count, plural, one {got a new member} other {got # new members}}",
-  "7zzmf3": "and {count} more clubs joined {alliance}",
+  "P99O9k": "{count, plural, one {and # more club joined {alliance}} other {and # more clubs joined {alliance}}}",
   "qT5XP9": "joined {alliance}",
   "zmMjEn": "Alliance",
   "_zFGgP": "+{count} more",

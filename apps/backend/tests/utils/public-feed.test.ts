@@ -353,7 +353,8 @@ describe("GET /public/feed: players, new clubs and alliances", () => {
 		const stringData = JSON.stringify({ userId: hidden.id, assignedBy: admin.id });
 		await testDb`INSERT INTO "ClubAuditLog" (id, "clubId", "userId", "actionType", "actionData") VALUES
 			(${crypto.randomUUID()}, ${claimed.id}, ${admin.id}, 'CLUB_OWNER_ASSIGNED', ${objectData}),
-			(${crypto.randomUUID()}, ${quiet.id}, ${admin.id}, 'CLUB_OWNER_ASSIGNED', to_jsonb(${stringData}::text))`;
+			(${crypto.randomUUID()}, ${quiet.id}, ${admin.id}, 'CLUB_OWNER_ASSIGNED', to_jsonb(${stringData}::text)),
+			(${crypto.randomUUID()}, ${quiet.id}, ${admin.id}, 'CLUB_OWNER_ASSIGNED', to_jsonb('{not json'::text))`;
 		await bustFeedCache();
 
 		const { items } = await feed("type=clubs&limit=50");
