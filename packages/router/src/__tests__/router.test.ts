@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { z } from "zod";
+import { apiError } from "../errors";
 import { jsonResponse, parseBody, Router, responseSchema, setHeaders } from "../router";
 import type { CacheStore } from "../types";
 
@@ -1044,6 +1045,66 @@ describe("route matching and collisions", () => {
 		});
 
 		expect(router.match(createMockRequest("http://localhost/manual/9"))?.params).toEqual({ id: "9" });
+	});
+});
+
+describe("onError hook", () => {
+	test("should report thrown errors that map to 5xx", async () => {
+		const reported: Array<{ error: unknown; path: string; statusCode: number }> = [];
+		const router = new Router({
+			onError: (error, { route, statusCode }) => {
+				reported.push({ error, path: route.path, statusCode });
+			},
+		});
+		const boom = new Error("boom");
+		router.get("/clubs/:id", () => {
+			throw boom;
+		});
+
+		const res = await router.handle(
+			createMockRequest("http://localhost/clubs/1"),
+			createMockContext(),
+			jsonResponse,
+		);
+
+		expect(res.status).toBe(500);
+		expect(reported).toEqual([{ error: boom, path: "/clubs/:id", statusCode: 500 }]);
+	});
+
+	test("should not report 4xx AppErrors", async () => {
+		let calls = 0;
+		const router = new Router({
+			onError: () => {
+				calls++;
+			},
+		});
+		router.get("/missing", () => {
+			throw apiError.notFound("Club");
+		});
+
+		const res = await router.handle(
+			createMockRequest("http://localhost/missing"),
+			createMockContext(),
+			jsonResponse,
+		);
+
+		expect(res.status).toBe(404);
+		expect(calls).toBe(0);
+	});
+
+	test("should keep the error response when the hook throws", async () => {
+		const router = new Router({
+			onError: () => {
+				throw new Error("reporter down");
+			},
+		});
+		router.get("/fail", () => {
+			throw new Error("boom");
+		});
+
+		const res = await router.handle(createMockRequest("http://localhost/fail"), createMockContext(), jsonResponse);
+
+		expect(res.status).toBe(500);
 	});
 });
 

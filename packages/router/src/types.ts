@@ -344,6 +344,12 @@ export type RouterOptions = {
 	 * `cache.varyByUser`. Defaults to "throw" — see `RouteCacheConfig.varyByUser`.
 	 */
 	onMissingVaryByUser?: "throw" | "warn";
+
+	/**
+	 * Called when a route throws and the error maps to a 5xx response (4xx `AppError`s are skipped).
+	 * Use it to report server errors to an error tracker. A throw from this hook is swallowed.
+	 */
+	onError?: (error: unknown, info: { request: Request; route: Route; statusCode: number }) => void;
 };
 
 // ============================================================================

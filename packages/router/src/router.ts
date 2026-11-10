@@ -179,6 +179,7 @@ export class Router {
 	private defaultSwr: number | undefined;
 	private onDuplicateRoute: "throw" | "error" | "ignore";
 	private onMissingVaryByUser: "throw" | "warn";
+	private onError: RouterOptions["onError"];
 
 	/** Exact-path lookup for routes with no params: `METHOD a/b/c` -> route. */
 	private staticRoutes = new Map<string, CompiledRoute>();
@@ -198,6 +199,7 @@ export class Router {
 		this.defaultSwr = options?.cache?.defaultSwr;
 		this.onDuplicateRoute = options?.onDuplicateRoute ?? "error";
 		this.onMissingVaryByUser = options?.onMissingVaryByUser ?? "throw";
+		this.onError = options?.onError;
 	}
 
 	add<TBody = undefined, TQuery = undefined, TSchema extends RouteSchema | undefined = undefined>(
@@ -909,6 +911,14 @@ export class Router {
 				typeof (error as { statusCode: unknown }).statusCode === "number"
 			) {
 				statusCode = (error as { statusCode: number }).statusCode;
+			}
+
+			if (statusCode >= 500 && this.onError) {
+				try {
+					this.onError(error, { request, route, statusCode });
+				} catch {
+					// Error reporting must never change the response
+				}
 			}
 
 			return jsonResponseFn(errorResponse, statusCode);

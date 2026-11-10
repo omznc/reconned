@@ -19,7 +19,7 @@ import { loggingMiddleware } from "./lib/middlewares/logging";
 import { wideEventsMiddleware } from "./lib/middlewares/wide-events";
 import { runMigrations } from "./lib/migrate";
 import { handleOpenAPIRoutes } from "./lib/openapi";
-import { logger } from "./lib/posthog";
+import { logger, posthog } from "./lib/posthog";
 import { adminRouter } from "./routes/admin";
 import { alliancesRouter } from "./routes/alliances";
 import { apiKeysRouter } from "./routes/api-keys";
@@ -63,6 +63,15 @@ const mainRouter = new Router({
 	// traffic. That mismatch has silently broken shipped UI more than once (a blank registrations
 	// chart, and audit-log rows missing their user column). Fail at boot instead of at runtime.
 	onDuplicateRoute: "throw",
+	// Path and method only: request bodies and query strings can carry emails or tokens.
+	onError: (error, { request, route, statusCode }) => {
+		posthog.captureException(error, undefined, {
+			method: request.method,
+			path: new URL(request.url).pathname,
+			route: route.path,
+			status_code: statusCode,
+		});
+	},
 });
 
 mainRouter.middleware(correlationMiddleware());
