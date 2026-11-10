@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { Building2, Calendar, KeyRound, MapPin, MessageSquare, Star, Users } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
-import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import * as z from "zod";
 import { ClubAvatar } from "@/components/identity/club-avatar";
 import { Image } from "@/components/image";
@@ -156,8 +156,45 @@ function clubOf(item: FeedItem) {
 	return "club" in item ? item.club : null;
 }
 
+function PersonPicture({ person }: { person: Person }) {
+	return (
+		<Avatar className="size-4">
+			<AvatarImage src={person.image ?? ""} alt="" />
+			<AvatarFallback name={person.name} />
+		</Avatar>
+	);
+}
+
 function personOf(item: FeedItem): Person | null {
 	return item.kind === "review" || item.kind === "player_review" ? item.review.author : null;
+}
+
+/** The person, club or event a feed sentence is about, as an inline link with a small picture. */
+function FeedTarget({ href, children, picture }: { href: string; children: ReactNode; picture: ReactNode }) {
+	return (
+		<Link
+			href={href as "/clubs"}
+			className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
+		>
+			{picture}
+			{children}
+		</Link>
+	);
+}
+
+function reviewTarget(item: Extract<FeedItem, { kind: "review" }>) {
+	const { target } = item.review;
+	if (target.type === "event") {
+		return {
+			href: `/events/${target.slug || target.id}`,
+			picture: <Calendar className="size-3.5 text-muted-foreground" aria-hidden={true} />,
+		};
+	}
+	const club = item.club.id === target.id ? item.club : null;
+	return {
+		href: `/clubs/${target.slug || target.id}`,
+		picture: <ClubAvatar name={target.name} logo={club?.logo} tile={club?.logoTile} size={16} />,
+	};
 }
 
 function useFeedMeta(item: FeedItem) {
@@ -167,10 +204,30 @@ function useFeedMeta(item: FeedItem) {
 			return { icon: Calendar, type: t("Game"), verb: t("published a game") };
 		case "post":
 			return { icon: MessageSquare, type: t("Post"), verb: t("posted") };
-		case "review":
-			return { icon: Star, type: t("Review"), verb: t("reviewed {name}", { name: item.review.target.name }) };
-		case "player_review":
-			return { icon: Star, type: t("Review"), verb: t("reviewed {name}", { name: item.review.player.name }) };
+		case "review": {
+			const { href, picture } = reviewTarget(item);
+			const verb = t.rich("reviewed <target>{name}</target>", {
+				name: item.review.target.name,
+				target: (chunks) => (
+					<FeedTarget href={href} picture={picture}>
+						{chunks}
+					</FeedTarget>
+				),
+			});
+			return { icon: Star, type: t("Review"), verb };
+		}
+		case "player_review": {
+			const { player } = item.review;
+			const verb = t.rich("reviewed <target>{name}</target>", {
+				name: player.name,
+				target: (chunks) => (
+					<FeedTarget href={`/users/${player.slug || player.id}`} picture={<PersonPicture person={player} />}>
+						{chunks}
+					</FeedTarget>
+				),
+			});
+			return { icon: Star, type: t("Review"), verb };
+		}
 		case "club":
 			return { icon: Building2, type: t("Club"), verb: t("joined RECONNED") };
 		case "claim":
@@ -335,7 +392,7 @@ function FeedCard({ item }: { item: FeedItem }) {
 			<header className="flex items-center gap-3">
 				<FeedAuthor item={item} />
 				<div className="flex min-w-0 flex-1 flex-col text-[13px]">
-					<span className="flex min-w-0 flex-wrap items-baseline gap-x-1.5">
+					<span className="flex min-w-0 flex-wrap items-center gap-x-1.5">
 						<Link
 							href={whoHref as "/clubs"}
 							className="inline-flex items-center gap-1 font-semibold hover:underline"
@@ -343,7 +400,10 @@ function FeedCard({ item }: { item: FeedItem }) {
 							{who}
 							{!person && club?.verified ? <VerifiedBadge label={t("Verified club")} /> : null}
 						</Link>
-						<span className="text-muted-foreground">{meta.verb}</span>
+						{/* A flex row, so the text and an inline target link share one center line and one gap. */}
+						<span className="inline-flex flex-wrap items-center gap-x-1.5 text-muted-foreground">
+							{meta.verb}
+						</span>
 					</span>
 					<time className="text-xs text-muted-foreground" dateTime={toDate(item.createdAt).toISOString()}>
 						{ago(item.createdAt)}
