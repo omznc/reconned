@@ -1,4 +1,5 @@
-@import "tailwindcss";
+/* Scan only src: the Docker build has no .gitignore, so an automatic scan reads the client build output and the SSR CSS hash no longer matches. */
+@import "tailwindcss" source(".");
 @import "tw-animate-css";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
