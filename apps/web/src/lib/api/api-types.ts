@@ -3985,7 +3985,7 @@ export interface paths {
 		};
 		/**
 		 * Home community feed
-		 * @description One time-ordered list (newest first) of new public games (events that have not finished), public club posts and public reviews of clubs and events (only when the REVIEWS feature flag is on). Each item has a `kind` (`game`, `post` or `review`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts or reviews change.
+		 * @description One time-ordered list (newest first) of new public games (events that have not finished), public club posts, public reviews of clubs, events and players (only when the REVIEWS feature flag is on; a player review needs a public reviewed player and a public author), new public clubs, and public clubs that joined an alliance. Types: `all`, `games`, `posts`, `reviews` (club, event and player reviews) and `clubs` (new clubs and alliance joins). Each item has a `kind` (`game`, `post`, `review`, `player_review`, `club` or `alliance`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts, reviews, clubs or alliances change.
 		 */
 		get: operations["publicfeedGet"];
 		put?: never;
@@ -23438,7 +23438,7 @@ export interface operations {
 	publicfeedGet: {
 		parameters: {
 			query?: {
-				type?: "all" | "games" | "posts" | "reviews";
+				type?: "all" | "games" | "posts" | "reviews" | "clubs";
 				cursor?: string;
 				limit?: number;
 			};
@@ -23539,6 +23539,64 @@ export interface operations {
 											name: string;
 											image: string | null;
 										};
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "player_review";
+									id: string;
+									createdAt: string;
+									review: {
+										rating: number;
+										/** @description First 400 characters */
+										content: string;
+										player: {
+											id: string;
+											slug: string | null;
+											name: string;
+											image: string | null;
+										};
+										author: {
+											id: string;
+											slug: string | null;
+											name: string;
+											image: string | null;
+										};
+									};
+							  }
+							| {
+									/** @enum {string} */
+									kind: "club";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									city: string | null;
+							  }
+							| {
+									/** @enum {string} */
+									kind: "alliance";
+									id: string;
+									createdAt: string;
+									club: {
+										id: string;
+										slug: string | null;
+										name: string;
+										logo: string | null;
+										/** @enum {string|null} */
+										logoTile: "paper" | "ink" | null;
+										verified: boolean;
+									};
+									alliance: {
+										id: number;
+										name: string;
 									};
 							  }
 						)[];

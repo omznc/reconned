@@ -16,10 +16,10 @@ async function bustFeedCache(clubId = "") {
 }
 
 interface FeedItem {
-	kind: "game" | "post" | "review";
+	kind: "game" | "post" | "review" | "player_review" | "club" | "alliance";
 	id: string;
 	createdAt: string;
-	club: { id: string; name: string };
+	club?: { id: string; name: string };
 	// biome-ignore lint/suspicious/noExplicitAny: payload differs per kind
 	[key: string]: any;
 }
@@ -178,9 +178,9 @@ describe("GET /public/feed", () => {
 			await bustFeedCache(club.id);
 
 			const on = await feed("type=reviews&limit=50");
-			const mine = on.items.filter((i) => i.club.id === club.id);
+			const mine = on.items.filter((i) => i.club?.id === club.id);
 			expect(mine.length).toBe(2);
-			expect(on.items.map((i) => i.club.id)).not.toContain(privateClub.id);
+			expect(on.items.map((i) => i.club?.id)).not.toContain(privateClub.id);
 			const great = mine.find((i) => i.review.content === "Great club");
 			expect(great?.review).toMatchObject({ rating: 5, target: { type: "club", id: club.id } });
 			expect(great?.review.author).toMatchObject({ id: author.id, name: "Review Author" });
@@ -190,6 +190,180 @@ describe("GET /public/feed", () => {
 		} finally {
 			await setReviewsEnabled(true);
 		}
+	});
+});
+
+async function seedAlliance(clubId: string) {
+	const countries = await api().get("/api/countries");
+	const countryId = countries.body[0].id as number;
+	const [row] = await testDb`INSERT INTO "Alliance" (name, "countryId", "updatedAt")
+		VALUES (${`Feed Alliance ${crypto.randomUUID().slice(0, 6)}`}, ${countryId}, now()) RETURNING id, name`;
+	await testDb`INSERT INTO "ClubAlliance" ("clubId", "allianceId") VALUES (${clubId}, ${row?.id})`;
+	return { id: row?.id as number, name: row?.name as string };
+}
+
+async function seedPlayerReview(authorId: string, userId: string, content: string) {
+	const id = crypto.randomUUID();
+	await testDb`INSERT INTO "Review" (id, type, rating, content, "authorId", "userId", "updatedAt")
+		VALUES (${id}, 'USER', 4, ${content}, ${authorId}, ${userId}, NOW())`;
+	return id;
+}
+
+describe("GET /public/feed: players, new clubs and alliances", () => {
+	test("player reviews need a public reviewed player and a public author", async () => {
+		const author = await createUser({ name: "Pub Author" });
+		const player = await createUser({ name: "Pub Player" });
+		const privatePlayer = await createUser();
+		const privateAuthor = await createUser();
+		const bannedPlayer = await createUser();
+		await testDb`UPDATE "User" SET image = 'https://example.com/p.png' WHERE id IN (${author.id}, ${player.id})`;
+		await testDb`UPDATE "User" SET "isPrivate" = true, image = 'https://example.com/x.png' WHERE id IN (${privatePlayer.id}, ${privateAuthor.id})`;
+		await testDb`UPDATE "User" SET banned = true WHERE id = ${bannedPlayer.id}`;
+		const shown = await seedPlayerReview(author.id, player.id, "Fun to play with");
+		const hiddenPlayer = await seedPlayerReview(author.id, privatePlayer.id, "p1");
+		const hiddenAuthor = await seedPlayerReview(privateAuthor.id, player.id, "p2");
+		const hiddenBanned = await seedPlayerReview(author.id, bannedPlayer.id, "p3");
+		await bustFeedCache();
+
+		const { items } = await feed("type=reviews&limit=50");
+		const ids = items.map((i) => i.id);
+		expect(ids).toContain(shown);
+		for (const id of [hiddenPlayer, hiddenAuthor, hiddenBanned]) {
+			expect(ids).not.toContain(id);
+		}
+		const item = items.find((i) => i.id === shown);
+		expect(item?.kind).toBe("player_review");
+		expect(item?.review).toMatchObject({
+			rating: 4,
+			content: "Fun to play with",
+			player: { id: player.id, name: "Pub Player", image: "https://example.com/p.png" },
+			author: { id: author.id, name: "Pub Author" },
+		});
+		expect(JSON.stringify(items)).not.toContain(player.email);
+		expect((await feed("type=posts&limit=50")).items.map((i) => i.id)).not.toContain(shown);
+	});
+
+	test("a player review busts the cached feed", async () => {
+		const author = await createUser();
+		const player = await createUser();
+		await feed("type=reviews&limit=5");
+		const response = await api(author.cookie).post("/api/reviews", {
+			type: "USER",
+			userId: player.id,
+			rating: 5,
+			content: "Cache check",
+		});
+		expect(response.status).toBe(201);
+		const { items } = await feed("type=reviews&limit=5");
+		expect(items[0]?.review.content).toBe("Cache check");
+	});
+
+	test("a new public club appears under clubs and all, private and banned clubs do not", async () => {
+		const owner = await createUser();
+		await feed("type=clubs&limit=5");
+		const club = await createClub(owner);
+		const privateClub = await createClub(owner, { isPrivate: true });
+		const bannedClub = await createClub(owner);
+		await testDb`UPDATE "Club" SET banned = true, city = 'Tuzla' WHERE id = ${bannedClub.id}`;
+		await testDb`UPDATE "Club" SET city = 'Zenica' WHERE id = ${club.id}`;
+		await bustFeedCache();
+
+		const clubs = await feed("type=clubs&limit=50");
+		const item = clubs.items.find((i) => i.id === club.id);
+		expect(item).toMatchObject({ kind: "club", city: "Zenica", club: { id: club.id, name: club.name } });
+		const ids = clubs.items.map((i) => i.id);
+		expect(ids).not.toContain(privateClub.id);
+		expect(ids).not.toContain(bannedClub.id);
+		expect((await feed("limit=50")).items.map((i) => i.id)).toContain(club.id);
+		expect((await feed("type=games&limit=50")).items.map((i) => i.id)).not.toContain(club.id);
+	});
+
+	test("creating a club busts the cached feed", async () => {
+		const owner = await createUser();
+		await feed("type=clubs&limit=5");
+		const club = await createClub(owner);
+		expect((await feed("type=clubs&limit=5")).items[0]?.id).toBe(club.id);
+	});
+
+	test("an alliance join shows the alliance, and hides private and banned clubs", async () => {
+		const owner = await createUser();
+		const club = await createClub(owner);
+		const privateClub = await createClub(owner, { isPrivate: true });
+		const bannedClub = await createClub(owner);
+		await testDb`UPDATE "Club" SET banned = true WHERE id = ${bannedClub.id}`;
+		const shown = await seedAlliance(club.id);
+		await seedAlliance(privateClub.id);
+		await seedAlliance(bannedClub.id);
+		await bustFeedCache();
+
+		const { items } = await feed("type=clubs&limit=50");
+		const joins = items.filter((i) => i.kind === "alliance");
+		const mine = joins.filter((i) => [club.id, privateClub.id, bannedClub.id].includes(i.club?.id ?? ""));
+		expect(mine).toHaveLength(1);
+		expect(mine[0]).toMatchObject({ club: { id: club.id }, alliance: shown });
+	});
+
+	test("saving the same alliances again keeps the join time and adds only the new one", async () => {
+		const owner = await createUser();
+		const club = await createClub(owner);
+		const first = await seedAlliance(club.id);
+		await testDb`UPDATE "ClubAlliance" SET "createdAt" = '2020-01-01 00:00:00' WHERE "clubId" = ${club.id}`;
+		const second = await seedAlliance(club.id);
+		const countryRows = await testDb`SELECT "countryId" FROM "Alliance" WHERE id = ${first.id}`;
+		await testDb`UPDATE "Club" SET "countryId" = ${countryRows[0]?.countryId} WHERE id = ${club.id}`;
+		type JoinRow = { allianceId: number; t: string };
+
+		const put = await api(owner.cookie).put(`/api/clubs/${club.id}/alliances`, {
+			allianceIds: [first.id, second.id],
+		});
+		expect(put.status).toBe(200);
+		const rows: JoinRow[] =
+			await testDb`SELECT "allianceId", "createdAt"::text AS t FROM "ClubAlliance" WHERE "clubId" = ${club.id} ORDER BY "allianceId"`;
+		expect(rows).toHaveLength(2);
+		expect(rows.find((r) => r.allianceId === first.id)?.t).toStartWith("2020-01-01");
+	});
+
+	test("a cursor walk across every kind returns each item once, in order", async () => {
+		const owner = await createUser();
+		const author = await createUser();
+		const player = await createUser();
+		const club = await createClub(owner);
+		await createPost(owner, club.id);
+		await createEvent(owner, club.id);
+		await addClubReview(author.id, club.id, 5, "Walk review");
+		await seedPlayerReview(author.id, player.id, "Walk player");
+		const ally = await seedAlliance(club.id);
+		// Force one shared instant so the kind/id tie-break decides the order.
+		const tie = "2021-05-05 10:00:00";
+		await testDb`UPDATE "Club" SET "createdAt" = ${tie} WHERE id = ${club.id}`;
+		await testDb`UPDATE "Post" SET "createdAt" = ${tie} WHERE "clubId" = ${club.id}`;
+		await testDb`UPDATE "Review" SET "createdAt" = ${tie} WHERE "authorId" = ${author.id}`;
+		await testDb`UPDATE "ClubAlliance" SET "createdAt" = ${tie} WHERE "allianceId" = ${ally.id}`;
+		await bustFeedCache();
+
+		const walked: FeedItem[] = [];
+		let cursor: string | null = null;
+		for (let guard = 0; guard < 500; guard++) {
+			const page: { items: FeedItem[]; nextCursor: string | null } = await feed(
+				`limit=3${cursor ? `&cursor=${cursor}` : ""}`,
+			);
+			walked.push(...page.items);
+			cursor = page.nextCursor;
+			if (!cursor) {
+				break;
+			}
+		}
+		expect(cursor).toBeNull();
+		const keys = walked.map((i) => `${i.kind}:${i.id}`);
+		expect(new Set(keys).size).toBe(keys.length);
+		const tied = walked.filter((i) => i.createdAt.startsWith("2021-05-05 10:00:00"));
+		const kinds = tied.map((i) => i.kind);
+		for (const kind of ["alliance", "club", "player_review", "post", "review"] as const) {
+			expect(kinds).toContain(kind);
+		}
+		expect(kinds).toEqual([...kinds].sort());
+		const times = walked.map((i) => Date.parse(`${i.createdAt.replace(" ", "T")}Z`));
+		expect(times).toEqual([...times].sort((a, b) => b - a));
 	});
 });
 
@@ -218,6 +392,18 @@ describe("GET /public/stats", () => {
 });
 
 describe("GET /public/clubs/map", () => {
+	test("a banned club is not on the map", async () => {
+		const owner = await createUser();
+		const club = await createClub(owner);
+		const banned = await createClub(owner);
+		await testDb`UPDATE "Club" SET banned = true WHERE id = ${banned.id}`;
+
+		const response = await api().get(`/api/public/clubs/map?bust=${crypto.randomUUID()}`);
+		const ids = response.body.clubs.map((c: { id: string }) => c.id);
+		expect(ids).toContain(club.id);
+		expect(ids).not.toContain(banned.id);
+	});
+
 	test("each club carries countryId, city and memberCount", async () => {
 		const owner = await createUser();
 		const club = await createClub(owner);

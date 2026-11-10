@@ -35,6 +35,7 @@ publicRouter.get(
 
 		const whereConditions = [
 			eq(club.isPrivate, false),
+			sql`(${club.banned} = false OR ${club.banned} IS NULL)`,
 			sql`${club.latitude} IS NOT NULL`,
 			sql`${club.longitude} IS NOT NULL`,
 		];
@@ -649,8 +650,9 @@ publicRouter.get("/public/feed", async ({ query, response }) => response.json(aw
 		tags: ["Public"],
 		summary: "Home community feed",
 		description:
-			"One time-ordered list (newest first) of new public games (events that have not finished), public club posts and public reviews of clubs and events (only when the REVIEWS feature flag is on). " +
-			"Each item has a `kind` (`game`, `post` or `review`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts or reviews change.",
+			"One time-ordered list (newest first) of new public games (events that have not finished), public club posts, public reviews of clubs, events and players (only when the REVIEWS feature flag is on; a player review needs a public reviewed player and a public author), new public clubs, and public clubs that joined an alliance. " +
+			"Types: `all`, `games`, `posts`, `reviews` (club, event and player reviews) and `clubs` (new clubs and alliance joins). " +
+			"Each item has a `kind` (`game`, `post`, `review`, `player_review`, `club` or `alliance`) and only public fields. Page with `nextCursor`: pass it as `cursor` to get the next page; it is null on the last page. Cached for 60 seconds and busted when events, posts, reviews, clubs or alliances change.",
 		query: z.object({
 			type: z.enum(FEED_TYPES).optional().default("all"),
 			cursor: z.string().max(500).optional(),

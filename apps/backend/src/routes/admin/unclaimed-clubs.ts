@@ -288,7 +288,7 @@ adminUnclaimedClubsRouter.post(
 	},
 	{
 		auth: true,
-		bustCache: ["clubs"],
+		bustCache: ["clubs", "public:feed"],
 		schema: {
 			tags: ["Admin"],
 			summary: "Create unclaimed club",

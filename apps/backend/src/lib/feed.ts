@@ -1,6 +1,7 @@
-import { and, desc, eq, inArray, or, type SQL, sql } from "drizzle-orm";
+import { type AnyColumn, and, desc, eq, inArray, or, type SQL, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import * as z from "zod";
-import { club, event, post, review, user } from "../drizzle/schema";
+import { alliance, club, clubAlliance, event, post, review, user } from "../drizzle/schema";
 import { db } from "./db";
 import { isFeatureEnabled } from "./feature-flags";
 import { loadAttendeeCounts, placesLeftOf } from "./people-stats";
@@ -15,6 +16,13 @@ export const feedClubSchema = z.object({
 	logo: z.string().nullable(),
 	logoTile: logoTileResponseSchema,
 	verified: z.boolean(),
+});
+
+const feedPersonSchema = z.object({
+	id: z.string(),
+	slug: z.string().nullable(),
+	name: z.string(),
+	image: z.string().nullable(),
 });
 
 const feedBase = { id: z.string(), createdAt: z.string(), club: feedClubSchema };
@@ -60,22 +68,42 @@ export const feedItemSchema = z.discriminatedUnion("kind", [
 				slug: z.string().nullable(),
 				name: z.string(),
 			}),
-			author: z.object({
-				id: z.string(),
-				slug: z.string().nullable(),
-				name: z.string(),
-				image: z.string().nullable(),
-			}),
+			author: feedPersonSchema,
 		}),
+	}),
+	z.object({
+		kind: z.literal("player_review"),
+		id: z.string(),
+		createdAt: z.string(),
+		review: z.object({
+			rating: z.number(),
+			content: z.string().describe(`First ${TEXT_CHARS} characters`),
+			player: feedPersonSchema,
+			author: feedPersonSchema,
+		}),
+	}),
+	z.object({
+		kind: z.literal("club"),
+		...feedBase,
+		city: z.string().nullable(),
+	}),
+	z.object({
+		kind: z.literal("alliance"),
+		...feedBase,
+		alliance: z.object({ id: z.number(), name: z.string() }),
 	}),
 ]);
 export type FeedItem = z.infer<typeof feedItemSchema>;
 type FeedKind = FeedItem["kind"];
 
-export const FEED_TYPES = ["all", "games", "posts", "reviews"] as const;
+export const FEED_TYPES = ["all", "games", "posts", "reviews", "clubs"] as const;
 export type FeedType = (typeof FEED_TYPES)[number];
 
-const cursorSchema = z.object({ t: z.string(), k: z.enum(["game", "post", "review"]), id: z.string() });
+const cursorSchema = z.object({
+	t: z.string(),
+	k: z.enum(["game", "post", "review", "player_review", "club", "alliance"]),
+	id: z.string(),
+});
 type Cursor = z.infer<typeof cursorSchema>;
 
 export function encodeCursor(item: FeedItem): string {
@@ -239,10 +267,7 @@ async function loadPosts(limit: number, cursor: Cursor | null, clubOk: SQL | und
 	}));
 }
 
-/**
- * Reviews of public clubs and of public events of public clubs. Reviews of players are not part of
- * the feed: they are about a person, and the player's own page shows them.
- */
+/** Reviews of public clubs and of public events of public clubs. */
 async function loadReviews(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
 	const rows = await db
 		.select({
@@ -301,6 +326,104 @@ async function loadReviews(limit: number, cursor: Cursor | null, clubOk: SQL | u
 	});
 }
 
+/**
+ * Reviews of players. Both the reviewed player and the author must have a public profile, so no
+ * photo of a private profile is ever shown (the club reviews above mask it instead).
+ */
+async function loadPlayerReviews(limit: number, cursor: Cursor | null): Promise<FeedItem[]> {
+	const author = alias(user, "author");
+	const publicUser = (column: { isPrivate: AnyColumn; banned: AnyColumn }) =>
+		and(eq(column.isPrivate, false), or(eq(column.banned, false), sql`${column.banned} IS NULL`));
+	const rows = await db
+		.select({
+			id: review.id,
+			createdAt: review.createdAt,
+			rating: review.rating,
+			content: review.content,
+			playerId: user.id,
+			playerSlug: user.slug,
+			playerName: user.name,
+			playerImage: user.image,
+			authorId: author.id,
+			authorSlug: author.slug,
+			authorName: author.name,
+			authorImage: author.image,
+		})
+		.from(review)
+		.innerJoin(user, eq(review.userId, user.id))
+		.innerJoin(author, eq(review.authorId, author.id))
+		.where(
+			and(
+				eq(review.type, "USER"),
+				publicUser(user),
+				publicUser(author),
+				afterCursor("player_review", sql`${review.createdAt}`, sql`${review.id}`, cursor),
+			),
+		)
+		.orderBy(desc(review.createdAt), desc(review.id))
+		.limit(limit);
+
+	return rows.map((row) => ({
+		kind: "player_review" as const,
+		id: row.id,
+		createdAt: row.createdAt,
+		review: {
+			rating: row.rating,
+			content: trim(row.content),
+			player: { id: row.playerId, slug: row.playerSlug, name: row.playerName, image: row.playerImage },
+			author: { id: row.authorId, slug: row.authorSlug, name: row.authorName, image: row.authorImage },
+		},
+	}));
+}
+
+/** Public clubs, by the time they joined. */
+async function loadNewClubs(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
+	const rows = await db
+		.select({ createdAt: club.createdAt, city: club.city, ...clubColumns })
+		.from(club)
+		.where(and(clubOk, afterCursor("club", sql`${club.createdAt}`, sql`${club.id}`, cursor)))
+		.orderBy(desc(club.createdAt), desc(club.id))
+		.limit(limit);
+
+	return rows.map((row) => ({
+		kind: "club" as const,
+		id: row.clubId,
+		createdAt: row.createdAt,
+		club: toFeedClub(row),
+		city: row.city,
+	}));
+}
+
+/**
+ * A club that joined an alliance. An alliance is a group of clubs of one country, not a pair, so
+ * each membership row is one item. The row id is zero-padded so text order equals numeric order.
+ */
+async function loadAllianceJoins(limit: number, cursor: Cursor | null, clubOk: SQL | undefined): Promise<FeedItem[]> {
+	const paddedId = sql`lpad(${clubAlliance.id}::text, 10, '0')`;
+	const rows = await db
+		.select({
+			id: paddedId.mapWith(String),
+			createdAt: clubAlliance.createdAt,
+			allianceId: alliance.id,
+			allianceName: alliance.name,
+			...clubColumns,
+		})
+		.from(clubAlliance)
+		.innerJoin(club, eq(clubAlliance.clubId, club.id))
+		.innerJoin(alliance, eq(clubAlliance.allianceId, alliance.id))
+		.where(and(clubOk, afterCursor("alliance", sql`${clubAlliance.createdAt}`, paddedId, cursor)))
+		.orderBy(desc(clubAlliance.createdAt), desc(paddedId))
+		.limit(limit);
+
+	return rows.map((row) => ({
+		kind: "alliance" as const,
+		id: row.id,
+		createdAt: row.createdAt,
+		club: toFeedClub(row),
+		alliance: { id: row.allianceId, name: row.allianceName },
+	}));
+}
+
 function timeOf(item: FeedItem): number {
 	return new Date(`${item.createdAt.replace(" ", "T")}Z`).getTime();
 }
@@ -317,21 +440,37 @@ function compareFeed(a: FeedItem, b: FeedItem): number {
 	return timeOf(b) - timeOf(a) || compareText(a.kind, b.kind) || compareText(b.id, a.id);
 }
 
+/** Which tab shows which sources. "all" shows every source. */
+const TAB_SOURCES: Record<Exclude<FeedType, "all">, FeedKind[]> = {
+	games: ["game"],
+	posts: ["post"],
+	reviews: ["review", "player_review"],
+	clubs: ["club", "alliance"],
+};
+
+function tabHas(type: FeedType, kind: FeedKind): boolean {
+	return type === "all" || TAB_SOURCES[type].includes(kind);
+}
+
 export async function loadFeed(params: { type: FeedType; cursor?: string; limit: number }) {
 	const { type, limit } = params;
 	const cursor = decodeCursor(params.cursor);
 	const clubOk = await publicClubCondition();
-	const reviewsOn = (type === "all" || type === "reviews") && (await isFeatureEnabled("REVIEWS"));
+	const reviewsOn = (await isFeatureEnabled("REVIEWS")) && tabHas(type, "review");
 	// One extra row per source tells us whether another page exists.
 	const take = limit + 1;
+	const none: FeedItem[] = [];
 
-	const [games, posts, reviews] = await Promise.all([
-		type === "all" || type === "games" ? loadGames(take, cursor, clubOk) : [],
-		type === "all" || type === "posts" ? loadPosts(take, cursor, clubOk) : [],
-		reviewsOn ? loadReviews(take, cursor, clubOk) : [],
+	const sources = await Promise.all([
+		tabHas(type, "game") ? loadGames(take, cursor, clubOk) : none,
+		tabHas(type, "post") ? loadPosts(take, cursor, clubOk) : none,
+		reviewsOn ? loadReviews(take, cursor, clubOk) : none,
+		reviewsOn ? loadPlayerReviews(take, cursor) : none,
+		tabHas(type, "club") ? loadNewClubs(take, cursor, clubOk) : none,
+		tabHas(type, "alliance") ? loadAllianceJoins(take, cursor, clubOk) : none,
 	]);
 
-	const merged = [...games, ...posts, ...reviews].sort(compareFeed);
+	const merged = sources.flat().sort(compareFeed);
 	const items = merged.slice(0, limit);
 	const last = items[items.length - 1];
 	return { items, nextCursor: merged.length > limit && last ? encodeCursor(last) : null };

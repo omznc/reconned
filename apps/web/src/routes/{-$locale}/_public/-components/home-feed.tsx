@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { Building2, Calendar, MessageSquare, Star } from "lucide-react";
+import { Building2, Calendar, MapPin, MessageSquare, Star, Users } from "lucide-react";
 import { useExtracted, useLocale } from "next-intl";
-import { type KeyboardEvent, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import * as z from "zod";
 import { ClubAvatar } from "@/components/identity/club-avatar";
 import { Image } from "@/components/image";
@@ -17,7 +17,7 @@ import type { paths } from "@/lib/api/api-types";
 import { toIntlLocale } from "@/lib/intl-locale";
 import { asJson } from "@/lib/server/json";
 
-type FeedType = "all" | "games" | "posts" | "reviews";
+type FeedType = "all" | "games" | "posts" | "reviews" | "clubs";
 type FeedResponse = paths["/public/feed"]["get"]["responses"][200]["content"]["application/json"];
 export type FeedItem = FeedResponse["items"][number];
 export type FeedPage = { items: FeedItem[]; nextCursor: string | null };
@@ -33,7 +33,7 @@ export type NextGame = {
 	registrationState: "open" | "notOpenYet" | "closed" | "full";
 };
 
-const FEED_TYPES: FeedType[] = ["all", "games", "posts", "reviews"];
+const FEED_TYPES: FeedType[] = ["all", "games", "posts", "reviews", "clubs"];
 
 const getFeedFn = createServerFn({ method: "GET" })
 	.validator(z.object({ type: z.enum(FEED_TYPES), cursor: z.string().optional() }))
@@ -41,7 +41,11 @@ const getFeedFn = createServerFn({ method: "GET" })
 		const { data: page } = await apiServer.GET("/api/public/feed", {
 			params: { query: { type: data.type, cursor: data.cursor, limit: 10 } },
 		});
-		return asJson(page ?? { items: [], nextCursor: null });
+		if (!page) {
+			// The UI shows its retry state for a thrown error; an empty page would look like the end of the feed.
+			throw new Error("The feed request failed");
+		}
+		return asJson(page);
 	});
 
 /** The post content is an HTML excerpt that can stop inside a tag. */
@@ -58,11 +62,19 @@ function htmlToText(html: string): string {
 		.trim();
 }
 
+/** Relative time needs the clock, so the first render (server and client) shows a fixed UTC date instead. */
 function useTimeAgo() {
 	const locale = useLocale();
-	const formatter = new Intl.RelativeTimeFormat(toIntlLocale(locale), { numeric: "auto" });
+	const [now, setNow] = useState<number | null>(null);
+	useEffect(() => setNow(Date.now()), []);
+	const intlLocale = toIntlLocale(locale);
+	const formatter = new Intl.RelativeTimeFormat(intlLocale, { numeric: "auto" });
+	const absolute = new Intl.DateTimeFormat(intlLocale, { dateStyle: "medium", timeZone: "UTC" });
 	return (value: string) => {
-		const seconds = Math.round((toDate(value).getTime() - Date.now()) / 1000);
+		if (now === null) {
+			return absolute.format(toDate(value));
+		}
+		const seconds = Math.round((toDate(value).getTime() - now) / 1000);
 		const steps: [Intl.RelativeTimeFormatUnit, number][] = [
 			["year", 31536000],
 			["month", 2592000],
@@ -137,94 +149,125 @@ function Stars({ rating }: { rating: number }) {
 	);
 }
 
+type Person = { id: string; slug: string | null; name: string; image: string | null };
+
+/** Review items are written by a person; every other item belongs to a club. */
+/** Player reviews are the only items without a club. */
+function clubOf(item: FeedItem) {
+	return "club" in item ? item.club : null;
+}
+
+function personOf(item: FeedItem): Person | null {
+	return item.kind === "review" || item.kind === "player_review" ? item.review.author : null;
+}
+
 function useFeedMeta(item: FeedItem) {
 	const t = useExtracted();
-	if (item.kind === "game") {
-		return { icon: Calendar, type: t("Game"), verb: t("published a game") };
+	switch (item.kind) {
+		case "game":
+			return { icon: Calendar, type: t("Game"), verb: t("published a game") };
+		case "post":
+			return { icon: MessageSquare, type: t("Post"), verb: t("posted") };
+		case "review":
+			return { icon: Star, type: t("Review"), verb: t("reviewed {name}", { name: item.review.target.name }) };
+		case "player_review":
+			return { icon: Star, type: t("Review"), verb: t("reviewed {name}", { name: item.review.player.name }) };
+		case "club":
+			return { icon: Building2, type: t("Club"), verb: t("joined RECONNED") };
+		default:
+			return { icon: Users, type: t("Alliance"), verb: t("joined an alliance") };
 	}
-	if (item.kind === "post") {
-		return { icon: MessageSquare, type: t("Post"), verb: t("posted") };
-	}
-	return {
-		icon: Star,
-		type: t("Review"),
-		verb: t("reviewed {name}", { name: item.review.target.name }),
-	};
 }
 
 function FeedAuthor({ item }: { item: FeedItem }) {
-	if (item.kind === "review") {
-		const { author } = item.review;
+	const person = personOf(item);
+	if (person) {
 		return (
 			<Avatar className="size-10">
-				<AvatarImage src={author.image ?? ""} alt="" />
-				<AvatarFallback name={author.name} />
+				<AvatarImage src={person.image ?? ""} alt="" />
+				<AvatarFallback name={person.name} />
 			</Avatar>
 		);
 	}
-	return <ClubAvatar name={item.club.name} logo={item.club.logo} tile={item.club.logoTile} size={40} />;
+	const club = clubOf(item);
+	return club ? <ClubAvatar name={club.name} logo={club.logo} tile={club.logoTile} size={40} /> : null;
+}
+
+function FeedImage({ src }: { src: string }) {
+	return (
+		<div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
+			<Image src={src} alt="" fill={true} sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
+		</div>
+	);
+}
+
+function ClubBody({ item }: { item: Extract<FeedItem, { kind: "club" | "alliance" }> }) {
+	const t = useExtracted();
+	const href = `/clubs/${item.club.slug || item.club.id}` as "/clubs";
+	return (
+		<div className="flex items-center gap-3 rounded-lg border bg-secondary/40 p-3">
+			<div className="flex min-w-0 flex-1 flex-col gap-1 text-[13px]">
+				<span className="truncate font-semibold">
+					{item.kind === "alliance" ? item.alliance.name : item.club.name}
+				</span>
+				{item.kind === "club" && item.city ? (
+					<span className="flex items-center gap-1 text-xs text-muted-foreground">
+						<MapPin className="size-3.5 shrink-0" aria-hidden={true} />
+						{item.city}
+					</span>
+				) : null}
+			</div>
+			<Button asChild={true} size="sm" variant="secondary">
+				<Link href={href}>{t("View club")}</Link>
+			</Button>
+		</div>
+	);
 }
 
 function FeedBody({ item }: { item: FeedItem }) {
-	if (item.kind === "game") {
-		return (
-			<>
-				<h3 className="text-base font-semibold">{item.event.name}</h3>
-				<p className="line-clamp-3 text-[13px] text-muted-foreground">{htmlToText(item.event.description)}</p>
-				{item.event.image ? (
-					<div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
-						<Image
-							src={item.event.image}
-							alt=""
-							fill={true}
-							sizes="(min-width: 1024px) 640px, 100vw"
-							className="object-cover"
-						/>
-					</div>
-				) : null}
-				<GameBlock item={item} />
-			</>
-		);
+	switch (item.kind) {
+		case "game":
+			return (
+				<>
+					<h3 className="text-base font-semibold">{item.event.name}</h3>
+					<p className="line-clamp-3 text-[13px] text-muted-foreground">
+						{htmlToText(item.event.description)}
+					</p>
+					{item.event.image ? <FeedImage src={item.event.image} /> : null}
+					<GameBlock item={item} />
+				</>
+			);
+		case "post":
+			return (
+				<>
+					<h3 className="text-base font-semibold">{item.post.title}</h3>
+					<p className="line-clamp-4 text-[13px] text-muted-foreground">{htmlToText(item.post.content)}</p>
+					{item.post.images[0] ? <FeedImage src={item.post.images[0]} /> : null}
+				</>
+			);
+		case "review":
+		case "player_review":
+			return (
+				<>
+					<h3 className="text-base font-semibold">
+						<Stars rating={item.review.rating} />
+					</h3>
+					<p className="text-[13px] text-muted-foreground">{item.review.content}</p>
+				</>
+			);
+		default:
+			return <ClubBody item={item} />;
 	}
-	if (item.kind === "post") {
-		const [image] = item.post.images;
-		return (
-			<>
-				<h3 className="text-base font-semibold">{item.post.title}</h3>
-				<p className="line-clamp-4 text-[13px] text-muted-foreground">{htmlToText(item.post.content)}</p>
-				{image ? (
-					<div className="relative aspect-video overflow-hidden rounded-lg bg-muted">
-						<Image
-							src={image}
-							alt=""
-							fill={true}
-							sizes="(min-width: 1024px) 640px, 100vw"
-							className="object-cover"
-						/>
-					</div>
-				) : null}
-			</>
-		);
-	}
-	return (
-		<>
-			<h3 className="text-base font-semibold">
-				<Stars rating={item.review.rating} />
-			</h3>
-			<p className="text-[13px] text-muted-foreground">{item.review.content}</p>
-		</>
-	);
 }
 
 function FeedCard({ item }: { item: FeedItem }) {
 	const t = useExtracted();
 	const ago = useTimeAgo();
 	const meta = useFeedMeta(item);
-	const who = item.kind === "review" ? item.review.author.name : item.club.name;
-	const whoHref =
-		item.kind === "review"
-			? `/users/${item.review.author.slug || item.review.author.id}`
-			: `/clubs/${item.club.slug || item.club.id}`;
+	const person = personOf(item);
+	const club = clubOf(item);
+	const who = person?.name ?? club?.name ?? "";
+	const whoHref = person ? `/users/${person.slug || person.id}` : `/clubs/${club?.slug || club?.id}`;
 	return (
 		<article className="flex flex-col gap-3 rounded-lg border bg-card p-4 text-card-foreground">
 			<header className="flex items-center gap-3">
@@ -236,9 +279,7 @@ function FeedCard({ item }: { item: FeedItem }) {
 							className="inline-flex items-center gap-1 font-semibold hover:underline"
 						>
 							{who}
-							{item.kind !== "review" && item.club.verified ? (
-								<VerifiedBadge label={t("Verified club")} />
-							) : null}
+							{!person && club?.verified ? <VerifiedBadge label={t("Verified club")} /> : null}
 						</Link>
 						<span className="text-muted-foreground">{meta.verb}</span>
 					</span>
@@ -263,6 +304,7 @@ export function HomeFeed({ initial }: { initial: FeedPage }) {
 		games: undefined,
 		posts: undefined,
 		reviews: undefined,
+		clubs: undefined,
 	});
 	const [loading, setLoading] = useState(false);
 	const [failed, setFailed] = useState(false);
@@ -272,6 +314,7 @@ export function HomeFeed({ initial }: { initial: FeedPage }) {
 		games: t("Games"),
 		posts: t("Posts"),
 		reviews: t("Reviews"),
+		clubs: t("Clubs"),
 	};
 
 	const load = async (next: FeedType, cursor?: string) => {
