@@ -256,7 +256,11 @@ utilsRouter.get(
 		try {
 			// Check Redis connectivity and measure latency
 			const redisStart = Date.now();
-			await redis.ping();
+			// Bounded so a Redis outage cannot hold the response past the Docker healthcheck timeout.
+			await Promise.race([
+				redis.ping(),
+				new Promise((_, reject) => setTimeout(() => reject(new Error("Redis ping timed out")), 3000)),
+			]);
 			redisLatency = Date.now() - redisStart;
 			redisStatus = "connected";
 		} catch (error) {
