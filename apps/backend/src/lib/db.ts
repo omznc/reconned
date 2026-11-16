@@ -11,18 +11,23 @@ declare global {
 
 let db: ReturnType<typeof drizzle<typeof fullSchema>>;
 
+// Pool options must go in `connection`: drizzle(url, options) ignores them. Bun reads these values in seconds.
 const connectionOptions = {
 	schema: fullSchema,
-	max: 20,
-	maxTimeout: 30000,
-	idleTimeout: 30000,
+	connection: {
+		url: env.DATABASE_URL,
+		max: 20,
+		idleTimeout: 30,
+		maxLifetime: 1800,
+		connectionTimeout: 10,
+	},
 };
 
 if (process.env.NODE_ENV === "production") {
-	db = drizzle(env.DATABASE_URL, connectionOptions);
+	db = drizzle(connectionOptions);
 } else {
 	if (!global.__db) {
-		global.__db = drizzle(env.DATABASE_URL, connectionOptions);
+		global.__db = drizzle(connectionOptions);
 	}
 	db = global.__db;
 }
