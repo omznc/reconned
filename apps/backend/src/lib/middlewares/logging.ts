@@ -13,5 +13,5 @@ export const loggingMiddleware = requestLoggingMiddleware({
 			attributes: data as unknown as Record<string, never>,
 		});
 	},
-	excludePaths: ["/api/docs", "/api/openapi.json"],
+	excludePaths: ["/api/docs", "/api/openapi.json", "/api/health"],
 });

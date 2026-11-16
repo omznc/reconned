@@ -33,11 +33,8 @@ EXPOSE 3002
 
 # Fails the deploy if the server isn't actually serving on the port the proxy targets
 # (e.g. a platform-injected PORT env overriding the one above). Uses bun's fetch because
-# the base image doesn't guarantee curl/wget.
-# Only the database decides health: the app runs without Redis. Docker does not restart
-# an unhealthy container, so a hung database check sends SIGTERM to the app, and the
-# unless-stopped restart policy starts it again.
+# the base image doesn't guarantee curl/wget. See scripts/healthcheck.ts for the restart rule.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD ["bun", "-e", "fetch('http://localhost:3002/api/health', { signal: AbortSignal.timeout(8000) }).then((r) => r.json()).then((b) => process.exit(b.database === 'connected' ? 0 : 1)).catch((e) => { if (e.name === 'TimeoutError') process.kill(1, 'SIGTERM'); process.exit(1); })"]
+    CMD ["bun", "run", "scripts/healthcheck.ts"]
 
 CMD ["bun", "--no-orphans", "run", "src/index.ts"]

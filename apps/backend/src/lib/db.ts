@@ -12,14 +12,16 @@ declare global {
 let db: ReturnType<typeof drizzle<typeof fullSchema>>;
 
 // Pool options must go in `connection`: drizzle(url, options) ignores them. Bun reads these values in seconds.
+// Bun applies idleTimeout to a silent socket, also inside a query or a transaction: a query, a lock wait or a
+// transaction gap longer than 30 s fails. No maxLifetime: Bun closes an expired connection mid-query.
+// connectionTimeout stays below the 8 s abort of scripts/healthcheck.ts.
 const connectionOptions = {
 	schema: fullSchema,
 	connection: {
 		url: env.DATABASE_URL,
 		max: 20,
 		idleTimeout: 30,
-		maxLifetime: 1800,
-		connectionTimeout: 10,
+		connectionTimeout: 5,
 	},
 };
 
