@@ -259,6 +259,7 @@ export function listOrderBy(
 	sortOrder: string | undefined,
 	attendeeCount: SQL,
 	placesLeft: SQL,
+	now: Date,
 ): SQL[] {
 	if (!sortBy) {
 		// The original order: verified clubs first, then the busiest events.
@@ -276,9 +277,9 @@ export function listOrderBy(
 		// Unlimited events have no places left to compare, so they sort last in both directions.
 		return [sql`${placesLeft} ${dir} NULLS LAST`, sql`${event.dateStart} ASC`, ...tieBreak];
 	}
-	if (sortOrder !== "desc") {
-		// Soonest: events that did not end yet first, then past events, the most recent first.
-		const past = sql`${event.dateEnd} < now()`;
+	if (sortBy === "soonest") {
+		// Events that did not end yet first, then past events, the most recent first.
+		const past = sql`${event.dateEnd} < ${now.toISOString()}`;
 		return [
 			sql`${past} ASC`,
 			sql`CASE WHEN ${past} THEN NULL ELSE ${event.dateStart} END ASC`,
