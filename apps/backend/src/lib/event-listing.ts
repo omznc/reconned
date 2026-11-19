@@ -276,6 +276,17 @@ export function listOrderBy(
 		// Unlimited events have no places left to compare, so they sort last in both directions.
 		return [sql`${placesLeft} ${dir} NULLS LAST`, sql`${event.dateStart} ASC`, ...tieBreak];
 	}
+	if (sortOrder !== "desc") {
+		// Soonest: events that did not end yet first, then past events, the most recent first.
+		const past = sql`${event.dateEnd} < now()`;
+		return [
+			sql`${past} ASC`,
+			sql`CASE WHEN ${past} THEN NULL ELSE ${event.dateStart} END ASC`,
+			sql`${event.dateStart} DESC`,
+			sql`${event.name} ASC`,
+			...tieBreak,
+		];
+	}
 	return [sql`${event.dateStart} ${dir}`, sql`${event.name} ASC`, ...tieBreak];
 }
 
