@@ -214,7 +214,9 @@ eventsRouter.get(
 			.leftJoin(country, eq(club.countryId, country.id))
 			.leftJoin(attendeeCountsSubquery, eq(event.id, attendeeCountsSubquery.eventId))
 			.where(listWhere)
-			.orderBy(...listOrderBy(query.sortBy, query.sortOrder, attendeeCountSql, placesLeftSql(attendeeCountSql)))
+			.orderBy(
+				...listOrderBy(query.sortBy, query.sortOrder, attendeeCountSql, placesLeftSql(attendeeCountSql), now),
+			)
 			.limit(perPage)
 			.offset(offset);
 
@@ -330,7 +332,7 @@ eventsRouter.get(
 				"List events with pagination, search, sorting, filters and privacy filtering. List-valued filters (registration, countryId) are comma separated. With facets=true the response also carries facet counts and the page header counts.",
 			query: paginationQuerySchema.extend({
 				search: z.string().max(100).optional(),
-				sortBy: z.enum(["name", "dateStart", "date", "placesLeft", "price"]).optional(),
+				sortBy: z.enum(["name", "dateStart", "date", "soonest", "placesLeft", "price"]).optional(),
 				sortOrder: z.enum(["asc", "desc"]).optional(),
 				isPrivate: z.string().optional(),
 				filter: z.enum(["mine"]).optional(),
