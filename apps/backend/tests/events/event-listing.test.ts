@@ -366,6 +366,34 @@ describe("GET /events filters, sorts and facets", () => {
 		expect(await keys({ sortBy: "dateStart" })).toEqual(asc);
 	});
 
+	test("sortBy=soonest lists running and upcoming events first, then past events newest first", async () => {
+		const soonToken = `soon${crypto.randomUUID().slice(0, 8)}`;
+		const make = async (key: string, startOffset: number) => {
+			const start = now + startOffset;
+			const response = await api(owner.cookie).post("/api/events", {
+				clubId: clubAId,
+				name: `${soonToken} ${key}`,
+				description: "Soonest order",
+				costPerPerson: 1,
+				location: "Sarajevo",
+				dateStart: new Date(start).toISOString(),
+				dateEnd: new Date(start + 2 * HOUR_MS).toISOString(),
+				dateRegistrationsOpen: new Date(start - 9 * DAY_MS).toISOString(),
+				dateRegistrationsClose: new Date(start - HOUR_MS).toISOString(),
+				allowFreelancers: true,
+			});
+			expect(response.status).toBe(200);
+		};
+		await make("oldPast", -3 * DAY_MS);
+		await make("upcoming", 2 * DAY_MS);
+		await make("recentPast", -DAY_MS);
+		await make("running", -HOUR_MS);
+
+		const response = await api().get(`/api/events?search=${soonToken}&sortBy=soonest&perPage=100`);
+		const found = (response.body.events as Array<{ name: string }>).map((e) => e.name.split(" ")[1]);
+		expect(found).toEqual(["running", "upcoming", "recentPast", "oldPast"]);
+	});
+
 	test("sortBy=price orders by price and breaks ties by start time", async () => {
 		expect(await keys({ sortBy: "price", sortOrder: "asc" })).toEqual([
 			"notYet",
