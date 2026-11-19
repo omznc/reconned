@@ -98,7 +98,7 @@ export function sortParams(sort: EventsSort) {
 	if (sort === "placesLeft") {
 		return { sortBy: "placesLeft", sortOrder: "desc" } as const;
 	}
-	return { sortBy: sort === "price" ? "price" : "dateStart", sortOrder: "asc" } as const;
+	return { sortBy: sort, sortOrder: "asc" } as const;
 }
 
 /** Page N of "Load more" means: show the first N * PER_PAGE events. */

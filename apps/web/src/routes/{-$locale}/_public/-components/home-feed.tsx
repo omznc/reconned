@@ -377,11 +377,19 @@ function FeedBody({ item }: { item: FeedItem }) {
 		case "game":
 			return (
 				<>
-					<h3 className="text-base font-semibold">{item.event.name}</h3>
+					<h3 className="text-base font-semibold">
+						<Link href={`/events/${item.event.slug || item.id}`} className="hover:underline">
+							{item.event.name}
+						</Link>
+					</h3>
 					<p className="line-clamp-3 text-[13px] text-muted-foreground">
 						{htmlToText(item.event.description)}
 					</p>
-					{item.event.image ? <FeedImage src={item.event.image} /> : null}
+					{item.event.image ? (
+						<Link href={`/events/${item.event.slug || item.id}`} tabIndex={-1} aria-hidden={true}>
+							<FeedImage src={item.event.image} />
+						</Link>
+					) : null}
 					<GameBlock item={item} />
 				</>
 			);

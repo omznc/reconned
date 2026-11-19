@@ -18055,7 +18055,7 @@ export interface operations {
 				page?: unknown;
 				perPage?: unknown;
 				search?: string;
-				sortBy?: "name" | "dateStart" | "date" | "placesLeft" | "price";
+				sortBy?: "name" | "dateStart" | "date" | "soonest" | "placesLeft" | "price";
 				sortOrder?: "asc" | "desc";
 				isPrivate?: string;
 				filter?: "mine";
